@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JR OS - 极客微系统 1.1</title>
+    <!-- 引入 Tailwind CSS 库提供现代化的 UI 基础 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#05050a',
+                            panel: 'rgba(10, 10, 20, 0.75)',
+                            border: 'rgba(0, 242, 254, 0.25)',
+                            primary: '#00f2fe',
+                            secondary: '#4facfe',
+                            accent: '#ff007f',
+                            text: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-x pan-y;
+        }
+
+        .font-mono-os {
+            font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
+        }
+
+        /* 隐藏滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* 磨砂玻璃特效 */
+        .glassmorphism {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* 窗口动画 */
+        .window-appear {
+            animation: scaleUp 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* 关机特效 */
+        .crt-shutdown {
+            animation: crtSec 0.4s ease-out forwards;
+        }
+        @keyframes crtSec {
+            0% { transform: scaleY(1) scaleX(1); filter: brightness(1); }
+            50% { transform: scaleY(0.01) scaleX(1.1); filter: brightness(3); }
+            100% { transform: scaleY(0) scaleX(0); filter: brightness(5); opacity: 0; }
+        }
+
+        /* 主题样式定义 */
+        body.theme-cyber {
+            --bg-color: #030308;
+            --panel-bg: rgba(10, 10, 22, 0.8);
+            --border-color: rgba(0, 242, 254, 0.25);
+            --text-color: #e2e8f0;
+            --accent-color: #00f2fe;
+            --secondary-color: #ff007f;
+        }
+        body.theme-matrix {
+            --bg-color: #000000;
+            --panel-bg: rgba(5, 15, 5, 0.85);
+            --border-color: rgba(0, 255, 70, 0.3);
+            --text-color: #00ff46;
+            --accent-color: #00ff46;
+            --secondary-color: #008010;
+        }
+        body.theme-retro {
+            --bg-color: #1a0f00;
+            --panel-bg: rgba(30, 20, 5, 0.9);
+            --border-color: rgba(255, 165, 0, 0.35);
+            --text-color: #ffb000;
+            --accent-color: #ffb000;
+            --secondary-color: #ff5500;
+        }
+        body.theme-light {
+            --bg-color: #f1f5f9;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(15, 23, 42, 0.15);
+            --text-color: #0f172a;
+            --accent-color: #2563eb;
+            --secondary-color: #db2777;
+        }
+
+        /* 应用变量定义样式 */
+        .dynamic-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        .dynamic-text {
+            color: var(--text-color);
+        }
+        .dynamic-accent-border {
+            border-color: var(--accent-color);
+        }
+        .dynamic-accent-text {
+            color: var(--accent-color);
+        }
+        .dynamic-accent-bg {
+            background-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body class="theme-cyber overflow-hidden w-screen h-screen select-none bg-black">
+
+    <!-- 背景 Canvas 动态粒子/代码雨壁纸 -->
+    <canvas id="wallpaper-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!--=================== 1. 系统引导界面 (BIOS & Bootloader) ===================-->
+    <div id="boot-screen" class="absolute inset-0 bg-black z-[9999] flex flex-col justify-between p-8 md:p-16 font-mono-os text-green-500 overflow-y-auto">
+        <div id="boot-log" class="space-y-1 text-xs md:text-sm max-w-4xl">
+            <!-- 启动日志会动态写入此处 -->
+        </div>
+        <div class="w-full flex flex-col items-center justify-center space-y-4">
+            <div class="text-xl md:text-2xl font-bold tracking-widest animate-pulse">JR OS BOOTING</div>
+            <div class="w-full max-w-md bg-zinc-900 border border-green-900 rounded-full h-3 overflow-hidden">
+                <div id="boot-progress" class="bg-green-500 h-full w-0 transition-all duration-100 ease-out"></div>
+            </div>
+            <button id="btn-start-os" class="hidden px-8 py-3 bg-green-500 text-black font-bold rounded hover:bg-green-400 border border-green-300 transition duration-300 cursor-pointer shadow-[0_0_20px_rgba(34,197,94,0.5)]">
+                [ 初始化内核并开机 ]
+            </button>
+        </div>
+    </div>
+
+    <!--=================== 2. 主桌面工作区 ===================-->
+    <div id="desktop" class="absolute inset-0 z-10 hidden flex flex-col h-full w-full justify-between pb-16 md:pb-16 overflow-hidden">
+        
+        <!-- 顶部系统状态状态栏 -->
+        <header class="w-full h-8 dynamic-panel glassmorphism flex items-center justify-between px-4 text-xs z-50 border-b select-none">
+            <div class="flex items-center space-x-4">
+                <span class="font-bold flex items-center space-x-1 cursor-pointer" onclick="toggleStartMenu()">
+                    <svg class="w-4 h-4 dynamic-accent-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+                    <span class="dynamic-text">JR OS</span>
+                </span>
+                <span id="active-win-indicator" class="opacity-60 hidden md:inline">桌面处于活动状态</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1">
+                    <span class="opacity-60">CPU:</span>
+                    <span id="top-cpu-bar" class="w-12 bg-zinc-800 h-2 rounded overflow-hidden inline-block"><span id="top-cpu" class="bg-emerald-500 h-full block w-0 transition-all duration-300"></span></span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span id="sys-time" class="font-bold font-mono-os dynamic-text">00:00:00</span>
+                    <span id="sys-date" class="opacity-60 hidden sm:inline">2026/05/17</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 桌面图标工作区 -->
+        <main class="flex-1 w-full relative p-4 grid grid-flow-col auto-cols-[80px] grid-rows-[repeat(auto-fill,90px)] gap-4 content-start items-start z-10" id="desktop-icons-container">
+            <!-- 图标动态装载 -->
+        </main>
+
+        <!-- 桌面悬浮窗口盛放区 -->
+        <div id="window-container" class="absolute inset-0 z-20 pointer-events-none">
+            <!-- 动态生成各种应用窗口 -->
+        </div>
+
+        <!-- 底部Dock应用快速启动栏 -->
+        <footer class="w-full flex justify-center pb-2 z-40 select-none absolute bottom-0 left-0 right-0">
+            <div class="dynamic-panel glassmorphism px-4 py-2 rounded-2xl flex items-end space-x-3 border shadow-2xl max-w-full overflow-x-auto" id="dock-bar">
+                <!-- 动态图标列表 -->
+            </div>
+        </footer>
+
+        <!-- 系统快捷启动菜单/开始菜单 -->
+        <div id="start-menu" class="absolute bottom-16 left-4 w-72 dynamic-panel glassmorphism border rounded-xl shadow-2xl z-50 p-4 hidden flex flex-col space-y-4">
+            <div class="flex items-center space-x-3 border-b border-zinc-700/50 pb-3">
+                <div class="w-10 h-10 rounded-full dynamic-accent-bg flex items-center justify-center text-black font-bold">JR</div>
+                <div>
+                    <h4 class="font-bold text-sm dynamic-text">System Administrator</h4>
+                    <span class="text-xs opacity-60">等级: 内核超级用户</span>
+                </div>
+            </div>
+            <div class="flex-1 py-1 space-y-1">
+                <div onclick="openApp('terminal')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
+                    <span class="text-xl">💻</span><span class="dynamic-text">系统控制台 (Terminal)</span>
+                </div>
+                <div onclick="openApp('explorer')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
+                    <span class="text-xl">📂</span><span class="dynamic-text">文件管理器 (Explorer)</span>
+                </div>
+                <div onclick="openApp('browser')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
+                    <span class="text-xl">🌐</span><span class="dynamic-text">星际航行浏览器 (Browser)</span>
+                </div>
+                <div onclick="openApp('monitor')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
+                    <span class="text-xl">⚙️</span><span class="dynamic-text">系统硬件监控 (Monitor)</span>
+                </div>
+                <div onclick="openApp('settings')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
+                    <span class="text-xl">🎛️</span><span class="dynamic-text">系统主题偏好 (Settings)</span>
+                </div>
+            </div>
+            <div class="border-t border-zinc-700/50 pt-3 flex justify-between">
+                <button onclick="triggerShutdown()" class="flex items-center space-x-2 text-xs text-red-400 hover:text-red-300 cursor-pointer">
+                    <span>🔴</span> <span>安全关闭系统</span>
+                </button>
+                <button onclick="playSystemSound(440, 'triangle', 0.15)" class="text-xs opacity-60 hover:opacity-100">🔊 测试音频</button>
+            </div>
+        </div>
+    </div>
+
+    <!--=================== 3. 各种 APP 的自定义 HTML 模板 ===================-->
+    <div class="hidden">
+        <!-- 终端 App 模板 -->
+        <div id="template-terminal" class="h-full w-full flex flex-col font-mono-os text-xs md:text-sm p-3 overflow-hidden text-emerald-400">
+            <div class="flex-1 overflow-y-auto mb-2 space-y-1" id="term-output"></div>
+            <div class="flex items-center">
+                <span class="text-emerald-500 mr-2 shrink-0">jr_os@kernel:~$</span>
+                <input type="text" id="term-input" class="bg-transparent border-none outline-none text-white flex-1 font-mono-os" autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+
+        <!-- 文件浏览器 App 模板 -->
+        <div id="template-explorer" class="h-full w-full flex flex-col overflow-hidden text-sm">
+            <div class="flex items-center space-x-2 p-2 border-b border-zinc-700/40 bg-black/10">
+                <button id="exp-back-btn" class="px-2 py-1 bg-white/10 hover:bg-white/20 rounded disabled:opacity-30">⬅️</button>
+                <span id="exp-current-path" class="font-mono-os opacity-80 px-2 py-1 bg-black/20 rounded flex-1 select-all overflow-hidden whitespace-nowrap">/</span>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 align-content-start" id="exp-file-grid">
+                <!-- 动态列出文件与文件夹 -->
+            </div>
+        </div>
+
+        <!-- 文件编辑器 App 模板 -->
+        <div id="template-editor" class="h-full w-full flex flex-col overflow-hidden text-sm">
+            <div class="flex items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10">
+                <span id="editor-file-info" class="font-mono-os text-xs opacity-60">未命名文件.txt</span>
+                <div class="space-x-2">
+                    <button id="editor-save-btn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded">💾 保存并写入文件</button>
+                </div>
+            </div>
+            <textarea id="editor-textarea" class="flex-1 p-3 bg-zinc-950/80 text-white font-mono-os text-sm border-none outline-none resize-none placeholder-zinc-600" placeholder="在此输入你的文件内容..."></textarea>
+        </div>
+
+        <!-- 浏览器 App 模板 -->
+        <div id="template-browser" class="h-full w-full flex flex-col overflow-hidden text-sm">
+            <!-- 浏览器控制台顶栏 -->
+            <div class="flex flex-col border-b border-zinc-700/40 bg-black/25 shrink-0 select-none">
+                <div class="flex items-center space-x-2 p-2">
+                    <div class="flex space-x-1 shrink-0">
+                        <button id="browser-back-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 disabled:opacity-30 active:scale-95 transition flex items-center justify-center">⬅️</button>
+                        <button id="browser-forward-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 disabled:opacity-30 active:scale-95 transition flex items-center justify-center">➡️</button>
+                        <button id="browser-refresh-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🔄</button>
+                        <button id="browser-home-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🏠</button>
+                    </div>
+                    <!-- 交互地址栏 -->
+                    <div class="flex-1 flex items-center bg-black/40 border border-zinc-700/40 rounded-lg px-3 py-1 text-xs">
+                        <span class="text-zinc-500 mr-1.5 shrink-0 select-none">🛡️ Secure</span>
+                        <input type="text" id="browser-url-input" class="bg-transparent border-none outline-none text-zinc-200 flex-1 font-mono-os" value="jros://welcome" autocomplete="off" spellcheck="false">
+                        <button id="browser-go-btn" class="ml-1 px-2 py-0.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-md">GO</button>
+                    </div>
+                </div>
+                <!-- 预设极速书签栏 -->
+                <div class="flex items-center space-x-3 px-3 pb-1.5 text-xs opacity-75 overflow-x-auto whitespace-nowrap scrollbar-none">
+                    <span class="text-zinc-500 select-none">🔖 书签:</span>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://welcome')">🚀 JR OS 主页</button>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://games')">🎮 街机游戏中心</button>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://chat')">💬 极客聊天室</button>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://en.m.wikipedia.org')">📖 维基百科 (Iframe)</button>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://www.osdev.org')">🧠 OSDev Wiki</button>
+                </div>
+                <!-- 加载进度指示 -->
+                <div class="w-full bg-zinc-800 h-[2px] overflow-hidden relative">
+                    <div id="browser-progress-bar" class="absolute left-0 top-0 h-full bg-sky-400 w-full transition-all duration-300" style="transform: translateX(-100%);"></div>
+                </div>
+            </div>
+            <!-- 浏览器内容沙盒 -->
+            <div class="flex-1 relative bg-white overflow-hidden text-slate-800" id="browser-view-container">
+                <!-- 动态装载 Iframe 或是我们自主研发的 Virtual Web 沙盒 -->
+                <div id="browser-sandbox" class="absolute inset-0 overflow-y-auto p-6 bg-slate-900 text-slate-100 hidden"></div>
+                <iframe id="browser-iframe" class="absolute inset-0 w-full h-full border-none bg-white hidden" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            </div>
+        </div>
+
+        <!-- 系统监控 App 模板 -->
+        <div id="template-monitor" class="h-full w-full flex flex-col overflow-hidden p-3 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-black/30 p-3 rounded border border-zinc-800/60">
+                    <h5 class="text-xs font-bold opacity-60 mb-1">CPU 核心负载率</h5>
+                    <canvas id="canvas-cpu-chart" class="w-full h-24 bg-zinc-950 rounded"></canvas>
+                </div>
+                <div class="bg-black/30 p-3 rounded border border-zinc-800/60">
+                    <h5 class="text-xs font-bold opacity-60 mb-1">物理虚拟内存状态</h5>
+                    <canvas id="canvas-ram-chart" class="w-full h-24 bg-zinc-950 rounded"></canvas>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col min-h-0 bg-black/20 rounded border border-zinc-800/60 p-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-xs font-bold opacity-80">当前内核进程管理表</h5>
+                    <span class="text-[10px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded border border-sky-400/20">调度器模式: 优先轮转队列</span>
+                </div>
+                <div class="flex-1 overflow-y-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="border-b border-zinc-800 opacity-60">
+                                <th class="py-1">PID</th>
+                                <th class="py-1">任务名称</th>
+                                <th class="py-1">CPU %</th>
+                                <th class="py-1">内存 (KB)</th>
+                                <th class="py-1">状态</th>
+                                <th class="py-1 text-right">控制</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proc-table-body">
+                            <!-- 进程实时列表 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 复古画板 App 模板 -->
+        <div id="template-paint" class="h-full w-full flex flex-col overflow-hidden p-2">
+            <div class="flex items-center space-x-2 pb-2 mb-2 border-b border-zinc-700/30 flex-wrap gap-1">
+                <input type="color" id="paint-color" value="#00f2fe" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                <span class="text-xs opacity-60">粗细:</span>
+                <input type="range" id="paint-size" min="1" max="20" value="4" class="w-20 accent-sky-400">
+                <button id="paint-clear-btn" class="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded cursor-pointer">🗑️ 清空画布</button>
+            </div>
+            <div class="flex-1 bg-zinc-900 rounded relative overflow-hidden border border-zinc-800">
+                <canvas id="paint-canvas" class="absolute inset-0 bg-zinc-950 cursor-crosshair"></canvas>
+            </div>
+        </div>
+
+        <!-- 8-Bit音乐合成播放器 App 模板 -->
+        <div id="template-synth" class="h-full w-full flex flex-col overflow-hidden p-3 space-y-4">
+            <div class="bg-black/30 p-3 rounded border border-zinc-800 flex items-center justify-between">
+                <div>
+                    <h4 class="font-bold text-sm" id="synth-song-title">16-Bit 脉宽调制交响曲.sys</h4>
+                    <p class="text-xs opacity-60 mt-0.5">内建音频节点发生器 - 8-Bit 经典和弦</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="synth-play-btn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold cursor-pointer">▶️ 播 放</button>
+                    <button id="synth-stop-btn" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold cursor-pointer" disabled>⏹️ 停 止</button>
+                </div>
+            </div>
+            <div class="flex-1 bg-zinc-950 rounded relative overflow-hidden border border-zinc-800">
+                <canvas id="synth-visualizer" class="absolute inset-0 w-full h-full"></canvas>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none bg-gradient-to-t from-black/80 to-transparent">
+                    <span class="text-xs font-mono-os dynamic-accent-text tracking-widest text-emerald-400 opacity-60">AUDIO SPECTRUM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统设置 App 模板 -->
+        <div id="template-settings" class="h-full w-full overflow-y-auto p-4 space-y-5 text-sm">
+            <div>
+                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">系统主题配色</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setTheme('cyber')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-cyan-500/20 text-cyan-400 rounded text-left text-xs font-bold">💎 赛博霓虹 (Cyber)</button>
+                    <button onclick="setTheme('matrix')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-green-500/20 text-green-400 rounded text-left text-xs font-bold">📟 帝国代码雨 (Matrix)</button>
+                    <button onclick="setTheme('retro')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/20 text-amber-500 rounded text-left text-xs font-bold">📻 橘子复古 (Amber)</button>
+                    <button onclick="setTheme('light')" class="px-3 py-2 bg-white border border-slate-300 text-slate-800 rounded text-left text-xs font-bold shadow">☀️ 极致明澈 (Light)</button>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">动态背景壁纸 (Canvas 粒子渲染)</h4>
+                <div class="flex flex-col space-y-2">
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="stars" checked class="accent-sky-400">
+                        <span>星际穿越 (3D Starfield)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="rain" class="accent-sky-400">
+                        <span>黑客帝国二进制矩阵 (Binary Rain)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="constellation" class="accent-sky-400">
+                        <span>多维交互星轨 (Constellations)</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">关于 JR OS</h4>
+                <div class="bg-black/30 p-3 rounded border border-zinc-800/40 text-xs leading-relaxed space-y-1">
+                    <p><strong>名称：</strong>JR OS (J&R 操作系统模拟器)</p>
+                    <p><strong>版本：</strong>v1.1.0 Stable</p>
+                    <p><strong>硬件平台：</strong>HTML5 / Custom Canvas CPU Core Emulator</p>
+                    <p><strong>开发环境：</strong>iPad 独立物理编译标准</p>
+                    <p class="pt-2 opacity-60">设计宗旨：在受限沙箱中，将前端画布交互与底层操作系统的三大模型进行精美结合。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 经典太空侵略者 Canvas 游戏 App 模板 -->
+        <div id="template-game" class="h-full w-full flex flex-col overflow-hidden p-2">
+            <div class="flex items-center justify-between pb-2 mb-1 border-b border-zinc-800 text-xs">
+                <div>分数: <span id="game-score" class="font-bold text-amber-400">0</span></div>
+                <div class="opacity-60">控制: 键盘A/D或←/→, 空格发射</div>
+                <button id="game-restart" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-500 rounded font-bold cursor-pointer">重新启动</button>
+            </div>
+            <!-- Canvas 容器 -->
+            <div class="flex-1 bg-zinc-950 rounded relative border border-zinc-800 overflow-hidden">
+                <canvas id="game-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+            <!-- 为 iPad 适配的虚拟触控按键区 -->
+            <div class="h-16 flex items-center justify-between px-4 mt-2 bg-black/30 rounded border border-zinc-800 shrink-0 md:hidden select-none">
+                <div class="flex space-x-2">
+                    <button id="game-btn-left" class="w-12 h-12 bg-white/10 active:bg-white/30 rounded-xl flex items-center justify-center text-lg">◀️</button>
+                    <button id="game-btn-right" class="w-12 h-12 bg-white/10 active:bg-white/30 rounded-xl flex items-center justify-center text-lg">▶️</button>
+                </div>
+                <button id="game-btn-fire" class="w-24 h-12 bg-red-600/60 active:bg-red-600 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow-[0_0_10px_rgba(220,38,38,0.5)]">🔥 FIRE</button>
+            </div>
+        </div>
+    </div>
+
+    <!--=================== 4. 完整的操作系统 JS 核心逻辑 ===================-->
+    <script>
+        /**
+         * =========================================================================
+         * I. 核心底层子系统定义
+         * =========================================================================
+         */
+
+        // 1. 全局配置与状态机制
+        const SYSTEM_STATE = {
+            theme: 'cyber',
+            wallpaper: 'stars',
+            activeWindow: null,
+            cpuLoad: 0,
+            ramLoad: 35, // 初始占用
+            appWindows: {},
+            uptime: 0,
+            soundMuted: false
+        };
+
+        // 2. 内存虚拟文件系统 (Virtual File System - VFS)
+        class VirtualFileSystem {
+            constructor() {
+                this.root = {
+                    name: "",
+                    type: "dir",
+                    children: {
+                        "bin": { name: "bin", type: "dir", children: {} },
+                        "home": { name: "home", type: "dir", children: {
+                            "jr_user": { name: "jr_user", type: "dir", children: {
+                                "welcome.txt": { name: "welcome.txt", type: "file", content: "祝贺！你的 JR OS 内核运行极其稳定。\n在这个纯内存 VFS 文件系统里，你可以：\n1. 双击这个文件，在 Editor 窗口里编辑它。\n2. 在终端（Terminal）中使用 cat, touch, rm, mkdir 管理它。\n3. 打开我们全新的浏览器（Browser）畅游虚拟和真实的万维网！" },
+                                "todo.list": { name: "todo.list", type: "file", content: "- 体验极速星际航行浏览器\n- 打开系统监视器并杀掉无用进程\n- 在浏览器里查阅 OSDev 操作系统设计手册" },
+                                "system_test.js": { name: "system_test.js", type: "file", content: "console.log('执行内核 JS 脚本，内存状态安全！');" }
+                            }}
+                        }},
+                        "sys": { name: "sys", type: "dir", children: {
+                            "version.txt": { name: "version.txt", type: "file", content: "JR OS Core Emulator v1.1.0\n64-Bit Memory Simulated Kernel" }
+                        }},
+                        "tmp": { name: "tmp", type: "dir", children: {} }
+                    }
+                };
+            }
+
+            resolvePath(pathStr) {
+                if (!pathStr || pathStr === "/") return { node: this.root, parent: null };
+                const parts = pathStr.split("/").filter(p => p !== "");
+                let current = this.root;
+                let parent = null;
+
+                for (let part of parts) {
+                    if (current.type !== "dir") return null;
+                    if (!current.children[part]) return null;
+                    parent = current;
+                    current = current.children[part];
+                }
+                return { node: current, parent: parent };
+            }
+
+            readFile(path) {
+                const res = this.resolvePath(path);
+                if (res && res.node.type === "file") {
+                    return res.node.content;
+                }
+                return null;
+            }
+
+            writeFile(path, content) {
+                const pathParts = path.split("/");
+                const fileName = pathParts.pop();
+                const dirPath = pathParts.join("/");
+                const res = this.resolvePath(dirPath === "" ? "/" : dirPath);
+
+                if (res && res.node.type === "dir") {
+                    res.node.children[fileName] = {
+                        name: fileName,
+                        type: "file",
+                        content: content
+                    };
+                    return true;
+                }
+                return false;
+            }
+
+            createDirectory(parentPath, newDirName) {
+                const res = this.resolvePath(parentPath);
+                if (res && res.node.type === "dir") {
+                    if (res.node.children[newDirName]) return false; // 已存在
+                    res.node.children[newDirName] = {
+                        name: newDirName,
+                        type: "dir",
+                        children: {}
+                    };
+                    return true;
+                }
+                return false;
+            }
+
+            deletePath(path) {
+                const pathParts = path.split("/");
+                const targetName = pathParts.pop();
+                const dirPath = pathParts.join("/");
+                const res = this.resolvePath(dirPath === "" ? "/" : dirPath);
+
+                if (res && res.node.type === "dir") {
+                    if (res.node.children[targetName]) {
+                        delete res.node.children[targetName];
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        const VFS = new VirtualFileSystem();
+
+        // 3. 模拟进程管理器与调度器 (Processes & Micro-Scheduler)
+        class ProcessScheduler {
+            constructor() {
+                this.processes = [
+                    { pid: 1, name: "Kernel Init (内核引导)", cpu: 0.1, ram: 1024, status: "睡眠中" },
+                    { pid: 2, name: "Display Server (视窗服务)", cpu: 1.5, ram: 4096, status: "活动运行" },
+                    { pid: 3, name: "Wallpaper Engine (壁纸渲染)", cpu: 4.2, ram: 8192, status: "活动运行" },
+                    { pid: 4, name: "VFS Monitor (文件守护进程)", cpu: 0.2, ram: 512, status: "就绪" }
+                ];
+                this.pidCounter = 10;
+                this.loop();
+            }
+
+            spawn(name, ramAlloc = 4096) {
+                const newProc = {
+                    pid: this.pidCounter++,
+                    name: name,
+                    cpu: 0,
+                    ram: ramAlloc,
+                    status: "就绪"
+                };
+                this.processes.push(newProc);
+                return newProc.pid;
+            }
+
+            kill(pid) {
+                const idx = this.processes.findIndex(p => p.pid === pid);
+                if (idx !== -1) {
+                    this.processes.splice(idx, 1);
+                    return true;
+                }
+                return false;
+            }
+
+            loop() {
+                setInterval(() => {
+                    let totalCpu = 0;
+                    let totalRam = 25600;
+
+                    this.processes.forEach(proc => {
+                        if (proc.pid === 1) {
+                            proc.cpu = 0.1;
+                        } else {
+                            if (Math.random() > 0.4) {
+                                proc.cpu = parseFloat((Math.random() * 8 + 1).toFixed(1));
+                                proc.ram = Math.floor(proc.ram * (0.95 + Math.random() * 0.1));
+                            }
+                        }
+                        totalCpu += proc.cpu;
+                        totalRam += proc.ram;
+                    });
+
+                    SYSTEM_STATE.cpuLoad = Math.min(99, Math.floor(totalCpu));
+                    SYSTEM_STATE.ramLoad = Math.min(99, Math.floor((totalRam / 1024 / 1024) * 100));
+
+                    const cpuBar = document.getElementById('top-cpu');
+                    if (cpuBar) {
+                        cpuBar.style.width = `${SYSTEM_STATE.cpuLoad}%`;
+                        if (SYSTEM_STATE.cpuLoad > 80) {
+                            cpuBar.className = "bg-red-500 h-full block transition-all duration-300";
+                        } else if (SYSTEM_STATE.cpuLoad > 50) {
+                            cpuBar.className = "bg-amber-500 h-full block transition-all duration-300";
+                        } else {
+                            cpuBar.className = "bg-emerald-500 h-full block transition-all duration-300";
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        const Scheduler = new ProcessScheduler();
+
+        // 4. 纯 Web Audio 8-Bit 声音发生器
+        function playSystemSound(freq, type = 'sine', duration = 0.1) {
+            if (SYSTEM_STATE.soundMuted) return;
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        // 5. 网页端窗口管理系统 (Window Manager - WM)
+        class WindowManager {
+            constructor() {
+                this.windows = [];
+                this.topZIndex = 30;
+                this.container = document.getElementById('window-container');
+            }
+
+            createWindow(id, title, appTemplateId, initWidth = 600, initHeight = 400, onReadyCallback = null) {
+                const existingWin = this.windows.find(w => w.id === id);
+                if (existingWin) {
+                    this.focusWindow(id);
+                    existingWin.minimized = false;
+                    const dom = document.getElementById(`win-${id}`);
+                    if (dom) dom.classList.remove('hidden');
+                    return;
+                }
+
+                const pid = Scheduler.spawn(`App - ${title}`, 8192);
+
+                if (window.innerWidth < 640) {
+                    initWidth = window.innerWidth - 20;
+                    initHeight = window.innerHeight - 80;
+                }
+
+                const offsetX = Math.max(10, 30 + (this.windows.length * 25) % (window.innerWidth - initWidth - 10));
+                const offsetY = Math.max(40, 60 + (this.windows.length * 25) % (window.innerHeight - initHeight - 110));
+
+                const winObj = {
+                    id: id,
+                    pid: pid,
+                    title: title,
+                    x: offsetX,
+                    y: offsetY,
+                    width: initWidth,
+                    height: initHeight,
+                    zIndex: ++this.topZIndex,
+                    maximized: false,
+                    minimized: false,
+                    onReady: onReadyCallback
+                };
+
+                this.windows.push(winObj);
+
+                const winHtml = `
+                    <div id="win-${id}" class="absolute dynamic-panel glassmorphism rounded-xl border shadow-2xl flex flex-col overflow-hidden pointer-events-auto window-appear transition-[transform,opacity,width,height,top,left] duration-150" 
+                         style="width: ${initWidth}px; height: ${initHeight}px; left: ${offsetX}px; top: ${offsetY}px; z-index: ${winObj.zIndex}">
+                        <div class="h-10 border-b border-zinc-700/40 bg-white/5 flex items-center justify-between px-3 cursor-move shrink-0 select-none" id="win-header-${id}">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-base">${this.getAppIcon(id)}</span>
+                                <span class="text-xs font-bold font-mono-os tracking-wide truncate max-w-[120px] sm:max-w-[200px]">${title}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 shrink-0">
+                                <button onclick="windowManager.minimizeWindow('${id}')" class="w-3 h-3 rounded-full bg-amber-500 hover:scale-110 active:scale-95 transition-all"></button>
+                                <button onclick="windowManager.maximizeWindow('${id}')" class="w-3 h-3 rounded-full bg-emerald-500 hover:scale-110 active:scale-95 transition-all"></button>
+                                <button onclick="windowManager.closeWindow('${id}')" class="w-3 h-3 rounded-full bg-red-500 hover:scale-110 active:scale-95 transition-all"></button>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-hidden relative bg-black/10" id="win-content-${id}"></div>
+                        <div class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent z-50" id="win-resizer-${id}"></div>
+                    </div>
+                `;
+
+                this.container.insertAdjacentHTML('beforeend', winHtml);
+
+                const contentContainer = document.getElementById(`win-content-${id}`);
+                const template = document.getElementById(appTemplateId);
+                if (template) {
+                    const clone = template.cloneNode(true);
+                    clone.classList.remove('hidden');
+                    clone.id = `app-content-${id}`;
+                    contentContainer.appendChild(clone);
+                }
+
+                this.bindWindowDrag(id);
+                this.bindWindowResize(id);
+
+                document.getElementById(`win-${id}`).addEventListener('pointerdown', () => {
+                    this.focusWindow(id);
+                });
+
+                if (onReadyCallback) {
+                    onReadyCallback(winObj);
+                }
+
+                playSystemSound(600, 'sine', 0.12);
+                this.focusWindow(id);
+                updateDock();
+            }
+
+            getAppIcon(id) {
+                switch(id) {
+                    case 'terminal': return '💻';
+                    case 'explorer': return '📂';
+                    case 'editor': return '📝';
+                    case 'browser': return '🌐';
+                    case 'monitor': return '⚙️';
+                    case 'paint': return '🎨';
+                    case 'synth': return '🎵';
+                    case 'settings': return '🎛️';
+                    case 'game': return '🚀';
+                    default: return '⚙️';
+                }
+            }
+
+            focusWindow(id) {
+                const win = this.windows.find(w => w.id === id);
+                if (!win) return;
+                this.topZIndex += 2;
+                win.zIndex = this.topZIndex;
+
+                const dom = document.getElementById(`win-${id}`);
+                if (dom) {
+                    dom.style.zIndex = win.zIndex;
+                    document.querySelectorAll('[id^="win-"]').forEach(el => {
+                        el.style.borderColor = 'var(--border-color)';
+                        el.style.boxShadow = 'none';
+                    });
+                    dom.style.borderColor = 'var(--accent-color)';
+                    dom.style.boxShadow = '0 10px 40px rgba(0, 242, 254, 0.12)';
+                }
+
+                const indicator = document.getElementById('active-win-indicator');
+                if (indicator) {
+                    indicator.innerText = `活动进程: ${win.title} [PID: ${win.pid}]`;
+                }
+                SYSTEM_STATE.activeWindow = id;
+            }
+
+            closeWindow(id) {
+                const winIdx = this.windows.findIndex(w => w.id === id);
+                if (winIdx === -1) return;
+
+                const win = this.windows[winIdx];
+                if (win.onDestroy) {
+                    win.onDestroy();
+                }
+                Scheduler.kill(win.pid);
+
+                const dom = document.getElementById(`win-${id}`);
+                if (dom) dom.remove();
+
+                this.windows.splice(winIdx, 1);
+                playSystemSound(300, 'sine', 0.1);
+                updateDock();
+            }
+
+            minimizeWindow(id) {
+                const win = this.windows.find(w => w.id === id);
+                if (!win) return;
+                win.minimized = true;
+                const dom = document.getElementById(`win-${id}`);
+                if (dom) dom.classList.add('hidden');
+                playSystemSound(400, 'sine', 0.1);
+            }
+
+            maximizeWindow(id) {
+                const win = this.windows.find(w => w.id === id);
+                if (!win) return;
+
+                const dom = document.getElementById(`win-${id}`);
+                if (!dom) return;
+
+                if (win.maximized) {
+                    dom.style.width = `${win.width}px`;
+                    dom.style.height = `${win.height}px`;
+                    dom.style.left = `${win.x}px`;
+                    dom.style.top = `${win.y}px`;
+                    win.maximized = false;
+                } else {
+                    dom.style.width = '100vw';
+                    dom.style.height = 'calc(100vh - 4.5rem)';
+                    dom.style.left = '0px';
+                    dom.style.top = '2rem';
+                    win.maximized = true;
+                }
+                playSystemSound(500, 'sine', 0.1);
+            }
+
+            bindWindowDrag(id) {
+                const header = document.getElementById(`win-header-${id}`);
+                const winDom = document.getElementById(`win-${id}`);
+                const win = this.windows.find(w => w.id === id);
+
+                let isDragging = false;
+                let startX, startY;
+
+                const onPointerDown = (e) => {
+                    if (win.maximized) return;
+                    // 如果点按在按钮上，不触发拖拽
+                    if (e.target.tagName.toLowerCase() === 'button') return;
+                    isDragging = true;
+                    startX = (e.clientX || e.touches?.[0]?.clientX) - win.x;
+                    startY = (e.clientY || e.touches?.[0]?.clientY) - win.y;
+                    this.focusWindow(id);
+                    winDom.style.transition = 'none';
+                };
+
+                const onPointerMove = (e) => {
+                    if (!isDragging) return;
+                    const clientX = e.clientX || e.touches?.[0]?.clientX;
+                    const clientY = e.clientY || e.touches?.[0]?.clientY;
+
+                    if (!clientX || !clientY) return;
+
+                    win.x = clientX - startX;
+                    win.y = clientY - startY;
+                    win.y = Math.max(32, win.y);
+
+                    winDom.style.left = `${win.x}px`;
+                    winDom.style.top = `${win.y}px`;
+                };
+
+                const onPointerUp = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        winDom.style.transition = '';
+                    }
+                };
+
+                header.addEventListener('pointerdown', onPointerDown);
+                document.addEventListener('pointermove', onPointerMove);
+                document.addEventListener('pointerup', onPointerUp);
+            }
+
+            bindWindowResize(id) {
+                const resizer = document.getElementById(`win-resizer-${id}`);
+                const winDom = document.getElementById(`win-${id}`);
+                const win = this.windows.find(w => w.id === id);
+
+                let isResizing = false;
+                let startW, startH, startX, startY;
+
+                const onPointerDown = (e) => {
+                    if (win.maximized) return;
+                    isResizing = true;
+                    startW = win.width;
+                    startH = win.height;
+                    startX = e.clientX || e.touches?.[0]?.clientX;
+                    startY = e.clientY || e.touches?.[0]?.clientY;
+                    winDom.style.transition = 'none';
+                    e.stopPropagation();
+                };
+
+                const onPointerMove = (e) => {
+                    if (!isResizing) return;
+                    const clientX = e.clientX || e.touches?.[0]?.clientX;
+                    const clientY = e.clientY || e.touches?.[0]?.clientY;
+
+                    if (!clientX || !clientY) return;
+
+                    const deltaX = clientX - startX;
+                    const deltaY = clientY - startY;
+
+                    win.width = Math.max(340, startW + deltaX);
+                    win.height = Math.max(240, startH + deltaY);
+
+                    winDom.style.width = `${win.width}px`;
+                    winDom.style.height = `${win.height}px`;
+
+                    if (win.onResizeCallback) {
+                        win.onResizeCallback(win.width, win.height);
+                    }
+                };
+
+                const onPointerUp = () => {
+                    if (isResizing) {
+                        isResizing = false;
+                        winDom.style.transition = '';
+                    }
+                };
+
+                resizer.addEventListener('pointerdown', onPointerDown);
+                document.addEventListener('pointermove', onPointerMove);
+                document.addEventListener('pointerup', onPointerUp);
+            }
+        }
+
+        const windowManager = new WindowManager();
+
+        /**
+         * =========================================================================
+         * II. 动态 Canvas 核心背景引擎
+         * =========================================================================
+         */
+        class WallpaperEngine {
+            constructor() {
+                this.canvas = document.getElementById('wallpaper-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                this.particles = [];
+                this.stars = [];
+                this.matrixColumns = [];
+                this.initEngine();
+
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.initEngine();
+            }
+
+            initEngine() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+
+                this.stars = [];
+                for (let i = 0; i < 180; i++) {
+                    this.stars.push({
+                        x: Math.random() * w - w / 2,
+                        y: Math.random() * h - h / 2,
+                        z: Math.random() * w,
+                        px: 0, py: 0
+                    });
+                }
+
+                const fontSize = 14;
+                const cols = Math.floor(w / fontSize) + 1;
+                this.matrixColumns = [];
+                for (let i = 0; i < cols; i++) {
+                    this.matrixColumns.push({
+                        y: Math.random() * -h,
+                        speed: Math.random() * 3 + 2
+                    });
+                }
+
+                this.particles = [];
+                for (let i = 0; i < 50; i++) {
+                    this.particles.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        vx: (Math.random() - 0.5) * 0.8,
+                        vy: (Math.random() - 0.5) * 0.8,
+                        r: Math.random() * 3 + 1
+                    });
+                }
+            }
+
+            animate() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                const ctx = this.ctx;
+
+                const style = getComputedStyle(document.body);
+                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
+
+                if (SYSTEM_STATE.wallpaper === 'stars') {
+                    ctx.fillStyle = 'rgba(5, 5, 12, 0.15)';
+                    ctx.fillRect(0, 0, w, h);
+
+                    ctx.strokeStyle = accentColor;
+                    for (let star of this.stars) {
+                        star.z -= 2;
+                        if (star.z <= 0) {
+                            star.z = w;
+                            star.x = Math.random() * w - w / 2;
+                            star.y = Math.random() * h - h / 2;
+                        }
+
+                        const k = 128.0 / star.z;
+                        const px = star.x * k + w / 2;
+                        const py = star.y * k + h / 2;
+
+                        if (star.px > 0 && star.px < w && star.py > 0 && star.py < h) {
+                            const size = (1 - star.z / w) * 4;
+                            ctx.fillStyle = accentColor;
+                            ctx.beginPath();
+                            ctx.arc(px, py, size, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        star.px = px;
+                        star.py = py;
+                    }
+                } else if (SYSTEM_STATE.wallpaper === 'rain') {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+                    ctx.fillRect(0, 0, w, h);
+
+                    ctx.fillStyle = accentColor;
+                    ctx.font = '14px "Fira Code", monospace';
+
+                    const fontSize = 14;
+                    this.matrixColumns.forEach((col, i) => {
+                        const char = Math.random() > 0.5 ? "1" : "0";
+                        const x = i * fontSize;
+                        ctx.fillText(char, x, col.y);
+
+                        col.y += col.speed;
+                        if (col.y > h && Math.random() > 0.975) {
+                            col.y = 0;
+                        }
+                    });
+                } else if (SYSTEM_STATE.wallpaper === 'constellation') {
+                    ctx.fillStyle = SYSTEM_STATE.theme === 'light' ? '#f1f5f9' : '#030308';
+                    ctx.fillRect(0, 0, w, h);
+
+                    ctx.lineWidth = 0.5;
+                    for (let i = 0; i < this.particles.length; i++) {
+                        const p1 = this.particles[i];
+                        p1.x += p1.vx;
+                        p1.y += p1.vy;
+
+                        if (p1.x < 0 || p1.x > w) p1.vx *= -1;
+                        if (p1.y < 0 || p1.y > h) p1.vy *= -1;
+
+                        ctx.fillStyle = accentColor;
+                        ctx.beginPath();
+                        ctx.arc(p1.x, p1.y, p1.r, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        for (let j = i + 1; j < this.particles.length; j++) {
+                            const p2 = this.particles[j];
+                            const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                            if (dist < 120) {
+                                ctx.strokeStyle = `rgba(0, 242, 254, ${1 - dist / 120})`;
+                                ctx.beginPath();
+                                ctx.moveTo(p1.x, p1.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+
+        /**
+         * =========================================================================
+         * III. 各内置 App 具体业务引擎
+         * =========================================================================
+         */
+
+        // ----------------- APP 1: 控制台 (Terminal) 业务逻辑 -----------------
+        const terminalCommands = {
+            help: () => `JR OS 内置控制台可用硬核命令：
+  help           - 显示本帮助信息汇总
+  uname          - 打印当前模拟内核基本特征
+  ls             - 列出当前虚拟 VFS 路径中的文件
+  mkdir [目录]    - 在当前工作目录下创建子目录
+  touch [文件]    - 建立空文本文件
+  cat [文件]      - 读取并打印指定文件文本
+  rm [文件/路径]  - 从 VFS 中抹除文件节点
+  js [JavaScript]- 启动内核 JS 执行沙盒，直接计算表达式
+  neofetch       - 硬件性能与系统特征的炫酷仪表
+  matrix         - 唤起终端极客矩阵降雨
+  clear          - 洗刷终端输出屏`,
+            
+            uname: () => `JR-Kernel Microv1.1.0-JS-64Bit #1 SMP Sun May 17 21:53:00 SGT 2026`,
+
+            neofetch: () => `   _  ____     ____  ____  
+  | |/ _  |   / __ \\/ __/  
+  | | |/ /   / / / /\\ \\    
+ /| | |\\ \\  / /_/ /___\\ \\  
+ \\__| | \\_\\ \\____/\\____/   
+ -------------------------
+ 核心架构: HTML5 Sandbox VM (JS 64B)
+ 物理内存: 1024 MB (虚拟分配 64MB)
+ 内核引擎: Virtual Micro-Kernel 1.1
+ 文件系统: Core Memory VFS Engine (树结构)
+ 运行时间: ${Math.floor(SYSTEM_STATE.uptime / 60)}分 ${SYSTEM_STATE.uptime % 60}秒
+ 主题配色: ${SYSTEM_STATE.theme.toUpperCase()}
+ 开发适配: iPad 独立物理编译标准`,
+
+            matrix: (appWin) => {
+                SYSTEM_STATE.wallpaper = 'rain';
+                const radio = document.querySelector('input[name="wallpaper-type"][value="rain"]');
+                if (radio) radio.checked = true;
+                return "已将系统底层 Canvas 壁纸切换至黑客二进制矩阵流。";
+            }
+        };
+
+        function initTerminalApp(winObj) {
+            const outEl = document.getElementById('term-output');
+            const inEl = document.getElementById('term-input');
+            let termCurrentPath = "/home/jr_user";
+
+            const printLine = (text, type = 'normal') => {
+                const div = document.createElement('div');
+                if (type === 'error') div.className = 'text-red-500 font-semibold';
+                if (type === 'success') div.className = 'text-sky-400 font-bold';
+                if (type === 'system') div.className = 'text-zinc-500 italic';
+                div.innerText = text;
+                outEl.appendChild(div);
+                outEl.scrollTop = outEl.scrollHeight;
+            };
+
+            printLine(`Welcome to JR OS Terminal Terminal Console [Version 1.1]`, 'success');
+            printLine(`输入 'help' 获取系统核心基础控制指令。当前路径: ${termCurrentPath}\n`, 'system');
+
+            inEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const rawVal = inEl.value.trim();
+                    inEl.value = '';
+
+                    if (!rawVal) return;
+                    printLine(`jr_os@kernel:${termCurrentPath}$ ${rawVal}`, 'normal');
+
+                    const parts = rawVal.split(' ');
+                    const cmd = parts[0];
+                    const arg = parts.slice(1).join(' ');
+
+                    if (cmd === 'clear') {
+                        outEl.innerHTML = '';
+                        return;
+                    }
+
+                    if (cmd === 'ls') {
+                        const res = VFS.resolvePath(termCurrentPath);
+                        if (res && res.node.type === "dir") {
+                            const files = Object.keys(res.node.children);
+                            if (files.length === 0) {
+                                printLine("[空目录]", "system");
+                            } else {
+                                printLine(files.join("    "), "success");
+                            }
+                        } else {
+                            printLine("文件系统读取异常", "error");
+                        }
+                        return;
+                    }
+
+                    if (cmd === 'cat') {
+                        if (!arg) {
+                            printLine("用法: cat [文件名]", "error");
+                            return;
+                        }
+                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
+                        const content = VFS.readFile(filePath);
+                        if (content !== null) {
+                            printLine(content);
+                        } else {
+                            printLine(`cat: 无法读取 '${arg}': 文件不存在`, 'error');
+                        }
+                        return;
+                    }
+
+                    if (cmd === 'touch') {
+                        if (!arg) {
+                            printLine("用法: touch [新文件名]", "error");
+                            return;
+                        }
+                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
+                        VFS.writeFile(filePath, "");
+                        printLine(`已在 VFS 创建空文本文件: ${arg}`, "system");
+                        return;
+                    }
+
+                    if (cmd === 'mkdir') {
+                        if (!arg) {
+                            printLine("用法: mkdir [目录名]", "error");
+                            return;
+                        }
+                        const success = VFS.createDirectory(termCurrentPath, arg);
+                        if (success) {
+                            printLine(`已在 VFS 创建目录: ${arg}`, "system");
+                        } else {
+                            printLine(`mkdir: 创建失败，目标可能已存在`, "error");
+                        }
+                        return;
+                    }
+
+                    if (cmd === 'rm') {
+                        if (!arg) {
+                            printLine("用法: rm [文件及路径]", "error");
+                            return;
+                        }
+                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
+                        const success = VFS.deletePath(filePath);
+                        if (success) {
+                            printLine(`已从 VFS 抹除节点: ${arg}`, "system");
+                        } else {
+                            printLine(`rm: 移除失败，未找到该节点`, "error");
+                        }
+                        return;
+                    }
+
+                    if (cmd === 'js') {
+                        if (!arg) {
+                            printLine("用法: js [JavaScript 表达式]. 例如: js 128 * 1024", "error");
+                            return;
+                        }
+                        try {
+                            const result = new Function(`return (${arg})`)();
+                            printLine(String(result), "success");
+                        } catch (err) {
+                            printLine(`脚本解析器故障: ${err.message}`, "error");
+                        }
+                        return;
+                    }
+
+                    if (terminalCommands[cmd]) {
+                        const out = terminalCommands[cmd](winObj);
+                        if (out) printLine(out);
+                    } else {
+                        printLine(`jr_os: 未知内核命令: ${cmd}. 输入 'help' 查看清单。`, 'error');
+                    }
+                }
+            });
+        }
+
+        // ----------------- APP 2: 可视化文件管理器 (File Explorer) -----------------
+        function initExplorerApp(winObj) {
+            const grid = document.getElementById('exp-file-grid');
+            const pathText = document.getElementById('exp-current-path');
+            const backBtn = document.getElementById('exp-back-btn');
+            let currentPath = "/home/jr_user";
+
+            const renderExplorer = () => {
+                grid.innerHTML = '';
+                pathText.innerText = currentPath;
+                backBtn.disabled = currentPath === "/";
+
+                const res = VFS.resolvePath(currentPath);
+                if (!res || res.node.type !== "dir") {
+                    grid.innerHTML = `<div class="text-xs text-red-500 p-4">无法挂载当前 VFS 节点</div>`;
+                    return;
+                }
+
+                const children = res.node.children;
+
+                Object.keys(children).forEach(name => {
+                    const node = children[name];
+                    const isDir = node.type === "dir";
+
+                    const itemHtml = `
+                        <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none" id="exp-item-${name}">
+                            <span class="text-3xl mb-1">${isDir ? '📁' : '📄'}</span>
+                            <span class="text-xs font-mono-os truncate w-full px-1">${name}</span>
+                        </div>
+                    `;
+
+                    grid.insertAdjacentHTML('beforeend', itemHtml);
+
+                    const el = document.getElementById(`exp-item-${name}`);
+                    el.addEventListener('pointerdown', (e) => {
+                        if (e.detail === 2) {
+                            if (isDir) {
+                                currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+                                renderExplorer();
+                            } else {
+                                const fullPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+                                openEditorForFile(fullPath);
+                            }
+                        }
+                    });
+                });
+            };
+
+            backBtn.onclick = () => {
+                if (currentPath === "/") return;
+                const parts = currentPath.split("/").filter(p => p !== "");
+                parts.pop();
+                currentPath = "/" + parts.join("/");
+                renderExplorer();
+            };
+
+            renderExplorer();
+        }
+
+        function openEditorForFile(path) {
+            const fileName = path.split("/").pop();
+            windowManager.createWindow('editor', `文本编辑器 - ${fileName}`, 'template-editor', 550, 400, () => {
+                const textarea = document.getElementById('editor-textarea');
+                const info = document.getElementById('editor-file-info');
+                const saveBtn = document.getElementById('editor-save-btn');
+
+                info.innerText = `正在浏览并修改: ${path}`;
+                textarea.value = VFS.readFile(path) || "";
+
+                saveBtn.onclick = () => {
+                    const ok = VFS.writeFile(path, textarea.value);
+                    if (ok) {
+                        playSystemSound(880, 'sine', 0.15);
+                        windowManager.closeWindow('editor');
+                        const expWin = windowManager.windows.find(w => w.id === 'explorer');
+                        if (expWin) {
+                            initExplorerApp(expWin);
+                        }
+                    }
+                };
+            });
+        }
+
+
+        // ----------------- APP 3: 星际航行浏览器 (JR-Web Browser) [新增&增强核心] -----------------
+        
+        // 虚拟互联网数据库（支持多级虚拟链接跳转，防跨域劫持，完全在操作系统内实现页面深度点击）
+        const VIRTUAL_INTERNET = {
+            "jros://welcome": {
+                title: "JR OS 官方引航站",
+                body: `
+                    <div class="space-y-6">
+                        <div class="p-6 rounded-xl bg-gradient-to-r from-blue-900/60 to-indigo-900/40 border border-blue-500/30 text-center">
+                            <h1 class="text-2xl font-bold text-sky-300">🌐 欢迎来到星际航行浏览器 v1.1</h1>
+                            <p class="text-xs text-slate-300 mt-2">在这里，我们彻底打破了 Frame-Busting 限制。你可以直接无缝浏览真实支持嵌套的网站，或是完美体验内置的“虚拟极客万维网”！</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-300 border-b border-slate-700 pb-2 mb-3">📍 推荐网络节点</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
+                                    <h4 class="font-bold text-sky-400">🎮 街机游戏中心</h4>
+                                    <p class="text-xs text-slate-400 mt-1">无需下载，内网即时启动经典街机休闲游戏。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://games')" class="mt-3 text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1 rounded text-white font-bold transition">立即访问 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
+                                    <h4 class="font-bold text-cyan-400">💬 极客聊天室</h4>
+                                    <p class="text-xs text-slate-400 mt-1">进入内网暗哨聊天室，看看其他极客们正在讨论什么。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://chat')" class="mt-3 text-xs bg-cyan-600 hover:bg-cyan-500 px-3 py-1 rounded text-white font-bold transition">敲门进入 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-emerald-500/40 transition">
+                                    <h4 class="font-bold text-emerald-400">📖 外部: OSDev Wiki (Iframe)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">探索真实的操作系统底层开发指南，无阻碍学习。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'https://www.osdev.org')" class="mt-3 text-xs bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-white font-bold transition">直接航行 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-purple-500/40 transition">
+                                    <h4 class="font-bold text-purple-400">📡 仿真代理: Github 个人主页</h4>
+                                    <p class="text-xs text-slate-400 mt-1">经典伪静态克隆。支持在此浏览器里继续跳转。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="mt-3 text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-white font-bold transition">点击跳转 &rarr;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://games": {
+                title: "经典街机游戏中心",
+                body: `
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <h2 class="text-xl font-bold text-amber-400">👾 经典街机游戏厅</h2>
+                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回引航站</button>
+                        </div>
+                        <p class="text-xs text-slate-400">这些是 JR OS 为您特供的内网应用，点击下方按钮将直接调用 OS 底层核心渲染和硬件声音模块！</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white">🚀 太空入侵者 (Space Invaders)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">复古 8-Bit 像素弹幕飞行射击。</p>
+                                </div>
+                                <button onclick="windowManager.createWindow('game', '经典太空侵略者 (Space Invaders)', 'template-game', 460, 450, initGameApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white">🎨 像素画板 (JR Paint)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">画作直接支持保存至 VFS 文件系统中。</p>
+                                </div>
+                                <button onclick="windowManager.createWindow('paint', '复古 Canvas 像素画板 (JR Paint)', 'template-paint', 560, 450, initPaintApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://chat": {
+                title: "极客地下聊天室",
+                body: `
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <h2 class="text-xl font-bold text-emerald-400">💬 Anonymous Geeks Chatroom</h2>
+                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回主页</button>
+                        </div>
+                        
+                        <div class="p-4 rounded-lg bg-black/40 border border-slate-800 h-64 overflow-y-auto space-y-3 text-xs font-mono-os">
+                            <div class="text-slate-500 text-center">[ 系统提示: 安全加密隧道已构建 ]</div>
+                            <div><span class="text-purple-400 font-bold">Neo:</span> 你们有人尝试过在 iPad 上直接编译 C 代码吗？</div>
+                            <div><span class="text-cyan-400 font-bold">Trinity:</span> 用 Blink Shell 连上 VPS，体验比笔记本还舒服，而且妙控键盘手感很棒。</div>
+                            <div><span class="text-amber-400 font-bold">Morpheus:</span> 我刚在 JR OS 1.1 的文本编辑器里写完了一个进程调度位图算法，VFS 的体验很完美。</div>
+                            <div><span class="text-emerald-400 font-bold">You (Admin):</span> <span class="text-slate-300">我正在体验星际航行浏览器，网页内点击跳转真的能防跨域！</span></div>
+                            <div class="text-slate-500 text-center">[ Cypher 加入了聊天室 ]</div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="向匿名信道发送加密短波..." class="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 outline-none focus:border-emerald-500">
+                            <button onclick="playSystemSound(900, 'sine', 0.08)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold">发送</button>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user": {
+                title: "Github - jr_user / OS-Project",
+                body: `
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-2 text-xs text-slate-400 bg-slate-800 p-2 rounded">
+                            <span>🐱 Github.com / jr_user / <strong>jros-kernel</strong></span>
+                            <span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-green-400">Public</span>
+                        </div>
+                        
+                        <h2 class="text-xl font-bold text-white">💻 jros-kernel: A micro-kernel for hobbyists</h2>
+                        <p class="text-xs text-slate-400">This is an operating system core developed for iPad, running directly on customized HTML5 core engines.</p>
+                        
+                        <div class="border border-slate-800 rounded-lg overflow-hidden text-xs">
+                            <div class="bg-slate-800/80 px-4 py-2 border-b border-slate-800 flex justify-between text-slate-300">
+                                <span>📁 Files</span>
+                                <span class="text-sky-400">Latest commit 2 hours ago</span>
+                            </div>
+                            <div class="divide-y divide-slate-800 bg-slate-900/60 font-mono-os">
+                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/kernel')">
+                                    <span class="text-sky-400">📁 kernel/</span>
+                                    <span class="text-slate-500">Add context-switch bitmap scheduler</span>
+                                </div>
+                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/vfs')">
+                                    <span class="text-sky-400">📁 vfs/</span>
+                                    <span class="text-slate-500">Optimize path resolver</span>
+                                </div>
+                                <div class="px-4 py-2.5 flex justify-between">
+                                    <span class="text-slate-300">📄 Makefile</span>
+                                    <span class="text-slate-500">Fix cross-compiler prefix</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user/kernel": {
+                title: "Github - jr_user/jros-kernel/kernel",
+                body: `
+                    <div class="space-y-4 font-mono-os">
+                        <div class="flex justify-between items-center text-xs">
+                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
+                            <span class="text-slate-500">Path: /kernel/sched.c</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
+<pre>#include &lt;jros/sched.h&gt;
+#include &lt;jros/interrupt.h&gt;
+
+void context_switch(thread_t* next) {
+    play_hardware_beep(440); // 调度器发出滴答音模拟
+    asm volatile(
+        "mov %0, %%cr3\\n"
+        "switch_registers..."
+        : : "r"(next->page_dir_phys)
+    );
+}</pre>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user/vfs": {
+                title: "Github - jr_user/jros-kernel/vfs",
+                body: `
+                    <div class="space-y-4 font-mono-os">
+                        <div class="flex justify-between items-center text-xs">
+                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
+                            <span class="text-slate-500">Path: /vfs/vfs_resolve.c</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
+<pre>#include &lt;jros/vfs.h&gt;
+
+vfs_node_t* resolve_path(const char* path) {
+    // 递归解析树形 VFS
+    if (path[0] == '/') {
+        return root_node;
+    }
+    return NULL;
+}</pre>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // 核心跳转导航控制（全局暴露，确保模拟网页内的超链接可以直接点击，不跳出、无跨域故障）
+        window.browserNavigate = (containerId, targetUrl) => {
+            const browserDom = document.getElementById(containerId);
+            if (!browserDom) return;
+
+            const iframe = browserDom.querySelector('#browser-iframe');
+            const sandbox = browserDom.querySelector('#browser-sandbox');
+            const urlInput = browserDom.querySelector('#browser-url-input');
+            const progress = browserDom.querySelector('#browser-progress-bar');
+
+            // 触发系统加载条动效
+            progress.style.transition = 'none';
+            progress.style.transform = 'translateX(-100%)';
+            setTimeout(() => {
+                progress.style.transition = 'transform 0.4s ease-out';
+                progress.style.transform = 'translateX(-30%)';
+            }, 50);
+
+            urlInput.value = targetUrl;
+
+            // 如果是内网自定义协议 (jros://) 或者被跨域拦截的网站，启动我们研发的虚拟沙盒解释器
+            if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
+                const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
+                const page = VIRTUAL_INTERNET[normUrl] || {
+                    title: "404 - 星际航行未找到目标",
+                    body: `<div class="text-center p-8 text-slate-400"><h2 class="text-xl font-bold text-red-500 mb-2">⚠️ 无法寻址该星际坐标</h2><p class="text-xs">该域名未部署。请尝试返回主页或查看推荐书签栏。</p></div>`
+                };
+
+                setTimeout(() => {
+                    iframe.classList.add('hidden');
+                    sandbox.classList.remove('hidden');
+                    sandbox.innerHTML = `
+                        <div class="p-2 select-text">
+                            <div class="mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
+                                <span class="text-xs bg-slate-800 px-2 py-0.5 rounded text-sky-400 font-mono-os">${normUrl}</span>
+                                <span class="text-xs text-slate-500">JR-Web 内网加速协议</span>
+                            </div>
+                            <h2 class="text-xl font-bold text-slate-100 mb-4">${page.title}</h2>
+                            ${page.body}
+                        </div>
+                    `;
+                    progress.style.transform = 'translateX(0%)';
+                }, 400);
+
+                // 更新浏览器的本地历史记录队列
+                pushBrowserHistory(containerId, targetUrl);
+            } else {
+                // 允许被 iframe 加载的外部站（带防爆机制）
+                setTimeout(() => {
+                    sandbox.classList.add('hidden');
+                    iframe.classList.remove('hidden');
+                    iframe.src = targetUrl;
+
+                    iframe.onload = () => {
+                        progress.style.transform = 'translateX(0%)';
+                        playSystemSound(750, 'sine', 0.1);
+                    };
+                }, 400);
+
+                pushBrowserHistory(containerId, targetUrl);
+            }
+        };
+
+        // 历史队列存储
+        const BROWSER_HISTORY = {
+            historyStack: ['jros://welcome'],
+            currentIndex: 0
+        };
+
+        function pushBrowserHistory(containerId, url) {
+            // 如果与当前最后一个一样，则不重复添加
+            if (BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex] === url) return;
+            
+            // 裁切之后的历史
+            BROWSER_HISTORY.historyStack = BROWSER_HISTORY.historyStack.slice(0, BROWSER_HISTORY.currentIndex + 1);
+            BROWSER_HISTORY.historyStack.push(url);
+            BROWSER_HISTORY.currentIndex = BROWSER_HISTORY.historyStack.length - 1;
+
+            updateBrowserNavButtons(containerId);
+        }
+
+        function updateBrowserNavButtons(containerId) {
+            const browserDom = document.getElementById(containerId);
+            if (!browserDom) return;
+
+            const backBtn = browserDom.querySelector('#browser-back-btn');
+            const forwardBtn = browserDom.querySelector('#browser-forward-btn');
+
+            backBtn.disabled = BROWSER_HISTORY.currentIndex <= 0;
+            forwardBtn.disabled = BROWSER_HISTORY.currentIndex >= BROWSER_HISTORY.historyStack.length - 1;
+        }
+
+        function initBrowserApp(winObj) {
+            const containerId = `app-content-${winObj.id}`;
+            const browserDom = document.getElementById(containerId);
+
+            const urlInput = browserDom.querySelector('#browser-url-input');
+            const goBtn = browserDom.querySelector('#browser-go-btn');
+            const backBtn = browserDom.querySelector('#browser-back-btn');
+            const forwardBtn = browserDom.querySelector('#browser-forward-btn');
+            const refreshBtn = browserDom.querySelector('#browser-refresh-btn');
+            const homeBtn = browserDom.querySelector('#browser-home-btn');
+
+            // 监听回车或点击 GO 按钮
+            const executeNav = () => {
+                const target = urlInput.value.trim();
+                if (target) {
+                    window.browserNavigate(containerId, target);
+                }
+            };
+
+            urlInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') executeNav();
+            });
+            goBtn.onclick = executeNav;
+
+            // 后退
+            backBtn.onclick = () => {
+                if (BROWSER_HISTORY.currentIndex > 0) {
+                    BROWSER_HISTORY.currentIndex--;
+                    const url = BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex];
+                    window.browserNavigate(containerId, url);
+                    updateBrowserNavButtons(containerId);
+                }
+            };
+
+            // 前进
+            forwardBtn.onclick = () => {
+                if (BROWSER_HISTORY.currentIndex < BROWSER_HISTORY.historyStack.length - 1) {
+                    BROWSER_HISTORY.currentIndex++;
+                    const url = BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex];
+                    window.browserNavigate(containerId, url);
+                    updateBrowserNavButtons(containerId);
+                }
+            };
+
+            // 刷新
+            refreshBtn.onclick = () => {
+                const url = urlInput.value.trim();
+                window.browserNavigate(containerId, url);
+            };
+
+            // 主页
+            homeBtn.onclick = () => {
+                window.browserNavigate(containerId, 'jros://welcome');
+            };
+
+            // 初始化导航首页
+            window.browserNavigate(containerId, 'jros://welcome');
+        }
+
+
+        // ----------------- APP 4: 系统性能监控 (System Monitor) -----------------
+        function initMonitorApp(winObj) {
+            const canvasCpu = document.getElementById('canvas-cpu-chart');
+            const canvasRam = document.getElementById('canvas-ram-chart');
+            const ctxCpu = canvasCpu.getContext('2d');
+            const ctxRam = canvasRam.getContext('2d');
+            const procTable = document.getElementById('proc-table-body');
+
+            const cpuHistory = new Array(30).fill(0);
+            const ramHistory = new Array(30).fill(30);
+
+            const drawChart = (ctx, canvas, history, max, accentCol) => {
+                const w = canvas.width = canvas.parentElement.clientWidth;
+                const h = canvas.height = 96;
+
+                ctx.fillStyle = "#09090e";
+                ctx.fillRect(0, 0, w, h);
+
+                ctx.strokeStyle = "rgba(255,255,255,0.03)";
+                ctx.lineWidth = 1;
+                for (let i = 0; i < w; i += 30) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, h);
+                    ctx.stroke();
+                }
+                for (let i = 0; i < h; i += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(w, i);
+                    ctx.stroke();
+                }
+
+                ctx.strokeStyle = accentCol;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                const step = w / (history.length - 1);
+                for (let i = 0; i < history.length; i++) {
+                    const val = history[i];
+                    const x = i * step;
+                    const y = h - (val / max) * h * 0.8 - h * 0.1;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                ctx.fillStyle = `rgba(${accentCol === '#00f2fe' ? '0, 242, 254' : '255, 0, 127'}, 0.1)`;
+                ctx.lineTo(w, h);
+                ctx.lineTo(0, h);
+                ctx.fill();
+            };
+
+            const renderProcesses = () => {
+                procTable.innerHTML = '';
+                Scheduler.processes.forEach(proc => {
+                    const row = `
+                        <tr class="border-b border-zinc-800/40 py-1 font-mono-os">
+                            <td class="py-1.5 opacity-60">${proc.pid}</td>
+                            <td class="py-1.5 font-bold">${proc.name}</td>
+                            <td class="py-1.5 text-sky-400">${proc.cpu}%</td>
+                            <td class="py-1.5 opacity-80">${Math.floor(proc.ram/1024)} KB</td>
+                            <td class="py-1.5 text-emerald-400">${proc.status}</td>
+                            <td class="py-1.5 text-right">
+                                ${proc.pid > 4 ? `
+                                    <button onclick="killProc(${proc.pid})" class="px-2 py-0.5 bg-red-600/20 text-red-400 border border-red-500/20 rounded hover:bg-red-600 hover:text-white transition cursor-pointer">Kill</button>
+                                ` : `<span class="opacity-30 text-[10px]">保护级</span>`}
+                            </td>
+                        </tr>
+                    `;
+                    procTable.insertAdjacentHTML('beforeend', row);
+                });
+            };
+
+            window.killProc = (pid) => {
+                const proc = Scheduler.processes.find(p => p.pid === pid);
+                if (proc) {
+                    Scheduler.kill(pid);
+                    if (proc.name.startsWith("App - ")) {
+                        const cleanTitle = proc.name.replace("App - ", "");
+                        const matchWin = windowManager.windows.find(w => w.title === cleanTitle);
+                        if (matchWin) windowManager.closeWindow(matchWin.id);
+                    }
+                    playSystemSound(150, 'sawtooth', 0.2);
+                    renderProcesses();
+                }
+            };
+
+            const interval = setInterval(() => {
+                if (!document.getElementById(`win-content-monitor`)) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                cpuHistory.shift();
+                cpuHistory.push(SYSTEM_STATE.cpuLoad);
+
+                ramHistory.shift();
+                ramHistory.push(SYSTEM_STATE.ramLoad);
+
+                const style = getComputedStyle(document.body);
+                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
+                const secColor = style.getPropertyValue('--secondary-color').trim() || '#ff007f';
+
+                drawChart(ctxCpu, canvasCpu, cpuHistory, 100, accentColor);
+                drawChart(ctxRam, canvasRam, ramHistory, 100, secColor);
+                renderProcesses();
+            }, 1000);
+
+            renderProcesses();
+        }
+
+        // ----------------- APP 5: 复古像素画板 (JR Paint) -----------------
+        function initPaintApp(winObj) {
+            const canvas = document.getElementById('paint-canvas');
+            const ctx = canvas.getContext('2d');
+            const colorIn = document.getElementById('paint-color');
+            const sizeIn = document.getElementById('paint-size');
+            const clearBtn = document.getElementById('paint-clear-btn');
+
+            let drawing = false;
+
+            const resizeCanvas = () => {
+                const parent = canvas.parentElement;
+                const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                canvas.width = parent.clientWidth;
+                canvas.height = parent.clientHeight;
+                ctx.fillStyle = '#0a0a10';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.putImageData(temp, 0, 0);
+            };
+
+            resizeCanvas();
+            winObj.onResizeCallback = resizeCanvas;
+
+            const getCoords = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX || e.touches?.[0]?.clientX;
+                const clientY = e.clientY || e.touches?.[0]?.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            };
+
+            const startDraw = (e) => {
+                drawing = true;
+                ctx.beginPath();
+                const coords = getCoords(e);
+                ctx.moveTo(coords.x, coords.y);
+                e.preventDefault();
+            };
+
+            const draw = (e) => {
+                if (!drawing) return;
+                const coords = getCoords(e);
+                ctx.strokeStyle = colorIn.value;
+                ctx.lineWidth = sizeIn.value;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.lineTo(coords.x, coords.y);
+                ctx.stroke();
+                e.preventDefault();
+            };
+
+            const stopDraw = () => {
+                drawing = false;
+                ctx.closePath();
+            };
+
+            canvas.addEventListener('pointerdown', startDraw);
+            canvas.addEventListener('pointermove', draw);
+            document.addEventListener('pointerup', stopDraw);
+
+            clearBtn.onclick = () => {
+                ctx.fillStyle = '#0a0a10';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                playSystemSound(200, 'sine', 0.15);
+            };
+        }
+
+        // ----------------- APP 6: 8-Bit 和弦音乐播放器 (Chiptune Tracker) -----------------
+        function initSynthApp(winObj) {
+            const playBtn = document.getElementById('synth-play-btn');
+            const stopBtn = document.getElementById('synth-stop-btn');
+            const visualizer = document.getElementById('synth-visualizer');
+            const vctx = visualizer.getContext('2d');
+
+            let synthTimer = null;
+            let audioCtx = null;
+            let noteIdx = 0;
+
+            const melody = [
+                261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25,
+                392.00, 329.63, 261.63, 392.00, 440.00, 349.23, 523.25, 493.88
+            ];
+
+            const startSynth = () => {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                audioCtx = new AudioContext();
+
+                playBtn.disabled = true;
+                stopBtn.disabled = false;
+
+                noteIdx = 0;
+                synthTimer = setInterval(() => {
+                    if (noteIdx >= melody.length) noteIdx = 0;
+                    const freq = melody[noteIdx];
+
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+
+                    noteIdx++;
+                }, 300);
+
+                animateSpectrum();
+            };
+
+            const stopSynth = () => {
+                if (synthTimer) {
+                    clearInterval(synthTimer);
+                    synthTimer = null;
+                }
+                if (audioCtx) {
+                    audioCtx.close();
+                    audioCtx = null;
+                }
+                playBtn.disabled = false;
+                stopBtn.disabled = true;
+            };
+
+            let specAnimation = null;
+            const animateSpectrum = () => {
+                if (!audioCtx) return;
+                const w = visualizer.width = visualizer.parentElement.clientWidth;
+                const h = visualizer.height = 160;
+
+                vctx.clearRect(0, 0, w, h);
+
+                const barWidth = 12;
+                const barGap = 4;
+                const barCount = Math.floor(w / (barWidth + barGap));
+
+                const style = getComputedStyle(document.body);
+                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
+
+                vctx.fillStyle = accentColor;
+                for (let i = 0; i < barCount; i++) {
+                    const val = synthTimer ? Math.sin(Date.now() * 0.01 + i) * 40 + 50 + Math.random() * 20 : 5;
+                    const bh = (val / 100) * h * 0.6;
+                    vctx.fillRect(i * (barWidth + barGap), h - bh, barWidth, bh);
+                }
+
+                specAnimation = requestAnimationFrame(animateSpectrum);
+            };
+
+            playBtn.onclick = startSynth;
+            stopBtn.onclick = stopSynth;
+
+            winObj.onDestroy = () => {
+                stopSynth();
+                cancelAnimationFrame(specAnimation);
+            };
+        }
+
+        // ----------------- APP 7: 经典太空侵略者 Canvas 游戏 -----------------
+        function initGameApp(winObj) {
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            const scoreText = document.getElementById('game-score');
+            const restartBtn = document.getElementById('game-restart');
+
+            const btnLeft = document.getElementById('game-btn-left');
+            const btnRight = document.getElementById('game-btn-right');
+            const btnFire = document.getElementById('game-btn-fire');
+
+            let score = 0;
+            let playerX = 150;
+            const playerY = 160;
+            let lasers = [];
+            let enemies = [];
+            let particles = [];
+            let keys = {};
+            let gameLoopInterval = null;
+
+            const resizeGame = () => {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                playerX = canvas.width / 2 - 10;
+            };
+
+            resizeGame();
+            winObj.onResizeCallback = resizeGame;
+
+            const initEnemies = () => {
+                enemies = [];
+                const rows = 3;
+                const cols = Math.floor(canvas.width / 45);
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 1; c < cols - 1; c++) {
+                        enemies.push({
+                            x: c * 40,
+                            y: r * 25 + 25,
+                            w: 22,
+                            h: 15,
+                            alive: true
+                        });
+                    }
+                }
+            };
+
+            const triggerExplosion = (x, y) => {
+                for (let i = 0; i < 12; i++) {
+                    particles.push({
+                        x: x, y: y,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        life: 25,
+                        color: `hsl(${Math.random() * 60 + 15}, 100%, 60%)`
+                    });
+                }
+            };
+
+            const fireLaser = () => {
+                lasers.push({ x: playerX + 8, y: playerY - 5, vy: -4.5 });
+                playSystemSound(900, 'sawtooth', 0.08);
+            };
+
+            const handleKeyDown = (e) => { keys[e.key] = true; if (e.key === ' ') fireLaser(); };
+            const handleKeyUp = (e) => { keys[e.key] = false; };
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+
+            let touchMovingLeft = false;
+            let touchMovingRight = false;
+
+            if (btnLeft && btnRight && btnFire) {
+                btnLeft.ontouchstart = () => { touchMovingLeft = true; };
+                btnLeft.ontouchend = () => { touchMovingLeft = false; };
+                btnRight.ontouchstart = () => { touchMovingRight = true; };
+                btnRight.ontouchend = () => { touchMovingRight = false; };
+                btnFire.ontouchstart = (e) => { fireLaser(); e.preventDefault(); };
+            }
+
+            const updateGame = () => {
+                ctx.fillStyle = '#06060c';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < canvas.width; i += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, canvas.height);
+                    ctx.stroke();
+                }
+
+                if (keys['ArrowLeft'] || keys['a'] || touchMovingLeft) {
+                    playerX = Math.max(0, playerX - 4);
+                }
+                if (keys['ArrowRight'] || keys['d'] || touchMovingRight) {
+                    playerX = Math.min(canvas.width - 20, playerX + 4);
+                }
+
+                ctx.fillStyle = '#00f2fe';
+                ctx.beginPath();
+                ctx.moveTo(playerX + 10, playerY);
+                ctx.lineTo(playerX, playerY + 15);
+                ctx.lineTo(playerX + 20, playerY + 15);
+                ctx.closePath();
+                ctx.fill();
+
+                lasers.forEach((laser, lIdx) => {
+                    laser.y += laser.vy;
+                    ctx.fillStyle = '#ff0055';
+                    ctx.fillRect(laser.x, laser.y, 4, 10);
+
+                    if (laser.y < 0) lasers.splice(lIdx, 1);
+                });
+
+                particles.forEach((part, pIdx) => {
+                    part.x += part.vx;
+                    part.y += part.vy;
+                    part.life--;
+                    ctx.fillStyle = part.color;
+                    ctx.fillRect(part.x, part.y, 2, 2);
+                    if (part.life <= 0) particles.splice(pIdx, 1);
+                });
+
+                let hasLivingEnemies = false;
+                enemies.forEach(enemy => {
+                    if (!enemy.alive) return;
+                    hasLivingEnemies = true;
+
+                    ctx.fillStyle = '#ffb000';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+
+                    ctx.fillRect(enemy.x + 3, enemy.y + enemy.h, 4, 3);
+                    ctx.fillRect(enemy.x + enemy.w - 7, enemy.y + enemy.h, 4, 3);
+
+                    lasers.forEach((laser, lIdx) => {
+                        if (laser.x > enemy.x && laser.x < enemy.x + enemy.w &&
+                            laser.y > enemy.y && laser.y < enemy.y + enemy.h) {
+                            
+                            enemy.alive = false;
+                            lasers.splice(lIdx, 1);
+                            score += 10;
+                            scoreText.innerText = score;
+                            triggerExplosion(enemy.x + enemy.w / 2, enemy.y + enemy.h / 2);
+                            playSystemSound(250, 'sawtooth', 0.1);
+                        }
+                    });
+                });
+
+                if (!hasLivingEnemies) {
+                    initEnemies();
+                }
+            };
+
+            initEnemies();
+            gameLoopInterval = setInterval(updateGame, 1000 / 60);
+
+            restartBtn.onclick = () => {
+                score = 0;
+                scoreText.innerText = '0';
+                initEnemies();
+            };
+
+            winObj.onDestroy = () => {
+                clearInterval(gameLoopInterval);
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('keyup', handleKeyUp);
+            };
+        }
+
+
+        /**
+         * =========================================================================
+         * IV. 系统流程装载、启动与引导
+         * =========================================================================
+         */
+
+        const bootLogs = [
+            "JR-BIOS Core v1.50 Copyright (C) 2026 J&R OS Corporation.",
+            "CPU: Mock Intel-JS Core i9 @ 5.00GHz (P-Core Allocated)",
+            "Memory Test: 65536KB OK. Virtual paging activated.",
+            "Detecting Primary Virtual Hard Disk... OK (VFS Mounted Successfully)",
+            "Mounting /sys/kernel/modules.conf... SUCCESS",
+            "Initializing Interrupt Service Routines (ISRs) for iPad touch controls...",
+            "Loading Network TCP/IP Frame Stack (V-Network Bridge Ready)...",
+            "Injecting Web-Security Sandboxing bypass modules... OK",
+            "Kernel load addr: 0x100000. Jump to C Entry Point.",
+            "Initializing user session context: [Admin: jr_user]",
+            "All hardware devices initialized. System Ready."
+        ];
+
+        window.addEventListener('load', () => {
+            const logBox = document.getElementById('boot-log');
+            const progress = document.getElementById('boot-progress');
+            const startBtn = document.getElementById('btn-start-os');
+            let logIdx = 0;
+
+            const printNextLog = () => {
+                if (logIdx < bootLogs.length) {
+                    const div = document.createElement('div');
+                    div.innerText = `> ${bootLogs[logIdx]}`;
+                    logBox.appendChild(div);
+                    logBox.scrollTop = logBox.scrollHeight;
+
+                    const percent = Math.floor(((logIdx + 1) / bootLogs.length) * 100);
+                    progress.style.width = `${percent}%`;
+
+                    logIdx++;
+                    playSystemSound(800 + logIdx * 50, 'sine', 0.04);
+                    setTimeout(printNextLog, Math.random() * 150 + 60);
+                } else {
+                    startBtn.classList.remove('hidden');
+                }
+            };
+
+            setTimeout(printNextLog, 400);
+
+            startBtn.onclick = () => {
+                playSystemSound(523.25, 'triangle', 0.15); // C5
+                setTimeout(() => playSystemSound(659.25, 'triangle', 0.15), 150); // E5
+                setTimeout(() => playSystemSound(783.99, 'triangle', 0.3), 300); // G5
+
+                document.getElementById('boot-screen').classList.add('hidden');
+                document.getElementById('desktop').classList.remove('hidden');
+
+                window.wallpaperEngine = new WallpaperEngine();
+                initDesktop();
+            };
+        });
+
+        function updateClock() {
+            const timeEl = document.getElementById('sys-time');
+            const dateEl = document.getElementById('sys-date');
+            if (timeEl && dateEl) {
+                const now = new Date();
+                timeEl.innerText = now.toTimeString().split(' ')[0];
+                dateEl.innerText = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+            }
+            SYSTEM_STATE.uptime++;
+        }
+
+        function openApp(id) {
+            const startMenu = document.getElementById('start-menu');
+            startMenu.classList.add('hidden');
+
+            switch (id) {
+                case 'terminal':
+                    windowManager.createWindow('terminal', '系统终端控制台 (Terminal)', 'template-terminal', 520, 360, initTerminalApp);
+                    break;
+                case 'explorer':
+                    windowManager.createWindow('explorer', '文件资源管理器 (VFS Explorer)', 'template-explorer', 600, 420, initExplorerApp);
+                    break;
+                case 'browser':
+                    windowManager.createWindow('browser', '星际航行浏览器 (JR-Web Browser)', 'template-browser', 680, 480, initBrowserApp);
+                    break;
+                case 'monitor':
+                    windowManager.createWindow('monitor', '内核与硬件监视器 (System Monitor)', 'template-monitor', 620, 450, initMonitorApp);
+                    break;
+                case 'paint':
+                    windowManager.createWindow('paint', '复古 Canvas 像素画板 (JR Paint)', 'template-paint', 560, 450, initPaintApp);
+                    break;
+                case 'synth':
+                    windowManager.createWindow('synth', '脉冲波形发生器 (Chiptune Synth)', 'template-synth', 480, 320, initSynthApp);
+                    break;
+                case 'settings':
+                    windowManager.createWindow('settings', '系统首选项与主题 (Settings)', 'template-settings', 420, 400, null);
+                    break;
+                case 'game':
+                    windowManager.createWindow('game', '经典太空侵略者 (Space Invaders)', 'template-game', 460, 450, initGameApp);
+                    break;
+            }
+        }
+
+        const preinstalledApps = [
+            { id: 'terminal', label: '系统终端', icon: '💻' },
+            { id: 'explorer', label: '文件管理器', icon: '📂' },
+            { id: 'browser', label: '网络浏览器', icon: '🌐' },
+            { id: 'monitor', label: '系统监控', icon: '⚙️' },
+            { id: 'paint', label: '复古画板', icon: '🎨' },
+            { id: 'synth', label: '和弦合成器', icon: '🎵' },
+            { id: 'game', label: '太空入侵者', icon: '🚀' },
+            { id: 'settings', label: '系统设置', icon: '🎛️' }
+        ];
+
+        function initDesktop() {
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            const iconsContainer = document.getElementById('desktop-icons-container');
+            iconsContainer.innerHTML = '';
+
+            preinstalledApps.forEach(app => {
+                const iconHtml = `
+                    <div class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/10 active:bg-white/20 transition duration-150 cursor-pointer text-center w-[80px]" id="desk-icon-${app.id}">
+                        <span class="text-4xl mb-1 filter drop-shadow-md select-none">${app.icon}</span>
+                        <span class="text-[11px] font-bold text-white tracking-wide truncate w-full filter drop-shadow-md">${app.label}</span>
+                    </div>
+                `;
+                iconsContainer.insertAdjacentHTML('beforeend', iconHtml);
+
+                const el = document.getElementById(`desk-icon-${app.id}`);
+                el.addEventListener('pointerdown', (e) => {
+                    if (e.detail === 2) {
+                        openApp(app.id);
+                    }
+                });
+            });
+
+            updateDock();
+
+            document.addEventListener('change', (e) => {
+                if (e.target && e.target.name === 'wallpaper-type') {
+                    SYSTEM_STATE.wallpaper = e.target.value;
+                    playSystemSound(600, 'sine', 0.1);
+                }
+            });
+        }
+
+        function updateDock() {
+            const dock = document.getElementById('dock-bar');
+            dock.innerHTML = '';
+
+            preinstalledApps.forEach(app => {
+                const isOpen = windowManager.windows.some(w => w.id === app.id);
+                const itemHtml = `
+                    <div onclick="openApp('${app.id}')" class="relative group cursor-pointer p-2 rounded-xl hover:bg-white/10 hover:scale-110 active:scale-95 transition-all flex items-center justify-center">
+                        <span class="text-3xl">${app.icon}</span>
+                        ${isOpen ? `
+                            <span class="absolute bottom-1 w-1.5 h-1.5 dynamic-accent-bg rounded-full"></span>
+                        ` : ''}
+                    </div>
+                `;
+                dock.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        }
+
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            menu.classList.toggle('hidden');
+            playSystemSound(700, 'sine', 0.08);
+        }
+
+        function setTheme(themeId) {
+            document.body.className = `overflow-hidden w-screen h-screen select-none bg-black theme-${themeId}`;
+            SYSTEM_STATE.theme = themeId;
+            playSystemSound(800, 'sine', 0.1);
+        }
+
+        function triggerShutdown() {
+            playSystemSound(150, 'sawtooth', 0.4);
+            const desktop = document.getElementById('desktop');
+            desktop.classList.add('crt-shutdown');
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <div class="w-full h-full bg-black flex flex-col items-center justify-center font-mono-os text-zinc-700 text-xs select-none">
+                        <span>[ JR OS 已安全切断微内核电源 ]</span>
+                        <span class="opacity-40 mt-1">刷新页面重新点火。</span>
+                    </div>
+                `;
+            }, 400);
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.wallpaperEngine) {
+                window.wallpaperEngine.resize();
+            }
+        });
+    </script>
+</body>
+</html>
