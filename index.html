@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JR OS - 极客微系统 1.1</title>
-    <!-- 引入 Tailwind CSS 库提供现代化的 UI 基础 -->
+    <title>JR OS - 极客微系统 1.2.1 (Touch Fixed)</title>
+    <!-- 引入 Tailwind CSS 提供现代化的 UI 基础 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -246,9 +246,15 @@
 
         <!-- 文件浏览器 App 模板 -->
         <div id="template-explorer" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <div class="flex items-center space-x-2 p-2 border-b border-zinc-700/40 bg-black/10">
-                <button id="exp-back-btn" class="px-2 py-1 bg-white/10 hover:bg-white/20 rounded disabled:opacity-30">⬅️</button>
-                <span id="exp-current-path" class="font-mono-os opacity-80 px-2 py-1 bg-black/20 rounded flex-1 select-all overflow-hidden whitespace-nowrap">/</span>
+            <div class="flex items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10 flex-wrap gap-2 select-none">
+                <div class="flex items-center space-x-1.5">
+                    <button id="exp-back-btn" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded disabled:opacity-30">⬅️</button>
+                    <span id="exp-current-path" class="font-mono-os opacity-80 px-2.5 py-1 bg-black/20 rounded text-xs select-all overflow-hidden whitespace-nowrap">/</span>
+                </div>
+                <!-- 新建文件快捷键 -->
+                <button id="exp-new-btn" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded flex items-center space-x-1 shadow">
+                    <span>➕</span> <span>新建文件</span>
+                </button>
             </div>
             <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 align-content-start" id="exp-file-grid">
                 <!-- 动态列出文件与文件夹 -->
@@ -257,9 +263,12 @@
 
         <!-- 文件编辑器 App 模板 -->
         <div id="template-editor" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <div class="flex items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10">
-                <span id="editor-file-info" class="font-mono-os text-xs opacity-60">未命名文件.txt</span>
-                <div class="space-x-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10 gap-2 select-none">
+                <div class="flex items-center space-x-2 flex-1">
+                    <span class="text-xs opacity-60 shrink-0">文件路径:</span>
+                    <input type="text" id="editor-file-path" class="bg-black/20 border border-zinc-800 rounded px-2 py-0.5 text-xs font-mono-os text-sky-400 flex-1 outline-none focus:border-sky-500" value="/home/jr_user/untitled.txt">
+                </div>
+                <div class="space-x-2 shrink-0 text-right">
                     <button id="editor-save-btn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded">💾 保存并写入文件</button>
                 </div>
             </div>
@@ -268,7 +277,6 @@
 
         <!-- 浏览器 App 模板 -->
         <div id="template-browser" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <!-- 浏览器控制台顶栏 -->
             <div class="flex flex-col border-b border-zinc-700/40 bg-black/25 shrink-0 select-none">
                 <div class="flex items-center space-x-2 p-2">
                     <div class="flex space-x-1 shrink-0">
@@ -277,14 +285,12 @@
                         <button id="browser-refresh-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🔄</button>
                         <button id="browser-home-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🏠</button>
                     </div>
-                    <!-- 交互地址栏 -->
                     <div class="flex-1 flex items-center bg-black/40 border border-zinc-700/40 rounded-lg px-3 py-1 text-xs">
                         <span class="text-zinc-500 mr-1.5 shrink-0 select-none">🛡️ Secure</span>
                         <input type="text" id="browser-url-input" class="bg-transparent border-none outline-none text-zinc-200 flex-1 font-mono-os" value="jros://welcome" autocomplete="off" spellcheck="false">
                         <button id="browser-go-btn" class="ml-1 px-2 py-0.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-md">GO</button>
                     </div>
                 </div>
-                <!-- 预设极速书签栏 -->
                 <div class="flex items-center space-x-3 px-3 pb-1.5 text-xs opacity-75 overflow-x-auto whitespace-nowrap scrollbar-none">
                     <span class="text-zinc-500 select-none">🔖 书签:</span>
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://welcome')">🚀 JR OS 主页</button>
@@ -293,16 +299,43 @@
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://en.m.wikipedia.org')">📖 维基百科 (Iframe)</button>
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://www.osdev.org')">🧠 OSDev Wiki</button>
                 </div>
-                <!-- 加载进度指示 -->
                 <div class="w-full bg-zinc-800 h-[2px] overflow-hidden relative">
                     <div id="browser-progress-bar" class="absolute left-0 top-0 h-full bg-sky-400 w-full transition-all duration-300" style="transform: translateX(-100%);"></div>
                 </div>
             </div>
-            <!-- 浏览器内容沙盒 -->
             <div class="flex-1 relative bg-white overflow-hidden text-slate-800" id="browser-view-container">
-                <!-- 动态装载 Iframe 或是我们自主研发的 Virtual Web 沙盒 -->
                 <div id="browser-sandbox" class="absolute inset-0 overflow-y-auto p-6 bg-slate-900 text-slate-100 hidden"></div>
                 <iframe id="browser-iframe" class="absolute inset-0 w-full h-full border-none bg-white hidden" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            </div>
+        </div>
+
+        <!-- 软件安装助手模板 -->
+        <div id="template-installer" class="h-full w-full flex flex-col justify-between p-4 bg-slate-900 text-slate-100 select-none">
+            <div class="flex items-center space-x-4 mb-3">
+                <div id="installer-icon" class="text-5xl animate-bounce">📦</div>
+                <div>
+                    <h3 id="installer-title" class="text-sm font-bold text-sky-400">软件安装准备就绪</h3>
+                    <p id="installer-subtitle" class="text-[11px] text-slate-400 mt-0.5">版本: v1.0 | 开发者: 极客第三方</p>
+                </div>
+            </div>
+            <div class="flex-1 bg-black/40 border border-slate-800 rounded p-3 text-xs leading-relaxed overflow-y-auto mb-3 font-mono-os text-slate-300">
+                <p class="font-bold text-amber-400 mb-1">【安全合规与免责声明】</p>
+                <p>1. 本软件由独立第三方开发者提供，并非 JR OS 核心内置。安装后将获得完全沙箱宿主执行权限。</p>
+                <p>2. 请确保安装包来源安全。JR OS 内核仅保障内存虚拟文件系统 (VFS) 安全隔离，不保证第三方软件内容的安全性。</p>
+                <p>3. 安装后将会在桌面及底栏常驻图标，随时可从系统监控器 (Monitor) 中杀死其进程。</p>
+            </div>
+            <div id="installer-progress-section" class="hidden mb-3 shrink-0">
+                <div class="flex justify-between text-[11px] mb-1">
+                    <span id="installer-status-text" class="text-sky-400">正在拷贝虚拟内存镜像...</span>
+                    <span id="installer-percent-text">0%</span>
+                </div>
+                <div class="w-full bg-slate-950 h-2 rounded overflow-hidden border border-slate-800">
+                    <div id="installer-progress" class="bg-gradient-to-r from-cyan-400 to-sky-500 h-full w-0 transition-all duration-100"></div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 shrink-0" id="installer-actions">
+                <button id="installer-btn-cancel" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold transition">取消安装</button>
+                <button id="installer-btn-confirm" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:brightness-110 text-white rounded text-xs font-bold transition shadow-[0_0_10px_rgba(14,165,233,0.3)]">一键安全安装</button>
             </div>
         </div>
 
@@ -408,7 +441,7 @@
                 <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">关于 JR OS</h4>
                 <div class="bg-black/30 p-3 rounded border border-zinc-800/40 text-xs leading-relaxed space-y-1">
                     <p><strong>名称：</strong>JR OS (J&R 操作系统模拟器)</p>
-                    <p><strong>版本：</strong>v1.1.0 Stable</p>
+                    <p><strong>版本：</strong>v1.2.1 Stable (Touch Fixed)</p>
                     <p><strong>硬件平台：</strong>HTML5 / Custom Canvas CPU Core Emulator</p>
                     <p><strong>开发环境：</strong>iPad 独立物理编译标准</p>
                     <p class="pt-2 opacity-60">设计宗旨：在受限沙箱中，将前端画布交互与底层操作系统的三大模型进行精美结合。</p>
@@ -423,11 +456,9 @@
                 <div class="opacity-60">控制: 键盘A/D或←/→, 空格发射</div>
                 <button id="game-restart" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-500 rounded font-bold cursor-pointer">重新启动</button>
             </div>
-            <!-- Canvas 容器 -->
             <div class="flex-1 bg-zinc-950 rounded relative border border-zinc-800 overflow-hidden">
                 <canvas id="game-canvas" class="absolute inset-0 w-full h-full"></canvas>
             </div>
-            <!-- 为 iPad 适配的虚拟触控按键区 -->
             <div class="h-16 flex items-center justify-between px-4 mt-2 bg-black/30 rounded border border-zinc-800 shrink-0 md:hidden select-none">
                 <div class="flex space-x-2">
                     <button id="game-btn-left" class="w-12 h-12 bg-white/10 active:bg-white/30 rounded-xl flex items-center justify-center text-lg">◀️</button>
@@ -452,15 +483,50 @@
             wallpaper: 'stars',
             activeWindow: null,
             cpuLoad: 0,
-            ramLoad: 35, // 初始占用
+            ramLoad: 35,
             appWindows: {},
             uptime: 0,
-            soundMuted: false
+            soundMuted: false,
+            installedApps: {} // 动态装载注册表
         };
+
+        // 核心安全触控双击手势解析器 (Bypasses iOS-Safari context/pointer double-tap limitations)
+        function addDoubleTapListener(element, callback) {
+            let lastTap = 0;
+            element.addEventListener('pointerdown', (e) => {
+                const currentTime = Date.now();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
+                    callback(e);
+                    lastTap = 0; // 重置防止三连击
+                } else {
+                    lastTap = currentTime;
+                }
+            });
+        }
 
         // 2. 内存虚拟文件系统 (Virtual File System - VFS)
         class VirtualFileSystem {
             constructor() {
+                // 预装的第三方软件安装包源码
+                const calcExeConfig = {
+                    appName: "calc",
+                    appTitle: "极客计算器 (Calculator)",
+                    icon: "🧮",
+                    width: 320,
+                    height: 400,
+                    script: `const content = document.getElementById('win-content-' + winObj.id); content.innerHTML = '<div class="p-4 flex flex-col h-full bg-slate-900 text-white select-text"><div id="calc-screen" class="bg-black p-3 text-right text-2xl font-mono mb-4 rounded border border-slate-800 h-14 overflow-hidden">0</div><div class="grid grid-cols-4 gap-2 flex-1"><button class="bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'C\\')">C</button><button class="bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'/\\')">/</button><button class="bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'*\\')">*</button><button class="bg-red-600 p-2 rounded hover:bg-red-500 font-bold flex items-center justify-center" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'Backspace\\')">&larr;</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'7\\')">7</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'8\\')">8</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'9\\')">9</button><button class="bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'-\\')">-</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'4\\')">4</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'5\\')">5</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'6\\')">6</button><button class="bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'+\\')">+</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'1\\')">1</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'2\\')">2</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'3\\')">3</button><button class="bg-blue-600 p-2 row-span-2 rounded hover:bg-blue-500 font-bold flex items-center justify-center" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'=\\')">=</button><button class="bg-slate-700 p-2 col-span-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'0\\')">0</button><button class="bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold" onclick="window.calcPress(\\'' + winObj.id + '\\', \\'.\\')">.</button></div></div>'; if(!window.calcPress){ window.calcHistory = {}; window.calcPress = function(winId, val){ const screen = document.querySelector('#win-' + winId + ' #calc-screen'); if(!screen) return; let current = window.calcHistory[winId] || ''; if(val === 'C'){ current = ''; } else if(val === 'Backspace'){ current = current.slice(0, -1); } else if(val === '='){ try { current = String(eval(current)); } catch(e){ current = 'Error'; } } else { current += val; } window.calcHistory[winId] = current; screen.innerText = current || '0'; playSystemSound(1000, 'sine', 0.05); } }`
+                };
+
+                const matrixExeConfig = {
+                    appName: "matrix_screensaver",
+                    appTitle: "极客代码雨 (Code Rain)",
+                    icon: "📟",
+                    width: 500,
+                    height: 400,
+                    script: `const content = document.getElementById('win-content-' + winObj.id); content.innerHTML = '<canvas id="matrix-app-canvas-' + winObj.id + '" class="w-full h-full bg-black"></canvas>'; const canvas = document.getElementById('matrix-app-canvas-' + winObj.id); const ctx = canvas.getContext('2d'); canvas.width = 500; canvas.height = 360; const columns = Math.floor(canvas.width / 12); const drops = new Array(columns).fill(0); const matrixInterval = setInterval(() => { ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#0f0"; ctx.font = "10px monospace"; for(let i=0; i<drops.length; i++) { const text = Math.floor(Math.random()*10); const x = i * 12; const y = drops[i] * 12; ctx.fillText(text, x, y); if(y > canvas.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }, 30); winObj.onDestroy = () => { clearInterval(matrixInterval); };`
+                };
+
                 this.root = {
                     name: "",
                     type: "dir",
@@ -468,13 +534,13 @@
                         "bin": { name: "bin", type: "dir", children: {} },
                         "home": { name: "home", type: "dir", children: {
                             "jr_user": { name: "jr_user", type: "dir", children: {
-                                "welcome.txt": { name: "welcome.txt", type: "file", content: "祝贺！你的 JR OS 内核运行极其稳定。\n在这个纯内存 VFS 文件系统里，你可以：\n1. 双击这个文件，在 Editor 窗口里编辑它。\n2. 在终端（Terminal）中使用 cat, touch, rm, mkdir 管理它。\n3. 打开我们全新的浏览器（Browser）畅游虚拟和真实的万维网！" },
-                                "todo.list": { name: "todo.list", type: "file", content: "- 体验极速星际航行浏览器\n- 打开系统监视器并杀掉无用进程\n- 在浏览器里查阅 OSDev 操作系统设计手册" },
-                                "system_test.js": { name: "system_test.js", type: "file", content: "console.log('执行内核 JS 脚本，内存状态安全！');" }
+                                "welcome.txt": { name: "welcome.txt", type: "file", content: "祝贺！你的 JR OS 内核运行极其稳定。\n【EXE安装大作战】：\n在当前路径下我们已经为你编译好了 calc.exe 和 matrix.exe。\n进入文件管理器中，直接双击它们，即可体验超真实的操作系统安全安装引导向导！" },
+                                "calc.exe": { name: "calc.exe", type: "file", content: JSON.stringify(calcExeConfig, null, 2) },
+                                "matrix.exe": { name: "matrix.exe", type: "file", content: JSON.stringify(matrixExeConfig, null, 2) }
                             }}
                         }},
                         "sys": { name: "sys", type: "dir", children: {
-                            "version.txt": { name: "version.txt", type: "file", content: "JR OS Core Emulator v1.1.0\n64-Bit Memory Simulated Kernel" }
+                            "version.txt": { name: "version.txt", type: "file", content: "JR OS Core Emulator v1.2.1\n64-Bit Memory Simulated Kernel" }
                         }},
                         "tmp": { name: "tmp", type: "dir", children: {} }
                     }
@@ -524,7 +590,7 @@
             createDirectory(parentPath, newDirName) {
                 const res = this.resolvePath(parentPath);
                 if (res && res.node.type === "dir") {
-                    if (res.node.children[newDirName]) return false; // 已存在
+                    if (res.node.children[newDirName]) return false;
                     res.node.children[newDirName] = {
                         name: newDirName,
                         type: "dir",
@@ -740,11 +806,16 @@
             }
 
             getAppIcon(id) {
+                if (SYSTEM_STATE.installedApps && SYSTEM_STATE.installedApps[id]) {
+                    const installedAppMeta = preinstalledApps.find(app => app.id === id);
+                    if (installedAppMeta) return installedAppMeta.icon;
+                }
                 switch(id) {
                     case 'terminal': return '💻';
                     case 'explorer': return '📂';
                     case 'editor': return '📝';
                     case 'browser': return '🌐';
+                    case 'installer': return '📦';
                     case 'monitor': return '⚙️';
                     case 'paint': return '🎨';
                     case 'synth': return '🎵';
@@ -838,8 +909,7 @@
 
                 const onPointerDown = (e) => {
                     if (win.maximized) return;
-                    // 如果点按在按钮上，不触发拖拽
-                    if (e.target.tagName.toLowerCase() === 'button') return;
+                    if (e.target.tagName.toLowerCase() === 'button' || e.target.tagName.toLowerCase() === 'input') return;
                     isDragging = true;
                     startX = (e.clientX || e.touches?.[0]?.clientX) - win.x;
                     startY = (e.clientY || e.touches?.[0]?.clientY) - win.y;
@@ -1101,7 +1171,7 @@
   matrix         - 唤起终端极客矩阵降雨
   clear          - 洗刷终端输出屏`,
             
-            uname: () => `JR-Kernel Microv1.1.0-JS-64Bit #1 SMP Sun May 17 21:53:00 SGT 2026`,
+            uname: () => `JR-Kernel Microv1.2.1-JS-64Bit #1 SMP Sun May 17 21:53:00 SGT 2026`,
 
             neofetch: () => `   _  ____     ____  ____  
   | |/ _  |   / __ \\/ __/  
@@ -1111,8 +1181,8 @@
  -------------------------
  核心架构: HTML5 Sandbox VM (JS 64B)
  物理内存: 1024 MB (虚拟分配 64MB)
- 内核引擎: Virtual Micro-Kernel 1.1
- 文件系统: Core Memory VFS Engine (树结构)
+ 内核引擎: Virtual Micro-Kernel 1.2.1
+ 文件系统: Core Memory VFS Engine (已打通安装注册表机制)
  运行时间: ${Math.floor(SYSTEM_STATE.uptime / 60)}分 ${SYSTEM_STATE.uptime % 60}秒
  主题配色: ${SYSTEM_STATE.theme.toUpperCase()}
  开发适配: iPad 独立物理编译标准`,
@@ -1140,7 +1210,7 @@
                 outEl.scrollTop = outEl.scrollHeight;
             };
 
-            printLine(`Welcome to JR OS Terminal Terminal Console [Version 1.1]`, 'success');
+            printLine("Welcome to JR OS Terminal Terminal Console [Version 1.2.1]", 'success');
             printLine(`输入 'help' 获取系统核心基础控制指令。当前路径: ${termCurrentPath}\n`, 'system');
 
             inEl.addEventListener('keydown', (e) => {
@@ -1157,6 +1227,12 @@
 
                     if (cmd === 'clear') {
                         outEl.innerHTML = '';
+                        return;
+                    }
+
+                    if (cmd.endsWith('.exe') || cmd.endsWith('.jrex')) {
+                        const filePath = cmd.startsWith("/") ? cmd : `${termCurrentPath}/${cmd}`;
+                        launchAppInstaller(filePath);
                         return;
                     }
 
@@ -1259,6 +1335,7 @@
             const grid = document.getElementById('exp-file-grid');
             const pathText = document.getElementById('exp-current-path');
             const backBtn = document.getElementById('exp-back-btn');
+            const newFileBtn = document.getElementById('exp-new-btn');
             let currentPath = "/home/jr_user";
 
             const renderExplorer = () => {
@@ -1277,10 +1354,11 @@
                 Object.keys(children).forEach(name => {
                     const node = children[name];
                     const isDir = node.type === "dir";
+                    const isExe = name.endsWith('.exe') || name.endsWith('.jrex');
 
                     const itemHtml = `
-                        <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none" id="exp-item-${name}">
-                            <span class="text-3xl mb-1">${isDir ? '📁' : '📄'}</span>
+                        <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none animate-appear" id="exp-item-${name}">
+                            <span class="text-3xl mb-1">${isDir ? '📁' : (isExe ? '📦' : '📄')}</span>
                             <span class="text-xs font-mono-os truncate w-full px-1">${name}</span>
                         </div>
                     `;
@@ -1288,13 +1366,17 @@
                     grid.insertAdjacentHTML('beforeend', itemHtml);
 
                     const el = document.getElementById(`exp-item-${name}`);
-                    el.addEventListener('pointerdown', (e) => {
-                        if (e.detail === 2) {
-                            if (isDir) {
-                                currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
-                                renderExplorer();
+                    
+                    // 使用手写高拟真双击触控监听器替代旧的 e.detail === 2 限制
+                    addDoubleTapListener(el, () => {
+                        if (isDir) {
+                            currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+                            renderExplorer();
+                        } else {
+                            const fullPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+                            if (isExe) {
+                                launchAppInstaller(fullPath);
                             } else {
-                                const fullPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
                                 openEditorForFile(fullPath);
                             }
                         }
@@ -1310,24 +1392,32 @@
                 renderExplorer();
             };
 
+            newFileBtn.onclick = () => {
+                openEditorForFile(`${currentPath}/untitled.txt`);
+            };
+
             renderExplorer();
         }
 
+        // 文件编辑器逻辑
         function openEditorForFile(path) {
-            const fileName = path.split("/").pop();
-            windowManager.createWindow('editor', `文本编辑器 - ${fileName}`, 'template-editor', 550, 400, () => {
+            windowManager.createWindow('editor', `文本编辑器 - 深度代码撰写`, 'template-editor', 550, 400, () => {
+                const pathInput = document.getElementById('editor-file-path');
                 const textarea = document.getElementById('editor-textarea');
-                const info = document.getElementById('editor-file-info');
                 const saveBtn = document.getElementById('editor-save-btn');
 
-                info.innerText = `正在浏览并修改: ${path}`;
+                pathInput.value = path;
                 textarea.value = VFS.readFile(path) || "";
 
                 saveBtn.onclick = () => {
-                    const ok = VFS.writeFile(path, textarea.value);
+                    const targetPath = pathInput.value.trim();
+                    if (!targetPath) return;
+
+                    const ok = VFS.writeFile(targetPath, textarea.value);
                     if (ok) {
                         playSystemSound(880, 'sine', 0.15);
                         windowManager.closeWindow('editor');
+                        
                         const expWin = windowManager.windows.find(w => w.id === 'explorer');
                         if (expWin) {
                             initExplorerApp(expWin);
@@ -1338,17 +1428,15 @@
         }
 
 
-        // ----------------- APP 3: 星际航行浏览器 (JR-Web Browser) [新增&增强核心] -----------------
-        
-        // 虚拟互联网数据库（支持多级虚拟链接跳转，防跨域劫持，完全在操作系统内实现页面深度点击）
+        // ----------------- APP 3: 星际航行浏览器 (JR-Web Browser) -----------------
         const VIRTUAL_INTERNET = {
             "jros://welcome": {
                 title: "JR OS 官方引航站",
                 body: `
                     <div class="space-y-6">
                         <div class="p-6 rounded-xl bg-gradient-to-r from-blue-900/60 to-indigo-900/40 border border-blue-500/30 text-center">
-                            <h1 class="text-2xl font-bold text-sky-300">🌐 欢迎来到星际航行浏览器 v1.1</h1>
-                            <p class="text-xs text-slate-300 mt-2">在这里，我们彻底打破了 Frame-Busting 限制。你可以直接无缝浏览真实支持嵌套的网站，或是完美体验内置的“虚拟极客万维网”！</p>
+                            <h1 class="text-2xl font-bold text-sky-300">🌐 欢迎来到星际航行浏览器 v1.2.1</h1>
+                            <p class="text-xs text-slate-300 mt-2">在这里，我们彻底打破了跨域 Frame-Busting 限制。你可以直接无缝浏览真实网页，或是完美体验内置的“虚拟极客万维网”！</p>
                         </div>
                         
                         <div>
@@ -1419,11 +1507,10 @@
                         
                         <div class="p-4 rounded-lg bg-black/40 border border-slate-800 h-64 overflow-y-auto space-y-3 text-xs font-mono-os">
                             <div class="text-slate-500 text-center">[ 系统提示: 安全加密隧道已构建 ]</div>
-                            <div><span class="text-purple-400 font-bold">Neo:</span> 你们有人尝试过在 iPad 上直接编译 C 代码吗？</div>
-                            <div><span class="text-cyan-400 font-bold">Trinity:</span> 用 Blink Shell 连上 VPS，体验比笔记本还舒服，而且妙控键盘手感很棒。</div>
-                            <div><span class="text-amber-400 font-bold">Morpheus:</span> 我刚在 JR OS 1.1 的文本编辑器里写完了一个进程调度位图算法，VFS 的体验很完美。</div>
-                            <div><span class="text-emerald-400 font-bold">You (Admin):</span> <span class="text-slate-300">我正在体验星际航行浏览器，网页内点击跳转真的能防跨域！</span></div>
-                            <div class="text-slate-500 text-center">[ Cypher 加入了聊天室 ]</div>
+                            <div><span class="text-purple-400 font-bold">Neo:</span> 你们有人尝试过在 iPad 上双击 calc.exe 直接调起安装包了吗？</div>
+                            <div><span class="text-cyan-400 font-bold">Trinity:</span> 我刚刚双击了，动画非常丝滑，向导不仅有进度条，写完了还能自动追加桌面图标和底栏圆点！</div>
+                            <div><span class="text-amber-400 font-bold">Morpheus:</span> 没错，我们甚至可以直接在文本编辑器里写一段 JSON 包，写完了保存为 .exe 也能一键安装！这直接构成了一个完整的 OS 开发大闭环。</div>
+                            <div><span class="text-emerald-400 font-bold">You (Admin):</span> <span class="text-slate-300">完全闭环！我们真的实现了一个可以动态安装拓展的轻量 OS。而且双击触碰现在完美兼容了！</span></div>
                         </div>
                         
                         <div class="flex space-x-2">
@@ -1459,10 +1546,6 @@
                                     <span class="text-sky-400">📁 vfs/</span>
                                     <span class="text-slate-500">Optimize path resolver</span>
                                 </div>
-                                <div class="px-4 py-2.5 flex justify-between">
-                                    <span class="text-slate-300">📄 Makefile</span>
-                                    <span class="text-slate-500">Fix cross-compiler prefix</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1481,7 +1564,7 @@
 #include &lt;jros/interrupt.h&gt;
 
 void context_switch(thread_t* next) {
-    play_hardware_beep(440); // 调度器发出滴答音模拟
+    play_hardware_beep(440);
     asm volatile(
         "mov %0, %%cr3\\n"
         "switch_registers..."
@@ -1504,7 +1587,6 @@ void context_switch(thread_t* next) {
 <pre>#include &lt;jros/vfs.h&gt;
 
 vfs_node_t* resolve_path(const char* path) {
-    // 递归解析树形 VFS
     if (path[0] == '/') {
         return root_node;
     }
@@ -1516,7 +1598,6 @@ vfs_node_t* resolve_path(const char* path) {
             }
         };
 
-        // 核心跳转导航控制（全局暴露，确保模拟网页内的超链接可以直接点击，不跳出、无跨域故障）
         window.browserNavigate = (containerId, targetUrl) => {
             const browserDom = document.getElementById(containerId);
             if (!browserDom) return;
@@ -1526,7 +1607,6 @@ vfs_node_t* resolve_path(const char* path) {
             const urlInput = browserDom.querySelector('#browser-url-input');
             const progress = browserDom.querySelector('#browser-progress-bar');
 
-            // 触发系统加载条动效
             progress.style.transition = 'none';
             progress.style.transform = 'translateX(-100%)';
             setTimeout(() => {
@@ -1536,7 +1616,6 @@ vfs_node_t* resolve_path(const char* path) {
 
             urlInput.value = targetUrl;
 
-            // 如果是内网自定义协议 (jros://) 或者被跨域拦截的网站，启动我们研发的虚拟沙盒解释器
             if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
                 const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
                 const page = VIRTUAL_INTERNET[normUrl] || {
@@ -1548,10 +1627,10 @@ vfs_node_t* resolve_path(const char* path) {
                     iframe.classList.add('hidden');
                     sandbox.classList.remove('hidden');
                     sandbox.innerHTML = `
-                        <div class="p-2 select-text">
-                            <div class="mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
-                                <span class="text-xs bg-slate-800 px-2 py-0.5 rounded text-sky-400 font-mono-os">${normUrl}</span>
-                                <span class="text-xs text-slate-500">JR-Web 内网加速协议</span>
+                        <div class="p-2 select-text text-slate-100">
+                            <div class="mb-4 border-b border-slate-800 pb-2 flex justify-between items-center text-xs">
+                                <span class="bg-slate-800 px-2 py-0.5 rounded text-sky-400 font-mono-os">${normUrl}</span>
+                                <span class="text-slate-500">JR-Web 内网加速协议</span>
                             </div>
                             <h2 class="text-xl font-bold text-slate-100 mb-4">${page.title}</h2>
                             ${page.body}
@@ -1560,10 +1639,8 @@ vfs_node_t* resolve_path(const char* path) {
                     progress.style.transform = 'translateX(0%)';
                 }, 400);
 
-                // 更新浏览器的本地历史记录队列
                 pushBrowserHistory(containerId, targetUrl);
             } else {
-                // 允许被 iframe 加载的外部站（带防爆机制）
                 setTimeout(() => {
                     sandbox.classList.add('hidden');
                     iframe.classList.remove('hidden');
@@ -1579,17 +1656,13 @@ vfs_node_t* resolve_path(const char* path) {
             }
         };
 
-        // 历史队列存储
         const BROWSER_HISTORY = {
             historyStack: ['jros://welcome'],
             currentIndex: 0
         };
 
         function pushBrowserHistory(containerId, url) {
-            // 如果与当前最后一个一样，则不重复添加
             if (BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex] === url) return;
-            
-            // 裁切之后的历史
             BROWSER_HISTORY.historyStack = BROWSER_HISTORY.historyStack.slice(0, BROWSER_HISTORY.currentIndex + 1);
             BROWSER_HISTORY.historyStack.push(url);
             BROWSER_HISTORY.currentIndex = BROWSER_HISTORY.historyStack.length - 1;
@@ -1619,7 +1692,6 @@ vfs_node_t* resolve_path(const char* path) {
             const refreshBtn = browserDom.querySelector('#browser-refresh-btn');
             const homeBtn = browserDom.querySelector('#browser-home-btn');
 
-            // 监听回车或点击 GO 按钮
             const executeNav = () => {
                 const target = urlInput.value.trim();
                 if (target) {
@@ -1632,7 +1704,6 @@ vfs_node_t* resolve_path(const char* path) {
             });
             goBtn.onclick = executeNav;
 
-            // 后退
             backBtn.onclick = () => {
                 if (BROWSER_HISTORY.currentIndex > 0) {
                     BROWSER_HISTORY.currentIndex--;
@@ -1642,7 +1713,6 @@ vfs_node_t* resolve_path(const char* path) {
                 }
             };
 
-            // 前进
             forwardBtn.onclick = () => {
                 if (BROWSER_HISTORY.currentIndex < BROWSER_HISTORY.historyStack.length - 1) {
                     BROWSER_HISTORY.currentIndex++;
@@ -1652,23 +1722,141 @@ vfs_node_t* resolve_path(const char* path) {
                 }
             };
 
-            // 刷新
             refreshBtn.onclick = () => {
                 const url = urlInput.value.trim();
                 window.browserNavigate(containerId, url);
             };
 
-            // 主页
             homeBtn.onclick = () => {
                 window.browserNavigate(containerId, 'jros://welcome');
             };
 
-            // 初始化导航首页
             window.browserNavigate(containerId, 'jros://welcome');
         }
 
 
-        // ----------------- APP 4: 系统性能监控 (System Monitor) -----------------
+        // ----------------- APP 4: JR OS 安装管理器 (App Installer) -----------------
+        function launchAppInstaller(filePath) {
+            const rawContent = VFS.readFile(filePath);
+            if (!rawContent) {
+                playSystemSound(150, 'sawtooth', 0.2);
+                return;
+            }
+
+            try {
+                const appConfig = JSON.parse(rawContent);
+                if (!appConfig.appName || !appConfig.appTitle || !appConfig.script) {
+                    throw new Error("安装包架构错误，关键属性缺失。");
+                }
+
+                windowManager.createWindow('installer', `JR OS 安全安装向导 - ${appConfig.appTitle}`, 'template-installer', 440, 340, (win) => {
+                    const iconEl = document.getElementById('installer-icon');
+                    const titleEl = document.getElementById('installer-title');
+                    const subtitleEl = document.getElementById('installer-subtitle');
+                    const cancelBtn = document.getElementById('installer-btn-cancel');
+                    const confirmBtn = document.getElementById('installer-btn-confirm');
+                    const progressSec = document.getElementById('installer-progress-section');
+                    const progressEl = document.getElementById('installer-progress');
+                    const statusTxt = document.getElementById('installer-status-text');
+                    const percentTxt = document.getElementById('installer-percent-text');
+
+                    iconEl.innerText = appConfig.icon || '📦';
+                    titleEl.innerText = `准备安装: ${appConfig.appTitle}`;
+                    subtitleEl.innerText = `标识: ${appConfig.appName} | 寻址空间: ${appConfig.width || 500}x${appConfig.height || 400}`;
+
+                    cancelBtn.onclick = () => {
+                        windowManager.closeWindow('installer');
+                    };
+
+                    confirmBtn.onclick = () => {
+                        confirmBtn.disabled = true;
+                        cancelBtn.disabled = true;
+                        confirmBtn.style.opacity = '0.5';
+                        cancelBtn.style.opacity = '0.5';
+
+                        progressSec.classList.remove('hidden');
+
+                        const steps = [
+                            { p: 15, t: "正在读取 VFS 内存区块..." },
+                            { p: 40, t: "正在解析虚拟段式内存寻址..." },
+                            { p: 70, t: "正在检查沙箱安全权限依赖..." },
+                            { p: 90, t: "正在注册桌面快捷路由映射..." },
+                            { p: 100, t: "装载完成！正在引导运行上下文..." }
+                        ];
+
+                        let currentStep = 0;
+                        const runStep = () => {
+                            if (currentStep < steps.length) {
+                                const step = steps[currentStep];
+                                progressEl.style.width = `${step.p}%`;
+                                percentTxt.innerText = `${step.p}%`;
+                                statusTxt.innerText = step.t;
+
+                                playSystemSound(400 + step.p * 5, 'sine', 0.05);
+                                currentStep++;
+                                setTimeout(runStep, 300 + Math.random() * 200);
+                            } else {
+                                const ok = registerDynamicApp(appConfig);
+                                if (ok) {
+                                    playSystemSound(523.25, 'triangle', 0.1); // C5
+                                    setTimeout(() => playSystemSound(659.25, 'triangle', 0.1), 100); // E5
+                                    setTimeout(() => playSystemSound(783.99, 'triangle', 0.25), 200); // G5
+                                }
+                                windowManager.closeWindow('installer');
+                            }
+                        };
+
+                        setTimeout(runStep, 100);
+                    };
+                });
+
+            } catch (err) {
+                playSystemSound(150, 'sawtooth', 0.3);
+                windowManager.createWindow('installer_err', '系统内核保护阻断', 'template-settings', 360, 180, (win) => {
+                    const content = document.getElementById('win-content-installer_err');
+                    content.innerHTML = `
+                        <div class="p-4 text-center font-mono-os text-xs text-red-400 space-y-3">
+                            <p class="font-bold text-sm">⚠️ 沙箱安全审查阻断</p>
+                            <p class="text-[10px] opacity-75 leading-relaxed bg-black/40 p-2 border border-red-500/20 rounded">错误元: ${err.message}</p>
+                            <p class="opacity-60">JR 内核已将该文件的执行进程挂起并隔离。</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function registerDynamicApp(appConfig) {
+            const alreadyRegistered = preinstalledApps.some(app => app.id === appConfig.appName);
+            if (alreadyRegistered) return false;
+
+            if (!SYSTEM_STATE.installedApps) SYSTEM_STATE.installedApps = {};
+            SYSTEM_STATE.installedApps[appConfig.appName] = {
+                id: appConfig.appName,
+                label: appConfig.appTitle,
+                width: appConfig.width || 500,
+                height: appConfig.height || 400,
+                script: appConfig.script
+            };
+
+            const hiddenContainer = document.querySelector('.hidden');
+            const newTemplate = document.createElement('div');
+            newTemplate.id = `template-${appConfig.appName}`;
+            newTemplate.className = "hidden";
+            newTemplate.innerHTML = `<div id="app-content-${appConfig.appName}" class="h-full w-full overflow-hidden bg-slate-950"></div>`;
+            hiddenContainer.appendChild(newTemplate);
+
+            preinstalledApps.push({
+                id: appConfig.appName,
+                label: appConfig.appTitle,
+                icon: appConfig.icon || '📦'
+            });
+
+            initDesktop();
+            return true;
+        }
+
+
+        // ----------------- APP 5: 系统性能监控 (System Monitor) -----------------
         function initMonitorApp(winObj) {
             const canvasCpu = document.getElementById('canvas-cpu-chart');
             const canvasRam = document.getElementById('canvas-ram-chart');
@@ -1780,7 +1968,7 @@ vfs_node_t* resolve_path(const char* path) {
             renderProcesses();
         }
 
-        // ----------------- APP 5: 复古像素画板 (JR Paint) -----------------
+        // ----------------- APP 6: 复古像素画板 (JR Paint) -----------------
         function initPaintApp(winObj) {
             const canvas = document.getElementById('paint-canvas');
             const ctx = canvas.getContext('2d');
@@ -1849,7 +2037,7 @@ vfs_node_t* resolve_path(const char* path) {
             };
         }
 
-        // ----------------- APP 6: 8-Bit 和弦音乐播放器 (Chiptune Tracker) -----------------
+        // ----------------- APP 7: 8-Bit 和弦音乐播放器 (Chiptune Tracker) -----------------
         function initSynthApp(winObj) {
             const playBtn = document.getElementById('synth-play-btn');
             const stopBtn = document.getElementById('synth-stop-btn');
@@ -1946,7 +2134,7 @@ vfs_node_t* resolve_path(const char* path) {
             };
         }
 
-        // ----------------- APP 7: 经典太空侵略者 Canvas 游戏 -----------------
+        // ----------------- APP 8: 经典太空侵略者 Canvas 游戏 -----------------
         function initGameApp(winObj) {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
@@ -2124,14 +2312,13 @@ vfs_node_t* resolve_path(const char* path) {
          */
 
         const bootLogs = [
-            "JR-BIOS Core v1.50 Copyright (C) 2026 J&R OS Corporation.",
-            "CPU: Mock Intel-JS Core i9 @ 5.00GHz (P-Core Allocated)",
+            "JR-BIOS Core v1.60 Copyright (C) 2026 J&R OS Corporation.",
+            "CPU: Mock Intel-JS Core i9 @ 5.00GHz (Touch Sync Active)",
             "Memory Test: 65536KB OK. Virtual paging activated.",
-            "Detecting Primary Virtual Hard Disk... OK (VFS Mounted Successfully)",
-            "Mounting /sys/kernel/modules.conf... SUCCESS",
-            "Initializing Interrupt Service Routines (ISRs) for iPad touch controls...",
-            "Loading Network TCP/IP Frame Stack (V-Network Bridge Ready)...",
-            "Injecting Web-Security Sandboxing bypass modules... OK",
+            "Detecting Primary Virtual Hard Disk... OK (VFS Loaded)",
+            "Mounting /sys/kernel/modules/installer.conf... SUCCESS",
+            "Initializing Gesture Recognition & Double-Tap Timers... SUCCESS",
+            "Checking Network Bridge... OK",
             "Kernel load addr: 0x100000. Jump to C Entry Point.",
             "Initializing user session context: [Admin: jr_user]",
             "All hardware devices initialized. System Ready."
@@ -2155,7 +2342,7 @@ vfs_node_t* resolve_path(const char* path) {
 
                     logIdx++;
                     playSystemSound(800 + logIdx * 50, 'sine', 0.04);
-                    setTimeout(printNextLog, Math.random() * 150 + 60);
+                    setTimeout(printNextLog, Math.random() * 80 + 30);
                 } else {
                     startBtn.classList.remove('hidden');
                 }
@@ -2189,7 +2376,23 @@ vfs_node_t* resolve_path(const char* path) {
 
         function openApp(id) {
             const startMenu = document.getElementById('start-menu');
-            startMenu.classList.add('hidden');
+            if (startMenu) startMenu.classList.add('hidden');
+
+            if (SYSTEM_STATE.installedApps && SYSTEM_STATE.installedApps[id]) {
+                const app = SYSTEM_STATE.installedApps[id];
+                windowManager.createWindow(app.id, app.label, `template-${app.id}`, app.width, app.height, (win) => {
+                    try {
+                        const initFunc = new Function('winObj', app.script);
+                        initFunc(win);
+                    } catch (err) {
+                        const content = document.getElementById(`win-content-${win.id}`);
+                        if (content) {
+                            content.innerHTML = `<div class="p-4 text-red-500 font-mono-os text-xs"><h4>⚠️ 运行时崩溃</h4><p>${err.message}</p></div>`;
+                        }
+                    }
+                });
+                return;
+            }
 
             switch (id) {
                 case 'terminal':
@@ -2231,8 +2434,10 @@ vfs_node_t* resolve_path(const char* path) {
         ];
 
         function initDesktop() {
-            setInterval(updateClock, 1000);
-            updateClock();
+            if (!window.clockTimer) {
+                window.clockTimer = setInterval(updateClock, 1000);
+                updateClock();
+            }
 
             const iconsContainer = document.getElementById('desktop-icons-container');
             iconsContainer.innerHTML = '';
@@ -2247,20 +2452,21 @@ vfs_node_t* resolve_path(const char* path) {
                 iconsContainer.insertAdjacentHTML('beforeend', iconHtml);
 
                 const el = document.getElementById(`desk-icon-${app.id}`);
-                el.addEventListener('pointerdown', (e) => {
-                    if (e.detail === 2) {
-                        openApp(app.id);
-                    }
+                
+                // 将桌面图标双击改写为 touch 兼容的 addDoubleTapListener 方式
+                addDoubleTapListener(el, () => {
+                    openApp(app.id);
                 });
             });
 
             updateDock();
 
-            document.addEventListener('change', (e) => {
-                if (e.target && e.target.name === 'wallpaper-type') {
+            const radioButtons = document.querySelectorAll('input[name="wallpaper-type"]');
+            radioButtons.forEach(btn => {
+                btn.onchange = (e) => {
                     SYSTEM_STATE.wallpaper = e.target.value;
                     playSystemSound(600, 'sine', 0.1);
-                }
+                };
             });
         }
 
@@ -2274,7 +2480,7 @@ vfs_node_t* resolve_path(const char* path) {
                     <div onclick="openApp('${app.id}')" class="relative group cursor-pointer p-2 rounded-xl hover:bg-white/10 hover:scale-110 active:scale-95 transition-all flex items-center justify-center">
                         <span class="text-3xl">${app.icon}</span>
                         ${isOpen ? `
-                            <span class="absolute bottom-1 w-1.5 h-1.5 dynamic-accent-bg rounded-full"></span>
+                            <span class="absolute bottom-1 w-1.5 h-1.5 dynamic-accent-bg rounded-full animate-pulse"></span>
                         ` : ''}
                     </div>
                 `;
