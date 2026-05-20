@@ -3,32 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JR OS - 极客微系统 1.2.2</title>
-
-    <!-- =========================================================================
-      ★ 核心配置区：Cloudflare Worker 跨域网关地址 (放在最头部，方便你直接修改)
-      ========================================================================= -->
-    <script>
-        // 请将下方双引号内的地址，替换为你部署在 Cloudflare 上的 Worker 代理网址！
-        // 注意：网址结尾保留 /proxy
-        window.PROXY_SERVER = "https://jr-os-proxy.zhangzhanhang855.workers.dev/proxy";
-    </script>
-
-    <!-- 引入 Tailwind CSS 提供现代化的 UI 基础 -->
+    <title>Windows 11 - JR OS Professional</title>
+    <!-- 引入 Tailwind CSS 库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        cyber: {
-                            bg: '#05050a',
-                            panel: 'rgba(10, 10, 20, 0.75)',
-                            border: 'rgba(0, 242, 254, 0.25)',
-                            primary: '#00f2fe',
-                            secondary: '#4facfe',
-                            accent: '#ff007f',
-                            text: '#e2e8f0'
+                        winblue: {
+                            DEFAULT: '#0078d4',
+                            hover: '#0067b8',
+                            light: '#e6f2fc'
+                        },
+                        winbg: {
+                            dark: '#1c1c1c',
+                            light: '#f3f3f3'
                         }
                     }
                 }
@@ -36,10 +26,10 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
         
         * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
             user-select: none;
             -webkit-user-select: none;
@@ -47,42 +37,50 @@
         }
 
         .font-mono-os {
-            font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
+            font-family: 'Fira Code', Consolas, Monaco, monospace !important;
         }
 
         /* 隐藏滚动条 */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
+            background: rgba(0, 0, 0, 0.05);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
+            background: rgba(100, 100, 100, 0.2);
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.4);
+            background: rgba(100, 100, 100, 0.4);
         }
 
-        /* 磨砂玻璃特效 */
-        .glassmorphism {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+        /* 亚克力磨砂玻璃 */
+        .acrylic {
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
         }
 
-        /* 窗口动画 */
-        .window-appear {
-            animation: scaleUp 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* 窗口出现特效 */
+        .window-animate {
+            animation: winOpen 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        @keyframes winOpen {
+            from { transform: scale(0.95) translateY(10px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        @keyframes scaleUp {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        /* 开始菜单弹出 */
+        .start-animate {
+            animation: startPop 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        @keyframes startPop {
+            from { transform: translateY(100%) scale(0.98); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        /* 关机特效 */
+        /* CRT 关机动效 */
         .crt-shutdown {
             animation: crtSec 0.4s ease-out forwards;
         }
@@ -92,217 +90,273 @@
             100% { transform: scaleY(0) scaleX(0); filter: brightness(5); opacity: 0; }
         }
 
-        /* 主题样式定义 */
-        body.theme-cyber {
-            --bg-color: #030308;
-            --panel-bg: rgba(10, 10, 22, 0.8);
-            --border-color: rgba(0, 242, 254, 0.25);
-            --text-color: #e2e8f0;
-            --accent-color: #00f2fe;
-            --secondary-color: #ff007f;
-        }
-        body.theme-matrix {
-            --bg-color: #000000;
-            --panel-bg: rgba(5, 15, 5, 0.85);
-            --border-color: rgba(0, 255, 70, 0.3);
-            --text-color: #00ff46;
-            --accent-color: #00ff46;
-            --secondary-color: #008010;
-        }
-        body.theme-retro {
-            --bg-color: #1a0f00;
-            --panel-bg: rgba(30, 20, 5, 0.9);
-            --border-color: rgba(255, 165, 0, 0.35);
-            --text-color: #ffb000;
-            --accent-color: #ffb000;
-            --secondary-color: #ff5500;
-        }
-        body.theme-light {
-            --bg-color: #f1f5f9;
-            --panel-bg: rgba(255, 255, 255, 0.85);
-            --border-color: rgba(15, 23, 42, 0.15);
-            --text-color: #0f172a;
-            --accent-color: #2563eb;
-            --secondary-color: #db2777;
+        /* Windows 经典活动窗口蓝色投影 */
+        .active-window-shadow {
+            box-shadow: 0 15px 40px rgba(0, 120, 212, 0.18);
         }
 
-        /* 应用变量定义样式 */
-        .dynamic-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        .dynamic-text {
-            color: var(--text-color);
-        }
-        .dynamic-accent-border {
-            border-color: var(--accent-color);
-        }
-        .dynamic-accent-text {
-            color: var(--accent-color);
-        }
-        .dynamic-accent-bg {
-            background-color: var(--accent-color);
+        /* 去除输入框默认高亮 */
+        input:focus, textarea:focus {
+            outline: none;
         }
     </style>
 </head>
-<body class="theme-cyber overflow-hidden w-screen h-screen select-none bg-black">
+<body class="overflow-hidden w-screen h-screen select-none bg-cover bg-center transition-all duration-300" style="background-image: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2560');">
 
-    <!-- 背景 Canvas 动态粒子/代码雨壁纸 -->
-    <canvas id="wallpaper-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+    <!-- 系统底层事件捕获热区 -->
+    <div id="desktop-wallpaper-trigger" class="absolute inset-0 z-0 pointer-events-auto"></div>
 
-    <!--=================== 1. 系统引导界面 (BIOS & Bootloader) ===================-->
-    <div id="boot-screen" class="absolute inset-0 bg-black z-[9999] flex flex-col justify-between p-8 md:p-16 font-mono-os text-green-500 overflow-y-auto">
-        <div id="boot-log" class="space-y-1 text-xs md:text-sm max-w-4xl"></div>
-        <div class="w-full flex flex-col items-center justify-center space-y-4">
-            <div class="text-xl md:text-2xl font-bold tracking-widest animate-pulse">JR OS BOOTING</div>
-            <div class="w-full max-w-md bg-zinc-900 border border-green-900 rounded-full h-3 overflow-hidden">
-                <div id="boot-progress" class="bg-green-500 h-full w-0 transition-all duration-100 ease-out"></div>
+    <!--=================== 1. Windows 开机引导 (Boot Screen) ===================-->
+    <div id="boot-screen" class="absolute inset-0 bg-black z-[9999] flex flex-col justify-between items-center py-20 font-mono-os text-white">
+        <div class="flex flex-col items-center mt-20">
+            <!-- 完美的 Windows 11 经典蓝转轮 -->
+            <div class="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-winblue animate-spin mb-8"></div>
+            <div id="boot-log" class="text-xs text-zinc-500 max-w-lg h-32 overflow-y-auto space-y-1 text-center font-mono-os"></div>
+        </div>
+        <div class="flex flex-col items-center space-y-4 w-full max-w-xs">
+            <div class="text-lg font-semibold tracking-wider">Windows 11 Pro</div>
+            <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                <div id="boot-progress" class="bg-winblue h-full w-0 transition-all duration-100 ease-out"></div>
             </div>
-            <button id="btn-start-os" class="hidden px-8 py-3 bg-green-500 text-black font-bold rounded hover:bg-green-400 border border-green-300 transition duration-300 cursor-pointer shadow-[0_0_20px_rgba(34,197,94,0.5)]">
-                [ 初始化内核并开机 ]
+            <button id="btn-start-os" class="hidden px-6 py-2.5 bg-winblue hover:bg-winblue-hover text-white font-bold rounded-md shadow-lg transition duration-200 cursor-pointer">
+                开启 Windows 体验
             </button>
         </div>
     </div>
 
-    <!--=================== 2. 主桌面工作区 ===================-->
-    <div id="desktop" class="absolute inset-0 z-10 hidden flex flex-col h-full w-full justify-between pb-16 md:pb-16 overflow-hidden">
+    <!--=================== 2. Windows 11 主桌面 ===================-->
+    <div id="desktop-workspace" class="absolute inset-0 z-10 hidden flex flex-col h-full w-full justify-between pb-12 overflow-hidden">
         
-        <!-- 顶部系统状态状态栏 -->
-        <header class="w-full h-8 dynamic-panel glassmorphism flex items-center justify-between px-4 text-xs z-50 border-b select-none">
-            <div class="flex items-center space-x-4">
-                <span class="font-bold flex items-center space-x-1 cursor-pointer" onclick="toggleStartMenu()">
-                    <svg class="w-4 h-4 dynamic-accent-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
-                    <span class="dynamic-text">JR OS</span>
-                </span>
-                <span id="active-win-indicator" class="opacity-60 hidden md:inline">桌面处于活动状态</span>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-1">
-                    <span class="opacity-60">CPU:</span>
-                    <span id="top-cpu-bar" class="w-12 bg-zinc-800 h-2 rounded overflow-hidden inline-block"><span id="top-cpu" class="bg-emerald-500 h-full block w-0 transition-all duration-300"></span></span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span id="sys-time" class="font-bold font-mono-os dynamic-text">00:00:00</span>
-                    <span id="sys-date" class="opacity-60 hidden sm:inline">2026/05/17</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- 桌面图标工作区 -->
-        <main class="flex-1 w-full relative p-4 grid grid-flow-col auto-cols-[80px] grid-rows-[repeat(auto-fill,90px)] gap-4 content-start items-start z-10" id="desktop-icons-container">
-            <!-- 图标动态装载 -->
+        <!-- 桌面图标网络容器 -->
+        <main class="flex-1 w-full relative p-4 grid grid-flow-col auto-cols-[85px] grid-rows-[repeat(auto-fill,100px)] gap-y-4 gap-x-2 content-start items-start z-10" id="desktop-icons-container">
+            <!-- 动态注入 Windows 图标 -->
         </main>
 
-        <!-- 桌面悬浮窗口盛放区 -->
-        <div id="window-container" class="absolute inset-0 z-20 pointer-events-none">
-            <!-- 动态生成各种应用窗口 -->
+        <!-- 悬浮窗口堆栈池 -->
+        <div id="window-container" class="absolute inset-0 z-20 pointer-events-none"></div>
+
+        <!-- 11 版日历和通知面板 (System Flyout) -->
+        <div id="calendar-flyout" class="absolute bottom-14 right-3 w-80 dynamic-panel acrylic rounded-xl border border-white/10 shadow-2xl z-50 p-4 hidden flex flex-col space-y-4 transition-all duration-200">
+            <div class="flex justify-between items-center pb-2 border-b border-white/10">
+                <h4 class="font-bold text-sm" id="flyout-month-year">2026年5月</h4>
+                <div class="flex space-x-1 text-xs">
+                    <button class="p-1 hover:bg-white/10 rounded">▲</button>
+                    <button class="p-1 hover:bg-white/10 rounded">▼</button>
+                </div>
+            </div>
+            <!-- 日历网格 -->
+            <div class="grid grid-cols-7 gap-1 text-center text-xs">
+                <span class="opacity-50">日</span><span class="opacity-50">一</span><span class="opacity-50">二</span><span class="opacity-50">三</span><span class="opacity-50">四</span><span class="opacity-50">五</span><span class="opacity-50">六</span>
+                <!-- 实时模拟填充日历 -->
+                <script>
+                    document.write(Array.from({length: 31}, (_, i) => `<span class="p-1.5 hover:bg-winblue/30 rounded-md cursor-pointer ${i+1 === 20 ? 'bg-winblue text-white font-bold' : ''}">${i+1}</span>`).join(''));
+                </script>
+            </div>
+            <!-- 模拟系统通知 -->
+            <div class="border-t border-white/10 pt-3 space-y-2">
+                <h5 class="text-xs font-bold opacity-60">通知中心</h5>
+                <div class="bg-white/5 p-2 rounded border border-white/5 text-[11px] leading-relaxed">
+                    <p class="font-bold text-winblue">✨ 系统提示</p>
+                    <p class="opacity-80">JR OS 成功加载 Windows 核心框架！双击桌面图标即可开始体验。</p>
+                </div>
+            </div>
         </div>
 
-        <!-- 底部Dock应用快速启动栏 -->
-        <footer class="w-full flex justify-center pb-2 z-40 select-none absolute bottom-0 left-0 right-0">
-            <div class="dynamic-panel glassmorphism px-4 py-2 rounded-2xl flex items-end space-x-3 border shadow-2xl max-w-full overflow-x-auto" id="dock-bar">
-                <!-- 动态图标列表 -->
+        <!-- 经典开始菜单 (Start Menu) -->
+        <div id="start-menu" class="absolute bottom-14 dynamic-menu acrylic rounded-2xl border border-white/10 shadow-2xl z-50 p-6 hidden flex flex-col space-y-6 transition-all duration-200" style="width: 580px; height: 600px;">
+            <!-- 搜索框 -->
+            <div class="relative w-full shrink-0">
+                <input type="text" placeholder=" 搜索应用、文件和设置" class="w-full bg-black/20 border border-white/10 hover:border-white/20 focus:border-winblue rounded-full py-2 px-10 text-xs text-white placeholder-white/50">
+                <span class="absolute left-4 top-2.5">🔍</span>
+            </div>
+
+            <!-- 已固定程序 (Pinned Apps) -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4 px-1">
+                    <h4 class="font-bold text-xs">已固定</h4>
+                    <button class="text-[11px] bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded border border-white/10">所有应用 &gt;</button>
+                </div>
+                <div class="grid grid-cols-6 gap-y-6 gap-x-2 text-center" id="start-menu-pinned-grid">
+                    <!-- 动态由 JS 填充 -->
+                </div>
+            </div>
+
+            <!-- 推荐项目 (Recommended) -->
+            <div class="h-32 shrink-0">
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <h4 class="font-bold text-xs">推荐</h4>
+                </div>
+                <div class="grid grid-cols-2 gap-3" id="start-menu-recommended-grid">
+                    <!-- 推荐打开的文件 -->
+                </div>
+            </div>
+
+            <!-- 底部用户/电源状态栏 -->
+            <div class="flex items-center justify-between border-t border-white/10 pt-4 shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-winblue flex items-center justify-center text-white font-bold text-sm">A</div>
+                    <span class="text-xs font-semibold">Administrator</span>
+                </div>
+                <button onclick="triggerPowerMenu()" class="p-2 hover:bg-white/10 rounded-lg text-sm" title="电源管理">
+                    🔌
+                </button>
+            </div>
+        </div>
+
+        <!--=================== 3. 全局底部任务栏 (Taskbar) ===================-->
+        <footer class="absolute bottom-0 left-0 right-0 h-12 acrylic border-t border-white/10 flex items-center px-3 z-50 select-none justify-between">
+            
+            <!-- 靠左：小工具/天气挂件 -->
+            <div class="w-32 hidden md:flex items-center space-x-2 text-xs text-white/80 cursor-pointer hover:bg-white/5 p-1 px-2.5 rounded transition">
+                <span class="text-lg">☀️</span>
+                <div>
+                    <div class="font-bold leading-none">24°C</div>
+                    <span class="text-[10px] opacity-60">晴朗 - 新加坡</span>
+                </div>
+            </div>
+
+            <!-- 中间：核心启动/活动进程区 -->
+            <div class="flex-1 flex justify-center" id="taskbar-center-container">
+                <div class="flex items-center space-x-1" id="taskbar-apps-wrapper">
+                    <!-- 开始徽标 (Windows Logo) -->
+                    <button onclick="toggleStartMenu()" class="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-md transition duration-150 active:scale-90" title="开始">
+                        <svg class="w-5 h-5 text-winblue" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zM10.8 1.95L24 0v11.55H10.8V1.95zM10.8 12.45H24v11.55l-13.2-1.95v-9.6z"/>
+                        </svg>
+                    </button>
+                    <!-- 搜索挂件 -->
+                    <button class="w-10 h-10 hidden sm:flex items-center justify-center hover:bg-white/10 rounded-md transition" title="搜索">
+                        <span class="text-lg">🔍</span>
+                    </button>
+                    <!-- 动态活动的 App 图标渲染区 -->
+                    <div class="flex items-center space-x-1" id="taskbar-running-apps"></div>
+                </div>
+            </div>
+
+            <!-- 靠右：系统托盘 (System Tray) -->
+            <div class="w-auto flex items-center space-x-2">
+                <div class="flex items-center space-x-2 text-xs text-white/90 hover:bg-white/10 p-1 px-2.5 rounded transition cursor-pointer" id="tray-icons">
+                    <span class="opacity-80">📶</span>
+                    <span class="opacity-80">🔊</span>
+                    <span class="opacity-80">🔋 98%</span>
+                </div>
+                <!-- 真实的时钟与日期按钮 -->
+                <div onclick="toggleCalendarFlyout()" class="text-right text-[11px] text-white/90 hover:bg-white/10 p-1 px-2.5 rounded transition cursor-pointer select-none font-mono-os" id="taskbar-clock">
+                    <div class="font-bold" id="taskbar-time-text">00:00</div>
+                    <div class="opacity-60 text-[9px]" id="taskbar-date-text">2026/05/20</div>
+                </div>
+                <!-- 显示桌面隐形热区 -->
+                <div onclick="minimizeAllWindows()" class="w-1.5 h-10 border-l border-white/10 hover:bg-white/20 transition cursor-pointer" title="显示桌面"></div>
             </div>
         </footer>
 
-        <!-- 开始菜单 -->
-        <div id="start-menu" class="absolute bottom-16 left-4 w-72 dynamic-panel glassmorphism border rounded-xl shadow-2xl z-50 p-4 hidden flex flex-col space-y-4">
-            <div class="flex items-center space-x-3 border-b border-zinc-700/50 pb-3">
-                <div class="w-10 h-10 rounded-full dynamic-accent-bg flex items-center justify-center text-black font-bold">JR</div>
-                <div>
-                    <h4 class="font-bold text-sm dynamic-text">System Administrator</h4>
-                    <span class="text-xs opacity-60">等级: 内核超级用户</span>
-                </div>
-            </div>
-            <div class="flex-1 py-1 space-y-1">
-                <div onclick="openApp('terminal')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
-                    <span class="text-xl">💻</span><span class="dynamic-text">系统控制台 (Terminal)</span>
-                </div>
-                <div onclick="openApp('explorer')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
-                    <span class="text-xl">📂</span><span class="dynamic-text">文件管理器 (Explorer)</span>
-                </div>
-                <div onclick="openApp('browser')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
-                    <span class="text-xl">🌐</span><span class="dynamic-text">星际航行浏览器 (Browser)</span>
-                </div>
-                <div onclick="openApp('monitor')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
-                    <span class="text-xl">⚙️</span><span class="dynamic-text">系统硬件监控 (Monitor)</span>
-                </div>
-                <div onclick="openApp('settings')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-sm">
-                    <span class="text-xl">🎛️</span><span class="dynamic-text">系统主题偏好 (Settings)</span>
-                </div>
-            </div>
-            <div class="border-t border-zinc-700/50 pt-3 flex justify-between">
-                <button onclick="triggerShutdown()" class="flex items-center space-x-2 text-xs text-red-400 hover:text-red-300 cursor-pointer">
-                    <span>🔴</span> <span>安全关闭系统</span>
-                </button>
-                <button onclick="playSystemSound(440, 'triangle', 0.15)" class="text-xs opacity-60 hover:opacity-100">🔊 测试音频</button>
-            </div>
-        </div>
     </div>
 
-    <!--=================== 3. 各种 APP 的自定义 HTML 模板 ===================-->
+    <!--=================== 4. 各种 Windows APP 自定义内容模板 ===================-->
     <div class="hidden">
-        <!-- 终端 App 模板 -->
-        <div id="template-terminal" class="h-full w-full flex flex-col font-mono-os text-xs md:text-sm p-3 overflow-hidden text-emerald-400">
-            <div class="flex-1 overflow-y-auto mb-2 space-y-1" id="term-output"></div>
-            <div class="flex items-center">
-                <span class="text-emerald-500 mr-2 shrink-0">jr_os@kernel:~$</span>
-                <input type="text" id="term-input" class="bg-transparent border-none outline-none text-white flex-1 font-mono-os" autocomplete="off" spellcheck="false">
+        
+        <!-- 此电脑 / 文件资源管理器 (File Explorer) -->
+        <div id="template-explorer" class="h-full w-full flex text-white select-none">
+            <!-- 侧栏导航 -->
+            <div class="w-48 bg-zinc-950/40 border-r border-white/5 p-2 flex flex-col space-y-1.5 text-xs shrink-0">
+                <div class="px-2 py-1 opacity-40 uppercase text-[9px] tracking-widest font-bold">快速访问</div>
+                <button onclick="explorerNavigate('C:/Users/jr_user/Desktop')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Desktop</span><span>桌面</span></button>
+                <button onclick="explorerNavigate('C:/Users/jr_user/Documents')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Documents</span><span>文档</span></button>
+                <div class="px-2 py-1 opacity-40 uppercase text-[9px] tracking-widest font-bold pt-3">此电脑 (This PC)</div>
+                <button onclick="explorerNavigate('C:/')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>📀</span><span>本地磁盘 (C:)</span></button>
+                <button onclick="explorerNavigate('D:/')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>💿</span><span>虚拟磁盘 (D:)</span></button>
+            </div>
+            <!-- 主视窗区 -->
+            <div class="flex-1 flex flex-col min-w-0 bg-zinc-900/60">
+                <!-- 导航与工具栏 -->
+                <div class="flex items-center justify-between p-2 border-b border-white/5 bg-black/10 select-none flex-wrap gap-2">
+                    <div class="flex items-center space-x-1 flex-1 min-w-0">
+                        <button id="exp-back-btn" class="w-7 h-7 flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-90 rounded transition">⬅️</button>
+                        <span id="exp-current-path" class="font-mono-os opacity-80 px-3 py-1 bg-black/30 rounded text-xs select-all overflow-hidden whitespace-nowrap flex-1 min-w-0">C:/</span>
+                    </div>
+                    <button id="exp-new-btn" class="px-3 py-1 bg-winblue hover:bg-winblue-hover text-white text-xs font-bold rounded shadow transition active:scale-95 flex items-center space-x-1">
+                        <span>➕</span> <span>新建文本</span>
+                    </button>
+                </div>
+                <!-- 网格排列 -->
+                <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 align-content-start" id="exp-file-grid"></div>
             </div>
         </div>
 
-        <!-- 文件管理器 App 模板 -->
-        <div id="template-explorer" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <div class="flex items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10 flex-wrap gap-2 select-none">
-                <div class="flex items-center space-x-1.5">
-                    <button id="exp-back-btn" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded disabled:opacity-30">⬅️</button>
-                    <span id="exp-current-path" class="font-mono-os opacity-80 px-2.5 py-1 bg-black/20 rounded text-xs select-all overflow-hidden whitespace-nowrap">/</span>
-                </div>
-                <button id="exp-new-btn" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded flex items-center space-x-1 shadow">
-                    <span>➕</span> <span>新建文件</span>
-                </button>
+        <!-- 记事本 (Notepad) -->
+        <div id="template-editor" class="h-full w-full flex flex-col overflow-hidden text-sm bg-zinc-900 text-white select-none">
+            <!-- 经典记事本文件菜单栏 -->
+            <div class="flex items-center space-x-4 px-3 py-1 bg-zinc-950/60 border-b border-white/5 text-xs">
+                <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer" onclick="playSystemSound(440)">文件 (F)</button>
+                <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer">编辑 (E)</button>
+                <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer">格式 (O)</button>
+                <span id="editor-file-info" class="font-mono-os text-xs opacity-40 ml-auto select-none">正在浏览和编辑磁盘文件</span>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 align-content-start" id="exp-file-grid"></div>
+            <div class="p-1 border-b border-white/5 bg-zinc-950/20 flex items-center space-x-2">
+                <span class="text-xs text-white/50 pl-2">文件路径:</span>
+                <input type="text" id="editor-file-path" class="bg-black/40 border border-white/5 rounded px-2.5 py-1 text-xs font-mono-os text-winblue flex-1 outline-none" value="C:/Users/jr_user/untitled.txt">
+                <button id="editor-save-btn" class="px-4 py-1 bg-winblue hover:bg-winblue-hover text-white text-xs font-bold rounded-md transition shadow active:scale-95">💾 保存修改</button>
+            </div>
+            <!-- 文本编辑区 -->
+            <textarea id="editor-textarea" class="flex-1 p-4 bg-zinc-950/60 text-white font-mono-os text-sm border-none outline-none resize-none placeholder-zinc-700 select-text" placeholder="在此处开始书写你的程序或文本..."></textarea>
+            <!-- 记事本状态栏 -->
+            <div class="h-6 bg-zinc-950/80 border-t border-white/5 flex items-center justify-between px-3 text-[10px] opacity-60">
+                <span>第 1 行，第 1 列</span>
+                <span class="font-mono-os">UTF-8 | 100% | Windows (CRLF)</span>
+            </div>
         </div>
 
-        <!-- 文件编辑器 App 模板 -->
-        <div id="template-editor" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-2 border-b border-zinc-700/40 bg-black/10 gap-2 select-none">
-                <div class="flex items-center space-x-2 flex-1">
-                    <span class="text-xs opacity-60 shrink-0">文件路径:</span>
-                    <input type="text" id="editor-file-path" class="bg-black/20 border border-zinc-800 rounded px-2 py-0.5 text-xs font-mono-os text-sky-400 flex-1 outline-none focus:border-sky-500" value="/home/jr_user/untitled.txt">
+        <!-- 任务管理器 (Task Manager) -->
+        <div id="template-monitor" class="h-full w-full flex flex-col overflow-hidden p-3 bg-zinc-900 text-white select-none">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                    <h5 class="text-[11px] font-bold opacity-60 mb-1.5">CPU 性能折线率</h5>
+                    <canvas id="canvas-cpu-chart" class="w-full h-24 bg-zinc-950 rounded border border-white/5"></canvas>
                 </div>
-                <div class="space-x-2 shrink-0 text-right">
-                    <button id="editor-save-btn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded">💾 保存并写入文件</button>
+                <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                    <h5 class="text-[11px] font-bold opacity-60 mb-1.5">虚拟内存 (RAM)</h5>
+                    <canvas id="canvas-ram-chart" class="w-full h-24 bg-zinc-950 rounded border border-white/5"></canvas>
                 </div>
             </div>
-            <textarea id="editor-textarea" class="flex-1 p-3 bg-zinc-950/80 text-white font-mono-os text-sm border-none outline-none resize-none placeholder-zinc-600" placeholder="在此输入你的文件内容..."></textarea>
+            <!-- 内核进程调度管理面板 -->
+            <div class="flex-1 flex flex-col min-h-0 bg-black/20 rounded-lg border border-white/5 p-3 mt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h5 class="text-xs font-bold opacity-80">当前正在运行的进程 (Processes)</h5>
+                    <span class="text-[10px] bg-winblue/10 text-winblue border border-winblue/20 px-2 py-0.5 rounded">调度模式: CPU Time-Slice</span>
+                </div>
+                <div class="flex-1 overflow-y-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="border-b border-white/10 opacity-50 font-semibold text-[11px]">
+                                <th class="py-1">PID</th>
+                                <th class="py-1">名称</th>
+                                <th class="py-1">CPU %</th>
+                                <th class="py-1">内存 (KB)</th>
+                                <th class="py-1">状态</th>
+                                <th class="py-1 text-right">管理</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proc-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- 浏览器 App 模板 -->
-        <div id="template-browser" class="h-full w-full flex flex-col overflow-hidden text-sm">
-            <div class="flex flex-col border-b border-zinc-700/40 bg-black/25 shrink-0 select-none">
+        <div id="template-browser" class="h-full w-full flex flex-col overflow-hidden text-sm bg-zinc-900 text-white select-none">
+            <div class="flex flex-col border-b border-white/5 bg-black/20 shrink-0 select-none">
                 <div class="flex items-center space-x-2 p-2">
                     <div class="flex space-x-1 shrink-0">
-                        <button id="browser-back-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 disabled:opacity-30 active:scale-95 transition flex items-center justify-center">⬅️</button>
-                        <button id="browser-forward-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 disabled:opacity-30 active:scale-95 transition flex items-center justify-center">➡️</button>
-                        <button id="browser-refresh-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🔄</button>
-                        <button id="browser-home-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/15 active:scale-95 transition flex items-center justify-center">🏠</button>
+                        <button id="browser-back-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 flex items-center justify-center">⬅️</button>
+                        <button id="browser-forward-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 flex items-center justify-center">➡️</button>
+                        <button id="browser-refresh-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center">🔄</button>
+                        <button id="browser-home-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center">🏠</button>
                     </div>
-                    <div class="flex-1 flex items-center bg-black/40 border border-zinc-700/40 rounded-lg px-3 py-1 text-xs">
-                        <span class="text-zinc-500 mr-1.5 shrink-0 select-none">🛡️ Secure</span>
+                    <div class="flex-1 flex items-center bg-black/40 border border-white/5 rounded-lg px-3 py-1 text-xs">
+                        <span class="text-emerald-500 mr-2 shrink-0">🔒 安全加密</span>
                         <input type="text" id="browser-url-input" class="bg-transparent border-none outline-none text-zinc-200 flex-1 font-mono-os" value="jros://welcome" autocomplete="off" spellcheck="false">
-                        <button id="browser-go-btn" class="ml-1 px-2 py-0.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-md">GO</button>
+                        <button id="browser-go-btn" class="ml-1 px-3 py-0.5 bg-winblue hover:bg-winblue-hover text-white font-bold rounded-md">GO</button>
                     </div>
-                </div>
-                <div class="flex items-center space-x-3 px-3 pb-1.5 text-xs opacity-75 overflow-x-auto whitespace-nowrap scrollbar-none">
-                    <span class="text-zinc-500 select-none">🔖 书签:</span>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://welcome')">🚀 JR OS 主页</button>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://games')">🎮 街机游戏中心</button>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://chat')">💬 极客聊天室</button>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://en.m.wikipedia.org')">📖 维基百科 (Iframe)</button>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://www.osdev.org')">🧠 OSDev Wiki</button>
                 </div>
                 <div class="w-full bg-zinc-800 h-[2px] overflow-hidden relative">
                     <div id="browser-progress-bar" class="absolute left-0 top-0 h-full bg-sky-400 w-full transition-all duration-300" style="transform: translateX(-100%);"></div>
@@ -314,178 +368,122 @@
             </div>
         </div>
 
-        <!-- 软件安装助手模板 -->
-        <div id="template-installer" class="h-full w-full flex flex-col justify-between p-4 bg-slate-900 text-slate-100 select-none">
-            <div class="flex items-center space-x-4 mb-3">
-                <div id="installer-icon" class="text-5xl animate-bounce">📦</div>
-                <div>
-                    <h3 id="installer-title" class="text-sm font-bold text-sky-400">软件安装准备就绪</h3>
-                    <p id="installer-subtitle" class="text-[11px] text-slate-400 mt-0.5">版本: v1.0 | 开发者: 极客第三方</p>
-                </div>
-            </div>
-            <div class="flex-1 bg-black/40 border border-slate-800 rounded p-3 text-xs leading-relaxed overflow-y-auto mb-3 font-mono-os text-slate-300">
-                <p class="font-bold text-amber-400 mb-1">【安全合规与免责声明】</p>
-                <p>1. 本软件由独立第三方开发者提供，并非 JR OS 核心内置。安装后将获得完全沙箱宿主执行权限。</p>
-                <p>2. 请确保安装包来源安全。JR OS 内核仅保障内存虚拟文件系统 (VFS) 安全隔离，不保证第三方软件内容的安全性。</p>
-                <p>3. 安装后将会在桌面及底栏常驻图标，随时可从系统监控器 (Monitor) 中杀死其进程。</p>
-            </div>
-            <div id="installer-progress-section" class="hidden mb-3 shrink-0">
-                <div class="flex justify-between text-[11px] mb-1">
-                    <span id="installer-status-text" class="text-sky-400">正在拷贝虚拟内存镜像...</span>
-                    <span id="installer-percent-text">0%</span>
-                </div>
-                <div class="w-full bg-slate-950 h-2 rounded overflow-hidden border border-slate-800">
-                    <div id="installer-progress" class="bg-gradient-to-r from-cyan-400 to-sky-500 h-full w-0 transition-all duration-100"></div>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-3 shrink-0" id="installer-actions">
-                <button id="installer-btn-cancel" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold transition">取消安装</button>
-                <button id="installer-btn-confirm" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:brightness-110 text-white rounded text-xs font-bold transition shadow-[0_0_10px_rgba(14,165,233,0.3)]">一键安全安装</button>
-            </div>
-        </div>
-
-        <!-- 系统监控 App 模板 -->
-        <div id="template-monitor" class="h-full w-full flex flex-col overflow-hidden p-3 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-black/30 p-3 rounded border border-zinc-800/60">
-                    <h5 class="text-xs font-bold opacity-60 mb-1">CPU 核心负载率</h5>
-                    <canvas id="canvas-cpu-chart" class="w-full h-24 bg-zinc-950 rounded"></canvas>
-                </div>
-                <div class="bg-black/30 p-3 rounded border border-zinc-800/60">
-                    <h5 class="text-xs font-bold opacity-60 mb-1">物理虚拟内存状态</h5>
-                    <canvas id="canvas-ram-chart" class="w-full h-24 bg-zinc-950 rounded"></canvas>
-                </div>
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 bg-black/20 rounded border border-zinc-800/60 p-3">
-                <div class="flex justify-between items-center mb-2">
-                    <h5 class="text-xs font-bold opacity-80">当前内核进程管理表</h5>
-                    <span class="text-[10px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded border border-sky-400/20">调度器模式: 优先轮转队列</span>
-                </div>
-                <div class="flex-1 overflow-y-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead>
-                            <tr class="border-b border-zinc-800 opacity-60">
-                                <th class="py-1">PID</th>
-                                <th class="py-1">任务名称</th>
-                                <th class="py-1">CPU %</th>
-                                <th class="py-1">内存 (KB)</th>
-                                <th class="py-1">状态</th>
-                                <th class="py-1 text-right">控制</th>
-                            </tr>
-                        </thead>
-                        <tbody id="proc-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 复古画板 App 模板 -->
-        <div id="template-paint" class="h-full w-full flex flex-col overflow-hidden p-2">
-            <div class="flex items-center space-x-2 pb-2 mb-2 border-b border-zinc-700/30 flex-wrap gap-1">
-                <input type="color" id="paint-color" value="#00f2fe" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
-                <span class="text-xs opacity-60">粗细:</span>
-                <input type="range" id="paint-size" min="1" max="20" value="4" class="w-20 accent-sky-400">
-                <button id="paint-clear-btn" class="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded cursor-pointer">🗑️ 清空画布</button>
-            </div>
-            <div class="flex-1 bg-zinc-900 rounded relative overflow-hidden border border-zinc-800">
-                <canvas id="paint-canvas" class="absolute inset-0 bg-zinc-950 cursor-crosshair"></canvas>
-            </div>
-        </div>
-
-        <!-- 8-Bit音乐合成播放器 App 模板 -->
-        <div id="template-synth" class="h-full w-full flex flex-col overflow-hidden p-3 space-y-4">
-            <div class="bg-black/30 p-3 rounded border border-zinc-800 flex items-center justify-between">
-                <div>
-                    <h4 class="font-bold text-sm" id="synth-song-title">16-Bit 脉宽调制交响曲.sys</h4>
-                    <p class="text-xs opacity-60 mt-0.5">内建音频节点发生器 - 8-Bit 经典和弦</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button id="synth-play-btn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold cursor-pointer">▶️ 播 放</button>
-                    <button id="synth-stop-btn" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold cursor-pointer" disabled>⏹️ 停 止</button>
-                </div>
-            </div>
-            <div class="flex-1 bg-zinc-950 rounded relative overflow-hidden border border-zinc-800">
-                <canvas id="synth-visualizer" class="absolute inset-0 w-full h-full"></canvas>
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none bg-gradient-to-t from-black/80 to-transparent">
-                    <span class="text-xs font-mono-os dynamic-accent-text tracking-widest text-emerald-400 opacity-60">AUDIO SPECTRUM</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 系统设置 App 模板 -->
-        <div id="template-settings" class="h-full w-full overflow-y-auto p-4 space-y-5 text-sm">
-            <div>
-                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">系统主题配色</h4>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="setTheme('cyber')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-cyan-500/20 text-cyan-400 rounded text-left text-xs font-bold">💎 赛博霓虹 (Cyber)</button>
-                    <button onclick="setTheme('matrix')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-green-500/20 text-green-400 rounded text-left text-xs font-bold">📟 帝国代码雨 (Matrix)</button>
-                    <button onclick="setTheme('retro')" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/20 text-amber-500 rounded text-left text-xs font-bold">📻 橘子复古 (Amber)</button>
-                    <button onclick="setTheme('light')" class="px-3 py-2 bg-white border border-slate-300 text-slate-800 rounded text-left text-xs font-bold shadow">☀️ 极致明澈 (Light)</button>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">动态背景壁纸 (Canvas 粒子渲染)</h4>
-                <div class="flex flex-col space-y-2">
-                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
-                        <input type="radio" name="wallpaper-type" value="stars" checked class="accent-sky-400">
-                        <span>星际穿越 (3D Starfield)</span>
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
-                        <input type="radio" name="wallpaper-type" value="rain" class="accent-sky-400">
-                        <span>黑客帝国二进制矩阵 (Binary Rain)</span>
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
-                        <input type="radio" name="wallpaper-type" value="constellation" class="accent-sky-400">
-                        <span>多维交互星轨 (Constellations)</span>
-                    </label>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-bold border-b border-zinc-800 pb-2 mb-3">关于 JR OS</h4>
-                <div class="bg-black/30 p-3 rounded border border-zinc-800/40 text-xs leading-relaxed space-y-1">
-                    <p><strong>名称：</strong>JR OS (J&R 操作系统模拟器)</p>
-                    <p><strong>版本：</strong>v1.2.2 Stable (Decoupled Edition)</p>
-                    <p><strong>硬件平台：</strong>HTML5 / Custom Canvas CPU Core Emulator</p>
-                    <p><strong>开发环境：</strong>iPad 独立物理编译标准</p>
-                    <p class="pt-2 opacity-60">设计宗旨：在受限沙箱中，将前端画布交互与底层操作系统的三大模型进行精美结合。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 经典太空侵略者 Canvas 游戏 App 模板 -->
-        <div id="template-game" class="h-full w-full flex flex-col overflow-hidden p-2">
-            <div class="flex items-center justify-between pb-2 mb-1 border-b border-zinc-800 text-xs">
+        <!-- 经典太空侵略者游戏 App -->
+        <div id="template-game" class="h-full w-full flex flex-col overflow-hidden p-2 bg-zinc-950 text-white select-none">
+            <div class="flex items-center justify-between pb-2 mb-1 border-b border-white/10 text-xs shrink-0">
                 <div>分数: <span id="game-score" class="font-bold text-amber-400">0</span></div>
-                <div class="opacity-60">控制: 键盘A/D或←/→, 空格发射</div>
-                <button id="game-restart" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-500 rounded font-bold cursor-pointer">重新启动</button>
+                <div class="opacity-50">控制: 键盘A/D或←/→, 空格发射</div>
+                <button id="game-restart" class="px-2 py-0.5 bg-winblue hover:bg-winblue-hover rounded font-bold transition">重试</button>
             </div>
-            <div class="flex-1 bg-zinc-950 rounded relative border border-zinc-800 overflow-hidden">
+            <div class="flex-1 bg-black rounded-lg relative border border-white/5 overflow-hidden">
                 <canvas id="game-canvas" class="absolute inset-0 w-full h-full"></canvas>
             </div>
-            <div class="h-16 flex items-center justify-between px-4 mt-2 bg-black/30 rounded border border-zinc-800 shrink-0 md:hidden select-none">
+            <!-- ipad触控适配 -->
+            <div class="h-16 flex items-center justify-between px-4 mt-2 bg-black/40 rounded-lg border border-white/5 shrink-0 md:hidden select-none">
                 <div class="flex space-x-2">
-                    <button id="game-btn-left" class="w-12 h-12 bg-white/10 active:bg-white/30 rounded-xl flex items-center justify-center text-lg">◀️</button>
-                    <button id="game-btn-right" class="w-12 h-12 bg-white/10 active:bg-white/30 rounded-xl flex items-center justify-center text-lg">▶️</button>
+                    <button id="game-btn-left" class="w-12 h-12 bg-white/5 active:bg-white/20 rounded-xl flex items-center justify-center text-lg">◀️</button>
+                    <button id="game-btn-right" class="w-12 h-12 bg-white/5 active:bg-white/20 rounded-xl flex items-center justify-center text-lg">▶️</button>
                 </div>
-                <button id="game-btn-fire" class="w-24 h-12 bg-red-600/60 active:bg-red-600 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow-[0_0_10px_rgba(220,38,38,0.5)]">🔥 FIRE</button>
+                <button id="game-btn-fire" class="w-24 h-12 bg-rose-600 active:bg-rose-500 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow">🔥 发射</button>
             </div>
         </div>
+
+        <!-- 系统设置 (Settings) -->
+        <div id="template-settings" class="h-full w-full overflow-y-auto p-5 space-y-6 text-sm bg-zinc-900 text-white select-none">
+            <div>
+                <h4 class="font-bold border-b border-white/10 pb-2 mb-3">💻 任务栏与桌面排版布局</h4>
+                <div class="flex flex-col space-y-2.5">
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="settings-taskbar-align" value="center" checked class="accent-winblue">
+                        <span>Windows 11 风格 (图标居中对齐)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="settings-taskbar-align" value="left" class="accent-winblue">
+                        <span>Windows 10 风格 (经典靠左对齐)</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold border-b border-white/10 pb-2 mb-3">🎨 个性化桌面壁纸 (Canvas 渲染)</h4>
+                <div class="flex flex-col space-y-2">
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="stars" checked class="accent-winblue">
+                        <span>星际漂移 (3D Starfield)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="rain" class="accent-winblue">
+                        <span>帝国二进制代码雨 (Matrix Rain)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
+                        <input type="radio" name="wallpaper-type" value="constellation" class="accent-winblue">
+                        <span>多维交互星网 (Constellations)</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold border-b border-white/10 pb-2 mb-3">⚙️ 系统状态与诊断</h4>
+                <div class="bg-black/30 p-4 rounded-lg border border-white/5 text-xs leading-relaxed space-y-1.5 font-mono-os">
+                    <p>操作系统: Windows 11 Pro - JR Kernel Simulator</p>
+                    <p>核心内核编译版本: v1.2.3 Stable</p>
+                    <p>处理器: Mock Intel Core i9-13900K @ 5.4GHz</p>
+                    <p>运行状态: 虚拟分页安全隔离开启，双击触控全兼容</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 绘图板 (Paint) -->
+        <div id="template-paint" class="h-full w-full flex flex-col overflow-hidden p-2 bg-zinc-900 text-white select-none">
+            <div class="flex items-center space-x-3 pb-2 mb-2 border-b border-white/10 flex-wrap gap-1">
+                <input type="color" id="paint-color" value="#0078d4" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                <span class="text-xs opacity-60">线宽:</span>
+                <input type="range" id="paint-size" min="1" max="20" value="4" class="w-20 accent-winblue">
+                <button id="paint-clear-btn" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded">🗑️ 抹去画布</button>
+            </div>
+            <div class="flex-1 bg-zinc-950 rounded-lg relative overflow-hidden border border-white/5">
+                <canvas id="paint-canvas" class="absolute inset-0 bg-black cursor-crosshair"></canvas>
+            </div>
+        </div>
+
+        <!-- 8-Bit 和弦音乐播放器 -->
+        <div id="template-synth" class="h-full w-full flex flex-col overflow-hidden p-3 space-y-4 bg-zinc-900 text-white select-none">
+            <div class="bg-black/30 p-3 rounded-lg border border-white/5 flex items-center justify-between">
+                <div>
+                    <h4 class="font-bold text-sm" id="synth-song-title">16-Bit Chiptune Symphony.wav</h4>
+                    <p class="text-[11px] opacity-60 mt-0.5">多路晶体管和弦振荡引擎</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="synth-play-btn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold">▶️ 播放</button>
+                    <button id="synth-stop-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold" disabled>⏹️ 停止</button>
+                </div>
+            </div>
+            <div class="flex-1 bg-black rounded-lg relative overflow-hidden border border-white/5">
+                <canvas id="synth-visualizer" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+        </div>
+
     </div>
 
-    <!--=================== 4. 完整的操作系统 JS 核心逻辑 ===================-->
+    <!--=================== 5. 核心操作系统引擎 JavaScript ===================-->
     <script>
+        /**
+         * =========================================================================
+         * ★ 跨域网关配置 (可选替换为你自己部署的 Cloudflare Workers 网关)
+         * =========================================================================
+         */
+        const PROXY_SERVER = "https://your-worker-subdomain.workers.dev/proxy";
+
         const SYSTEM_STATE = {
-            theme: 'cyber',
+            theme: 'dark',
             wallpaper: 'stars',
+            taskbarAlignment: 'center', // 'center' 或 'left'
             activeWindow: null,
             cpuLoad: 0,
             ramLoad: 35,
-            appWindows: {},
             uptime: 0,
-            soundMuted: false,
             installedApps: {}
         };
 
+        // 核心 iPadOS 触控双击事件拦截重构
         function addDoubleTapListener(element, callback) {
             let lastTap = 0;
             element.addEventListener('pointerdown', (e) => {
@@ -500,49 +498,61 @@
             });
         }
 
+        // 虚拟内存文件系统 (Virtual File System - VFS)
         class VirtualFileSystem {
             constructor() {
-                const calcExeConfig = {
-                    appName: "calc",
-                    appTitle: "极客计算器 (Calculator)",
-                    icon: "🧮",
-                    width: 320,
-                    height: 400,
-                    script: "const content = document.getElementById('win-content-' + winObj.id); content.innerHTML = '<div class=\"p-4 flex flex-col h-full bg-slate-900 text-white select-text\"><div id=\"calc-screen\" class=\"bg-black p-3 text-right text-2xl font-mono mb-4 rounded border border-slate-800 h-14 overflow-hidden\">0</div><div class=\"grid grid-cols-4 gap-2 flex-1\"><button class=\"bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'C\\\')\">C</button><button class=\"bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'/\\\')\">/</button><button class=\"bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'*\\\')\">*</button><button class=\"bg-red-600 p-2 rounded hover:bg-red-500 font-bold flex items-center justify-center\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'Backspace\\\')\">&larr;</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'7\\\')\">7</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'8\\\')\">8</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'9\\\')\">9</button><button class=\"bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'-\\\')\">-</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'4\\\')\">4</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'5\\\')\">5</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'6\\\')\">6</button><button class=\"bg-slate-800 p-2 rounded hover:bg-slate-700 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'+\\\')\">+</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'1\\\')\">1</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'2\\\')\">2</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'3\\\')\">3</button><button class=\"bg-blue-600 p-2 row-span-2 rounded hover:bg-blue-500 font-bold flex items-center justify-center\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'=\\\')\">=</button><button class=\"bg-slate-700 p-2 col-span-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\'0\\\')\">0</button><button class=\"bg-slate-700 p-2 rounded hover:bg-slate-600 font-bold\" onclick=\"window.calcPress(\\\'' + winObj.id + '\\\', \\\\\'.\\\\\')\">.</button></div></div>'; if(!window.calcPress){ window.calcHistory = {}; window.calcPress = function(winId, val){ const screen = document.querySelector('#win-' + winId + ' #calc-screen'); if(!screen) return; let current = window.calcHistory[winId] || ''; if(val === 'C'){ current = ''; } else if(val === 'Backspace'){ current = current.slice(0, -1); } else if(val === '='){ try { current = String(eval(current)); } catch(e){ current = 'Error'; } } else { current += val; } window.calcHistory[winId] = current; screen.innerText = current || '0'; playSystemSound(1000, 'sine', 0.05); } }"
-                };
-
-                const matrixExeConfig = {
-                    appName: "matrix_screensaver",
-                    appTitle: "极客代码雨 (Code Rain)",
-                    icon: "📟",
-                    width: 500,
-                    height: 400,
-                    script: "const content = document.getElementById('win-content-' + winObj.id); content.innerHTML = '<canvas id=\"matrix-app-canvas-\" + winObj.id + \"' class=\"w-full h-full bg-black\"></canvas>'; const canvas = document.getElementById('matrix-app-canvas-' + winObj.id); const ctx = canvas.getContext('2d'); canvas.width = 500; canvas.height = 360; const columns = Math.floor(canvas.width / 12); const drops = new Array(columns).fill(0); const matrixInterval = setInterval(() => { ctx.fillStyle = \"rgba(0, 0, 0, 0.05)\"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = \"#0f0\"; ctx.font = \"10px monospace\"; for(let i=0; i<drops.length; i++) { const text = Math.floor(Math.random()*10); const x = i * 12; const y = drops[i] * 12; ctx.fillText(text, x, y); if(y > canvas.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }, 30); winObj.onDestroy = () => { clearInterval(matrixInterval); };"
-                };
-
                 this.root = {
                     name: "",
                     type: "dir",
                     children: {
-                        "bin": { name: "bin", type: "dir", children: {} },
-                        "home": { name: "home", type: "dir", children: {
-                            "jr_user": { name: "jr_user", type: "dir", children: {
-                                "welcome.txt": { name: "welcome.txt", type: "file", content: "祝贺！你的 JR OS 内核运行极其稳定。\\n【EXE安装大作战】：\\n在当前路径下我们已经为你编译好了 calc.exe 和 matrix.exe。\\n进入文件管理器中，直接双击它们，即可体验超真实的操作系统安全安装引导向导！" },
-                                "calc.exe": { name: "calc.exe", type: "file", content: JSON.stringify(calcExeConfig, null, 2) },
-                                "matrix.exe": { name: "matrix.exe", type: "file", content: JSON.stringify(matrixExeConfig, null, 2) }
-                            }}
-                        }},
-                        "sys": { name: "sys", type: "dir", children: {
-                            "version.txt": { name: "version.txt", type: "file", content: "JR OS Core Emulator v1.2.2\\n64-Bit Memory Simulated Kernel" }
-                        }},
-                        "tmp": { name: "tmp", type: "dir", children: {} }
+                        "C:": {
+                            name: "C:",
+                            type: "dir",
+                            children: {
+                                "Windows": { name: "Windows", type: "dir", children: {} },
+                                "Users": {
+                                    name: "Users",
+                                    type: "dir",
+                                    children: {
+                                        "jr_user": {
+                                            name: "jr_user",
+                                            type: "dir",
+                                            children: {
+                                                "Desktop": {
+                                                    name: "Desktop",
+                                                    type: "dir",
+                                                    children: {}
+                                                },
+                                                "Documents": {
+                                                    name: "Documents",
+                                                    type: "dir",
+                                                    children: {
+                                                        "sys_test.txt": { name: "sys_test.txt", type: "file", content: "欢迎来到 Windows 11 专业极客版操作系统！\n这个系统完美重构了任务栏、日历和开始菜单。\n双击此电脑或文件管理器来体验极致的 VFS 磁盘操控乐趣！" }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "D:": {
+                            name: "D:",
+                            type: "dir",
+                            children: {
+                                "Backup": { name: "Backup", type: "dir", children: {} }
+                            }
+                        }
                     }
                 };
             }
 
             resolvePath(pathStr) {
-                if (!pathStr || pathStr === "/") return { node: this.root, parent: null };
-                const parts = pathStr.split("/").filter(p => p !== "");
+                // 将反斜杠统一替换为正斜杠并裁切首尾斜杠
+                const cleanPath = pathStr.replace(/\\/g, '/').replace(/\/$/, "");
+                if (cleanPath === "" || cleanPath === "/") return { node: this.root, parent: null };
+
+                const parts = cleanPath.split("/").filter(p => p !== "");
                 let current = this.root;
                 let parent = null;
 
@@ -564,7 +574,7 @@
             }
 
             writeFile(path, content) {
-                const pathParts = path.split("/");
+                const pathParts = path.replace(/\\/g, '/').split("/");
                 const fileName = pathParts.pop();
                 const dirPath = pathParts.join("/");
                 const res = this.resolvePath(dirPath === "" ? "/" : dirPath);
@@ -595,7 +605,7 @@
             }
 
             deletePath(path) {
-                const pathParts = path.split("/");
+                const pathParts = path.replace(/\\/g, '/').split("/");
                 const targetName = pathParts.pop();
                 const dirPath = pathParts.join("/");
                 const res = this.resolvePath(dirPath === "" ? "/" : dirPath);
@@ -612,13 +622,14 @@
 
         const VFS = new VirtualFileSystem();
 
+        // 极客微处理器调度器 (Micro-Processor Task Manager)
         class ProcessScheduler {
             constructor() {
                 this.processes = [
-                    { pid: 1, name: "Kernel Init (内核引导)", cpu: 0.1, ram: 1024, status: "睡眠中" },
-                    { pid: 2, name: "Display Server (视窗服务)", cpu: 1.5, ram: 4096, status: "活动运行" },
-                    { pid: 3, name: "Wallpaper Engine (壁纸渲染)", cpu: 4.2, ram: 8192, status: "活动运行" },
-                    { pid: 4, name: "VFS Monitor (文件守护进程)", cpu: 0.2, ram: 512, status: "就绪" }
+                    { pid: 1, name: "System Idle Process (系统空闲)", cpu: 85, ram: 128, status: "运行" },
+                    { pid: 2, name: "wininit.exe (系统初始化)", cpu: 0.1, ram: 2048, status: "睡眠" },
+                    { pid: 3, name: "explorer.exe (外壳视窗管理器)", cpu: 1.5, ram: 16384, status: "运行" },
+                    { pid: 4, name: "taskmgr.exe (任务管理器)", cpu: 2.1, ram: 4096, status: "运行" }
                 ];
                 this.pidCounter = 10;
                 this.loop();
@@ -648,64 +659,28 @@
             loop() {
                 setInterval(() => {
                     let totalCpu = 0;
-                    let totalRam = 25600;
-
-                    this.processes.forEach(proc => {
-                        if (proc.pid === 1) {
-                            proc.cpu = 0.1;
-                        } else {
-                            if (Math.random() > 0.4) {
-                                proc.cpu = parseFloat((Math.random() * 8 + 1).toFixed(1));
-                                proc.ram = Math.floor(proc.ram * (0.95 + Math.random() * 0.1));
-                            }
+                    let totalRam = 450000; // 基础核心系统架构开支
+                    this.processes.forEach(p => {
+                        if (p.pid !== 1) {
+                            p.cpu = parseFloat((Math.random() * 4 + 0.2).toFixed(1));
+                            p.ram = Math.floor(p.ram * (0.97 + Math.random() * 0.06));
+                            totalCpu += p.cpu;
+                            totalRam += p.ram;
                         }
-                        totalCpu += proc.cpu;
-                        totalRam += proc.ram;
                     });
-
+                    this.processes[0].cpu = parseFloat((100 - totalCpu).toFixed(1));
                     SYSTEM_STATE.cpuLoad = Math.min(99, Math.floor(totalCpu));
-                    SYSTEM_STATE.ramLoad = Math.min(99, Math.floor((totalRam / 1024 / 1024) * 100));
-
-                    const cpuBar = document.getElementById('top-cpu');
-                    if (cpuBar) {
-                        cpuBar.style.width = `\${SYSTEM_STATE.cpuLoad}%`;
-                        if (SYSTEM_STATE.cpuLoad > 80) {
-                            cpuBar.className = "bg-red-500 h-full block transition-all duration-300";
-                        } else if (SYSTEM_STATE.cpuLoad > 50) {
-                            cpuBar.className = "bg-amber-500 h-full block transition-all duration-300";
-                        } else {
-                            cpuBar.className = "bg-emerald-500 h-full block transition-all duration-300";
-                        }
-                    }
+                    SYSTEM_STATE.ramLoad = Math.min(99, Math.floor((totalRam / 8192000) * 100)); // 模拟8GB物理内存
+                    
+                    const bar = document.getElementById('top-cpu');
+                    if (bar) bar.style.width = `${SYSTEM_STATE.cpuLoad}%`;
                 }, 1000);
             }
         }
 
         const Scheduler = new ProcessScheduler();
 
-        function playSystemSound(freq, type = 'sine', duration = 0.1) {
-            if (SYSTEM_STATE.soundMuted) return;
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-                gain.gain.setValueAtTime(0.12, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc.start();
-                osc.stop(ctx.currentTime + duration);
-            } catch (e) {}
-        }
-
+        // 窗口管理引擎 (Window Manager - WM)
         class WindowManager {
             constructor() {
                 this.windows = [];
@@ -713,25 +688,25 @@
                 this.container = document.getElementById('window-container');
             }
 
-            createWindow(id, title, appTemplateId, initWidth = 600, initHeight = 400, onReadyCallback = null) {
-                const existingWin = this.windows.find(w => w.id === id);
-                if (existingWin) {
+            createWindow(id, title, appTemplateId, initWidth = 640, initHeight = 460, onReadyCallback = null) {
+                const existing = this.windows.find(w => w.id === id);
+                if (existing) {
                     this.focusWindow(id);
-                    existingWin.minimized = false;
+                    existing.minimized = false;
                     const dom = document.getElementById(`win-${id}`);
                     if (dom) dom.classList.remove('hidden');
+                    updateTaskbar();
                     return;
                 }
 
-                const pid = Scheduler.spawn(`App - ${title}`, 8192);
-
+                const pid = Scheduler.spawn(`App - ${title}`, 12288);
                 if (window.innerWidth < 640) {
-                    initWidth = window.innerWidth - 20;
+                    initWidth = window.innerWidth - 10;
                     initHeight = window.innerHeight - 80;
                 }
 
-                const offsetX = Math.max(10, 30 + (this.windows.length * 25) % (window.innerWidth - initWidth - 10));
-                const offsetY = Math.max(40, 60 + (this.windows.length * 25) % (window.innerHeight - initHeight - 110));
+                const offsetX = Math.max(15, 40 + (this.windows.length * 25) % (window.innerWidth - initWidth - 10));
+                const offsetY = Math.max(50, 80 + (this.windows.length * 25) % (window.innerHeight - initHeight - 110));
 
                 const winObj = {
                     id: id,
@@ -749,22 +724,27 @@
 
                 this.windows.push(winObj);
 
+                // 构建符合 Windows 11 专业审美极客设计的亚克力窗口
                 const winHtml = `
-                    <div id="win-${id}" class="absolute dynamic-panel glassmorphism rounded-xl border shadow-2xl flex flex-col overflow-hidden pointer-events-auto window-appear transition-[transform,opacity,width,height,top,left] duration-150" 
-                         style="width: ${initWidth}px; height: ${initHeight}px; left: ${offsetX}px; top: ${offsetY}px; z-index: ${winObj.zIndex}">
-                        <div class="h-10 border-b border-zinc-700/40 bg-white/5 flex items-center justify-between px-3 cursor-move shrink-0 select-none" id="win-header-${id}">
+                    <div id="win-${id}" class="absolute dynamic-panel acrylic rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden pointer-events-auto window-animate active-window-shadow transition-[transform,opacity,width,height,top,left] duration-150" 
+                         style="width: ${initWidth}px; height: ${initHeight}px; left: ${offsetX}px; top: ${offsetY}px; z-index: ${winObj.zIndex}; background: rgba(30, 30, 30, 0.75);">
+                        <!-- Windows 11 经典窗口顶栏控制区 -->
+                        <div class="h-9 bg-black/10 border-b border-white/5 flex items-center justify-between px-3 cursor-move shrink-0 select-none" id="win-header-${id}">
                             <div class="flex items-center space-x-2">
-                                <span class="text-base">${this.getAppIcon(id)}</span>
-                                <span class="text-xs font-bold font-mono-os tracking-wide truncate max-w-[120px] sm:max-w-[200px]">${title}</span>
+                                <span class="text-sm shrink-0">${this.getAppIcon(id)}</span>
+                                <span class="text-xs font-semibold tracking-wide truncate max-w-[150px] sm:max-w-[280px]">${title}</span>
                             </div>
-                            <div class="flex items-center space-x-2 shrink-0">
-                                <button onclick="windowManager.minimizeWindow('${id}')" class="w-3 h-3 rounded-full bg-amber-500 hover:scale-110 active:scale-95 transition-all"></button>
-                                <button onclick="windowManager.maximizeWindow('${id}')" class="w-3 h-3 rounded-full bg-emerald-500 hover:scale-110 active:scale-95 transition-all"></button>
-                                <button onclick="windowManager.closeWindow('${id}')" class="w-3 h-3 rounded-full bg-red-500 hover:scale-110 active:scale-95 transition-all"></button>
+                            <!-- 右侧 Minimize, Maximize, Close 三键控制钮 -->
+                            <div class="flex items-center h-full shrink-0">
+                                <button onclick="windowManager.minimizeWindow('${id}')" class="w-11 h-9 hover:bg-white/10 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="最小化">🗕</button>
+                                <button onclick="windowManager.maximizeWindow('${id}')" class="w-11 h-9 hover:bg-white/10 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="最大化">🗖</button>
+                                <button onclick="windowManager.closeWindow('${id}')" class="w-11 h-9 hover:bg-red-600 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="关闭">✕</button>
                             </div>
                         </div>
-                        <div class="flex-1 overflow-hidden relative bg-black/10" id="win-content-${id}"></div>
-                        <div class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent z-50" id="win-resizer-${id}"></div>
+                        <!-- 主视口宿主内容 -->
+                        <div class="flex-1 overflow-hidden relative" id="win-content-${id}"></div>
+                        <!-- 右下角缩放手柄 -->
+                        <div class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent z-50 animate-pulse" id="win-resizer-${id}"></div>
                     </div>
                 `;
 
@@ -790,22 +770,16 @@
                     onReadyCallback(winObj);
                 }
 
-                playSystemSound(600, 'sine', 0.12);
+                playSystemSound(440, 'triangle', 0.08);
                 this.focusWindow(id);
-                updateDock();
+                updateTaskbar();
             }
 
             getAppIcon(id) {
-                if (SYSTEM_STATE.installedApps && SYSTEM_STATE.installedApps[id]) {
-                    const installedAppMeta = preinstalledApps.find(app => app.id === id);
-                    if (installedAppMeta) return installedAppMeta.icon;
-                }
                 switch(id) {
-                    case 'terminal': return '💻';
                     case 'explorer': return '📂';
                     case 'editor': return '📝';
                     case 'browser': return '🌐';
-                    case 'installer': return '📦';
                     case 'monitor': return '⚙️';
                     case 'paint': return '🎨';
                     case 'synth': return '🎵';
@@ -825,11 +799,11 @@
                 if (dom) {
                     dom.style.zIndex = win.zIndex;
                     document.querySelectorAll('[id^="win-"]').forEach(el => {
-                        el.style.borderColor = 'var(--border-color)';
-                        el.style.boxShadow = 'none';
+                        el.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                        el.classList.remove('active-window-shadow');
                     });
-                    dom.style.borderColor = 'var(--accent-color)';
-                    dom.style.boxShadow = '0 10px 40px rgba(0, 242, 254, 0.12)';
+                    dom.style.borderColor = '#0078d4';
+                    dom.classList.add('active-window-shadow');
                 }
 
                 const indicator = document.getElementById('active-win-indicator');
@@ -840,10 +814,10 @@
             }
 
             closeWindow(id) {
-                const winIdx = this.windows.findIndex(w => w.id === id);
-                if (winIdx === -1) return;
+                const idx = this.windows.findIndex(w => w.id === id);
+                if (idx === -1) return;
 
-                const win = this.windows[winIdx];
+                const win = this.windows[idx];
                 if (win.onDestroy) {
                     win.onDestroy();
                 }
@@ -852,9 +826,9 @@
                 const dom = document.getElementById(`win-${id}`);
                 if (dom) dom.remove();
 
-                this.windows.splice(winIdx, 1);
+                this.windows.splice(idx, 1);
                 playSystemSound(300, 'sine', 0.1);
-                updateDock();
+                updateTaskbar();
             }
 
             minimizeWindow(id) {
@@ -863,7 +837,7 @@
                 win.minimized = true;
                 const dom = document.getElementById(`win-${id}`);
                 if (dom) dom.classList.add('hidden');
-                playSystemSound(400, 'sine', 0.1);
+                playSystemSound(400, 'sine', 0.05);
             }
 
             maximizeWindow(id) {
@@ -881,12 +855,12 @@
                     win.maximized = false;
                 } else {
                     dom.style.width = '100vw';
-                    dom.style.height = 'calc(100vh - 4.5rem)';
+                    dom.style.height = 'calc(100vh - 3rem)';
                     dom.style.left = '0px';
-                    dom.style.top = '2rem';
+                    dom.style.top = '0px';
                     win.maximized = true;
                 }
-                playSystemSound(500, 'sine', 0.1);
+                playSystemSound(500, 'sine', 0.08);
             }
 
             bindWindowDrag(id) {
@@ -894,44 +868,43 @@
                 const winDom = document.getElementById(`win-${id}`);
                 const win = this.windows.find(w => w.id === id);
 
-                let isDragging = false;
+                let dragging = false;
                 let startX, startY;
 
-                const onPointerDown = (e) => {
+                const onDown = (e) => {
                     if (win.maximized) return;
-                    if (e.target.tagName.toLowerCase() === 'button' || e.target.tagName.toLowerCase() === 'input') return;
-                    isDragging = true;
+                    if (e.target.tagName.toLowerCase() === 'button') return;
+                    dragging = true;
                     startX = (e.clientX || e.touches?.[0]?.clientX) - win.x;
                     startY = (e.clientY || e.touches?.[0]?.clientY) - win.y;
                     this.focusWindow(id);
                     winDom.style.transition = 'none';
                 };
 
-                const onPointerMove = (e) => {
-                    if (!isDragging) return;
-                    const clientX = e.clientX || e.touches?.[0]?.clientX;
-                    const clientY = e.clientY || e.touches?.[0]?.clientY;
+                const onMove = (e) => {
+                    if (!dragging) return;
+                    const cx = e.clientX || e.touches?.[0]?.clientX;
+                    const cy = e.clientY || e.touches?.[0]?.clientY;
+                    if (!cx || !cy) return;
 
-                    if (!clientX || !clientY) return;
-
-                    win.x = clientX - startX;
-                    win.y = clientY - startY;
-                    win.y = Math.max(32, win.y);
+                    win.x = cx - startX;
+                    win.y = cy - startY;
+                    win.y = Math.max(0, win.y); // 防止拖出顶部边界
 
                     winDom.style.left = `${win.x}px`;
                     winDom.style.top = `${win.y}px`;
                 };
 
-                const onPointerUp = () => {
-                    if (isDragging) {
-                        isDragging = false;
+                const onUp = () => {
+                    if (dragging) {
+                        dragging = false;
                         winDom.style.transition = '';
                     }
                 };
 
-                header.addEventListener('pointerdown', onPointerDown);
-                document.addEventListener('pointermove', onPointerMove);
-                document.addEventListener('pointerup', onPointerUp);
+                header.addEventListener('pointerdown', onDown);
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
             }
 
             bindWindowResize(id) {
@@ -939,12 +912,12 @@
                 const winDom = document.getElementById(`win-${id}`);
                 const win = this.windows.find(w => w.id === id);
 
-                let isResizing = false;
+                let resizing = false;
                 let startW, startH, startX, startY;
 
-                const onPointerDown = (e) => {
+                const onDown = (e) => {
                     if (win.maximized) return;
-                    isResizing = true;
+                    resizing = true;
                     startW = win.width;
                     startH = win.height;
                     startX = e.clientX || e.touches?.[0]?.clientX;
@@ -953,18 +926,14 @@
                     e.stopPropagation();
                 };
 
-                const onPointerMove = (e) => {
-                    if (!isResizing) return;
-                    const clientX = e.clientX || e.touches?.[0]?.clientX;
-                    const clientY = e.clientY || e.touches?.[0]?.clientY;
+                const onMove = (e) => {
+                    if (!resizing) return;
+                    const cx = e.clientX || e.touches?.[0]?.clientX;
+                    const cy = e.clientY || e.touches?.[0]?.clientY;
+                    if (!cx || !cy) return;
 
-                    if (!clientX || !clientY) return;
-
-                    const deltaX = clientX - startX;
-                    const deltaY = clientY - startY;
-
-                    win.width = Math.max(340, startW + deltaX);
-                    win.height = Math.max(240, startH + deltaY);
+                    win.width = Math.max(340, startW + (cx - startX));
+                    win.height = Math.max(240, startH + (cy - startY));
 
                     winDom.style.width = `${win.width}px`;
                     winDom.style.height = `${win.height}px`;
@@ -974,21 +943,22 @@
                     }
                 };
 
-                const onPointerUp = () => {
-                    if (isResizing) {
-                        isResizing = false;
+                const onUp = () => {
+                    if (resizing) {
+                        resizing = false;
                         winDom.style.transition = '';
                     }
                 };
 
-                resizer.addEventListener('pointerdown', onPointerDown);
-                document.addEventListener('pointermove', onPointerMove);
-                document.addEventListener('pointerup', onPointerUp);
+                resizer.addEventListener('pointerdown', onDown);
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
             }
         }
 
         const windowManager = new WindowManager();
 
+        // Canvas 高画质粒子桌面动态壁纸
         class WallpaperEngine {
             constructor() {
                 this.canvas = document.getElementById('wallpaper-canvas');
@@ -1050,14 +1020,11 @@
                 const h = this.canvas.height;
                 const ctx = this.ctx;
 
-                const style = getComputedStyle(document.body);
-                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
-
                 if (SYSTEM_STATE.wallpaper === 'stars') {
                     ctx.fillStyle = 'rgba(5, 5, 12, 0.15)';
                     ctx.fillRect(0, 0, w, h);
 
-                    ctx.strokeStyle = accentColor;
+                    ctx.fillStyle = '#0078d4';
                     for (let star of this.stars) {
                         star.z -= 2;
                         if (star.z <= 0) {
@@ -1072,7 +1039,7 @@
 
                         if (star.px > 0 && star.px < w && star.py > 0 && star.py < h) {
                             const size = (1 - star.z / w) * 4;
-                            ctx.fillStyle = accentColor;
+                            ctx.fillStyle = '#0078d4';
                             ctx.beginPath();
                             ctx.arc(px, py, size, 0, Math.PI * 2);
                             ctx.fill();
@@ -1084,7 +1051,7 @@
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
                     ctx.fillRect(0, 0, w, h);
 
-                    ctx.fillStyle = accentColor;
+                    ctx.fillStyle = '#00ff46';
                     ctx.font = '14px "Fira Code", monospace';
 
                     const fontSize = 14;
@@ -1099,7 +1066,7 @@
                         }
                     });
                 } else if (SYSTEM_STATE.wallpaper === 'constellation') {
-                    ctx.fillStyle = SYSTEM_STATE.theme === 'light' ? '#f1f5f9' : '#030308';
+                    ctx.fillStyle = '#1c1c1c';
                     ctx.fillRect(0, 0, w, h);
 
                     ctx.lineWidth = 0.5;
@@ -1111,7 +1078,7 @@
                         if (p1.x < 0 || p1.x > w) p1.vx *= -1;
                         if (p1.y < 0 || p1.y > h) p1.vy *= -1;
 
-                        ctx.fillStyle = accentColor;
+                        ctx.fillStyle = '#0078d4';
                         ctx.beginPath();
                         ctx.arc(p1.x, p1.y, p1.r, 0, Math.PI * 2);
                         ctx.fill();
@@ -1120,7 +1087,7 @@
                             const p2 = this.particles[j];
                             const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
                             if (dist < 120) {
-                                ctx.strokeStyle = `rgba(0, 242, 254, ${1 - dist / 120})`;
+                                ctx.strokeStyle = `rgba(0, 120, 212, ${1 - dist / 120})`;
                                 ctx.beginPath();
                                 ctx.moveTo(p1.x, p1.y);
                                 ctx.lineTo(p2.x, p2.y);
@@ -1134,156 +1101,35 @@
             }
         }
 
-        function initTerminalApp(winObj) {
-            const outEl = document.getElementById('term-output');
-            const inEl = document.getElementById('term-input');
-            let termCurrentPath = "/home/jr_user";
 
-            const printLine = (text, type = 'normal') => {
-                const div = document.createElement('div');
-                if (type === 'error') div.className = 'text-red-500 font-semibold';
-                if (type === 'success') div.className = 'text-sky-400 font-bold';
-                if (type === 'system') div.className = 'text-zinc-500 italic';
-                div.innerText = text;
-                outEl.appendChild(div);
-                outEl.scrollTop = outEl.scrollHeight;
-            };
+        /**
+         * =========================================================================
+         * VI. 各内置应用（APPS）业务控制器
+         * =========================================================================
+         */
 
-            printLine("Welcome to JR OS Terminal Terminal Console [Version 1.2.2]", 'success');
-            printLine(`输入 'help' 获取系统核心基础控制指令。当前路径: ${termCurrentPath}\n`, 'system');
-
-            inEl.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const rawVal = inEl.value.trim();
-                    inEl.value = '';
-
-                    if (!rawVal) return;
-                    printLine(`jr_os@kernel:${termCurrentPath}$ ${rawVal}`, 'normal');
-
-                    const parts = rawVal.split(' ');
-                    const cmd = parts[0];
-                    const arg = parts.slice(1).join(' ');
-
-                    if (cmd === 'clear') {
-                        outEl.innerHTML = '';
-                        return;
-                    }
-
-                    if (cmd.endsWith('.exe') || cmd.endsWith('.jrex')) {
-                        const filePath = cmd.startsWith("/") ? cmd : `${termCurrentPath}/${cmd}`;
-                        launchAppInstaller(filePath);
-                        return;
-                    }
-
-                    if (cmd === 'ls') {
-                        const res = VFS.resolvePath(termCurrentPath);
-                        if (res && res.node.type === "dir") {
-                            const files = Object.keys(res.node.children);
-                            if (files.length === 0) {
-                                printLine("[空目录]", "system");
-                            } else {
-                                printLine(files.join("    "), "success");
-                            }
-                        } else {
-                            printLine("文件系统读取异常", "error");
-                        }
-                        return;
-                    }
-
-                    if (cmd === 'cat') {
-                        if (!arg) {
-                            printLine("用法: cat [文件名]", "error");
-                            return;
-                        }
-                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
-                        const content = VFS.readFile(filePath);
-                        if (content !== null) {
-                            printLine(content);
-                        } else {
-                            printLine(`cat: 无法读取 '${arg}': 文件不存在`, 'error');
-                        }
-                        return;
-                    }
-
-                    if (cmd === 'touch') {
-                        if (!arg) {
-                            printLine("用法: touch [新文件名]", "error");
-                            return;
-                        }
-                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
-                        VFS.writeFile(filePath, "");
-                        printLine(`已在 VFS 创建空文本文件: ${arg}`, "system");
-                        return;
-                    }
-
-                    if (cmd === 'mkdir') {
-                        if (!arg) {
-                            printLine("用法: mkdir [目录名]", "error");
-                            return;
-                        }
-                        const success = VFS.createDirectory(termCurrentPath, arg);
-                        if (success) {
-                            printLine(`已在 VFS 创建目录: ${arg}`, "system");
-                        } else {
-                            printLine(`mkdir: 创建失败，目标可能已存在`, "error");
-                        }
-                        return;
-                    }
-
-                    if (cmd === 'rm') {
-                        if (!arg) {
-                            printLine("用法: rm [文件及路径]", "error");
-                            return;
-                        }
-                        const filePath = arg.startsWith("/") ? arg : `${termCurrentPath}/${arg}`;
-                        const success = VFS.deletePath(filePath);
-                        if (success) {
-                            printLine(`已从 VFS 抹除节点: ${arg}`, "system");
-                        } else {
-                            printLine(`rm: 移除失败，未找到该节点`, "error");
-                        }
-                        return;
-                    }
-
-                    if (cmd === 'js') {
-                        if (!arg) {
-                            printLine("用法: js [JavaScript 表达式]. 例如: js 128 * 1024", "error");
-                            return;
-                        }
-                        try {
-                            const result = new Function(`return (${arg})`)();
-                            printLine(String(result), "success");
-                        } catch (err) {
-                            printLine(`脚本解析器故障: ${err.message}`, "error");
-                        }
-                        return;
-                    }
-
-                    if (terminalCommands[cmd]) {
-                        const out = terminalCommands[cmd](winObj);
-                        if (out) printLine(out);
-                    } else {
-                        printLine(`jr_os: 未知内核命令: ${cmd}. 输入 'help' 查看清单。`, 'error');
-                    }
-                }
-            });
-        }
-
+        // 📂 FILE EXPLORER (此电脑) 业务逻辑
         function initExplorerApp(winObj) {
             const grid = document.getElementById('exp-file-grid');
             const pathText = document.getElementById('exp-current-path');
             const backBtn = document.getElementById('exp-back-btn');
             const newFileBtn = document.getElementById('exp-new-btn');
-            let currentPath = "/home/jr_user";
+            let currentPath = "C:/Users/jr_user/Desktop";
+
+            // 监听全局路径跳转命令，支持侧边栏跨盘跳转
+            window.explorerNavigate = (targetPath) => {
+                currentPath = targetPath;
+                renderExplorer();
+            };
 
             const renderExplorer = () => {
                 grid.innerHTML = '';
                 pathText.innerText = currentPath;
-                backBtn.disabled = currentPath === "/";
+                backBtn.disabled = currentPath === "C:" || currentPath === "D:";
 
                 const res = VFS.resolvePath(currentPath);
                 if (!res || res.node.type !== "dir") {
-                    grid.innerHTML = `<div class="text-xs text-red-500 p-4">无法挂载当前 VFS 节点</div>`;
+                    grid.innerHTML = `<div class="text-xs text-red-500 p-4">⚠️ 无法加载指定的磁盘分区或分区未初始化。</div>`;
                     return;
                 }
 
@@ -1292,12 +1138,12 @@
                 Object.keys(children).forEach(name => {
                     const node = children[name];
                     const isDir = node.type === "dir";
-                    const isExe = name.endsWith('.exe') || name.endsWith('.jrex');
+                    const isExe = name.endsWith('.exe') || name.endsWith('.json');
 
                     const itemHtml = `
-                        <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none animate-appear" id="exp-item-${name}">
+                        <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none" id="exp-item-${name}">
                             <span class="text-3xl mb-1">${isDir ? '📁' : (isExe ? '📦' : '📄')}</span>
-                            <span class="text-xs font-mono-os truncate w-full px-1">${name}</span>
+                            <span class="text-xs font-mono-os truncate w-full px-1 text-zinc-100">${name}</span>
                         </div>
                     `;
 
@@ -1322,10 +1168,10 @@
             };
 
             backBtn.onclick = () => {
-                if (currentPath === "/") return;
                 const parts = currentPath.split("/").filter(p => p !== "");
                 parts.pop();
-                currentPath = "/" + parts.join("/");
+                currentPath = parts.join("/");
+                if (currentPath === "C:" || currentPath === "D:") currentPath += "/";
                 renderExplorer();
             };
 
@@ -1337,7 +1183,7 @@
         }
 
         function openEditorForFile(path) {
-            windowManager.createWindow('editor', `文本编辑器 - 深度代码撰写`, 'template-editor', 550, 400, () => {
+            windowManager.createWindow('editor', `记事本 - ${path.split("/").pop()}`, 'template-editor', 560, 420, () => {
                 const pathInput = document.getElementById('editor-file-path');
                 const textarea = document.getElementById('editor-textarea');
                 const saveBtn = document.getElementById('editor-save-btn');
@@ -1363,104 +1209,7 @@
             });
         }
 
-        const BROWSER_HISTORY = {
-            historyStack: ['jros://welcome'],
-            currentIndex: 0
-        };
-
-        function pushBrowserHistory(containerId, url) {
-            if (BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex] === url) return;
-            BROWSER_HISTORY.historyStack = BROWSER_HISTORY.historyStack.slice(0, BROWSER_HISTORY.currentIndex + 1);
-            BROWSER_HISTORY.historyStack.push(url);
-            BROWSER_HISTORY.currentIndex = BROWSER_HISTORY.historyStack.length - 1;
-
-            updateBrowserNavButtons(containerId);
-        }
-
-        function updateBrowserNavButtons(containerId) {
-            const browserDom = document.getElementById(containerId);
-            if (!browserDom) return;
-
-            const backBtn = browserDom.querySelector('#browser-back-btn');
-            const forwardBtn = browserDom.querySelector('#browser-forward-btn');
-
-            backBtn.disabled = BROWSER_HISTORY.currentIndex <= 0;
-            forwardBtn.disabled = BROWSER_HISTORY.currentIndex >= BROWSER_HISTORY.historyStack.length - 1;
-        }
-
-        window.browserNavigate = (containerId, targetUrl) => {
-            const browserDom = document.getElementById(containerId);
-            if (!browserDom) return;
-
-            const iframe = browserDom.querySelector('#browser-iframe');
-            const sandbox = browserDom.querySelector('#browser-sandbox');
-            const urlInput = browserDom.querySelector('#browser-url-input');
-            const progress = browserDom.querySelector('#browser-progress-bar');
-
-            progress.style.transition = 'none';
-            progress.style.transform = 'translateX(-100%)';
-            setTimeout(() => {
-                progress.style.transition = 'transform 0.4s ease-out';
-                progress.style.transform = 'translateX(-30%)';
-            }, 50);
-
-            urlInput.value = targetUrl;
-
-            if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
-                const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
-                const page = VIRTUAL_INTERNET[normUrl] || {
-                    title: "404 - 未找到目标星轨",
-                    body: `<div class="text-center p-8 text-slate-400"><h2 class="text-xl font-bold text-red-500 mb-2">⚠️ 无法寻址</h2><p class="text-xs">该域名未部署。请尝试返回主页或查看推荐书签栏。</p></div>`
-                };
-
-                setTimeout(() => {
-                    iframe.classList.add('hidden');
-                    sandbox.classList.remove('hidden');
-                    sandbox.innerHTML = `
-                        <div class="p-2 select-text text-slate-100">
-                            <div class="mb-4 border-b border-slate-800 pb-2 flex justify-between items-center text-xs">
-                                <span class="bg-slate-800 px-2 py-0.5 rounded text-sky-400 font-mono-os">${normUrl}</span>
-                                <span class="text-slate-500">JR-Web 内网加速协议</span>
-                            </div>
-                            <h2 class="text-xl font-bold text-slate-100 mb-4">${page.title}</h2>
-                            ${page.body}
-                        </div>
-                    `;
-                    progress.style.transform = 'translateX(0%)';
-                }, 400);
-
-                pushBrowserHistory(containerId, targetUrl);
-            } else {
-                setTimeout(() => {
-                    sandbox.classList.add('hidden');
-                    iframe.classList.remove('hidden');
-                    
-                    // 核心关联修改：将以前的变量替换为 window.PROXY_SERVER
-                    iframe.src = window.PROXY_SERVER + "?url=" + encodeURIComponent(targetUrl);
-
-                    iframe.onload = () => {
-                        progress.style.transform = 'translateX(0%)';
-                        playSystemSound(750, 'sine', 0.1);
-                    };
-                }, 400);
-
-                pushBrowserHistory(containerId, targetUrl);
-            }
-        };
-
-        window.addEventListener('message', (e) => {
-            if (e.data && e.data.type === 'jros-browser-navigated') {
-                const browserDom = document.getElementById('app-content-browser');
-                if (browserDom) {
-                    const urlInput = browserDom.querySelector('#browser-url-input');
-                    if (urlInput) {
-                        urlInput.value = e.data.url;
-                    }
-                    pushBrowserHistory('app-content-browser', e.data.url);
-                }
-            }
-        });
-
+        // 🌐 BROWSER (Microsoft Edge) 控制器
         function initBrowserApp(winObj) {
             const containerId = `app-content-${winObj.id}`;
             const browserDom = document.getElementById(containerId);
@@ -1503,8 +1252,7 @@
             };
 
             refreshBtn.onclick = () => {
-                const url = urlInput.value.trim();
-                window.browserNavigate(containerId, url);
+                window.browserNavigate(containerId, urlInput.value.trim());
             };
 
             homeBtn.onclick = () => {
@@ -1514,125 +1262,7 @@
             window.browserNavigate(containerId, 'jros://welcome');
         }
 
-        function launchAppInstaller(filePath) {
-            const rawContent = VFS.readFile(filePath);
-            if (!rawContent) {
-                playSystemSound(150, 'sawtooth', 0.2);
-                return;
-            }
-
-            try {
-                const appConfig = JSON.parse(rawContent);
-                if (!appConfig.appName || !appConfig.appTitle || !appConfig.script) {
-                    throw new Error("安装包架构错误，关键属性缺失。");
-                }
-
-                windowManager.createWindow('installer', `JR OS 安全安装向导 - ${appConfig.appTitle}`, 'template-installer', 440, 340, (win) => {
-                    const iconEl = document.getElementById('installer-icon');
-                    const titleEl = document.getElementById('installer-title');
-                    const subtitleEl = document.getElementById('installer-subtitle');
-                    const cancelBtn = document.getElementById('installer-btn-cancel');
-                    const confirmBtn = document.getElementById('installer-btn-confirm');
-                    const progressSec = document.getElementById('installer-progress-section');
-                    const progressEl = document.getElementById('installer-progress');
-                    const statusTxt = document.getElementById('installer-status-text');
-                    const percentTxt = document.getElementById('installer-percent-text');
-
-                    iconEl.innerText = appConfig.icon || '📦';
-                    titleEl.innerText = `准备安装: ${appConfig.appTitle}`;
-                    subtitleEl.innerText = `标识: ${appConfig.appName} | 寻址空间: ${appConfig.width || 500}x${appConfig.height || 400}`;
-
-                    cancelBtn.onclick = () => {
-                        windowManager.closeWindow('installer');
-                    };
-
-                    confirmBtn.onclick = () => {
-                        confirmBtn.disabled = true;
-                        cancelBtn.disabled = true;
-                        confirmBtn.style.opacity = '0.5';
-                        cancelBtn.style.opacity = '0.5';
-
-                        progressSec.classList.remove('hidden');
-
-                        const steps = [
-                            { p: 15, t: "正在读取 VFS 内存区块..." },
-                            { p: 40, t: "正在解析虚拟段式内存寻址..." },
-                            { p: 70, t: "正在检查沙箱安全权限依赖..." },
-                            { p: 90, t: "正在注册桌面快捷路由映射..." },
-                            { p: 100, t: "装载完成！正在引导运行上下文..." }
-                        ];
-
-                        let currentStep = 0;
-                        const runStep = () => {
-                            if (currentStep < steps.length) {
-                                const step = steps[currentStep];
-                                progressEl.style.width = `${step.p}%`;
-                                percentTxt.innerText = `${step.p}%`;
-                                statusTxt.innerText = step.t;
-
-                                playSystemSound(400 + step.p * 5, 'sine', 0.05);
-                                currentStep++;
-                                setTimeout(runStep, 300 + Math.random() * 200);
-                            } else {
-                                const ok = registerDynamicApp(appConfig);
-                                if (ok) {
-                                    playSystemSound(523.25, 'triangle', 0.1);
-                                    setTimeout(() => playSystemSound(659.25, 'triangle', 0.1), 100);
-                                    setTimeout(() => playSystemSound(783.99, 'triangle', 0.25), 200);
-                                }
-                                windowManager.closeWindow('installer');
-                            }
-                        };
-
-                        setTimeout(runStep, 100);
-                    };
-                });
-
-            } catch (err) {
-                playSystemSound(150, 'sawtooth', 0.3);
-                windowManager.createWindow('installer_err', '系统内核保护阻断', 'template-settings', 360, 180, (win) => {
-                    const content = document.getElementById('win-content-installer_err');
-                    content.innerHTML = `
-                        <div class="p-4 text-center font-mono-os text-xs text-red-400 space-y-3">
-                            <p class="font-bold text-sm">⚠️ 沙箱安全审查阻断</p>
-                            <p class="text-[10px] opacity-75 leading-relaxed bg-black/40 p-2 border border-red-500/20 rounded">错误元: ${err.message}</p>
-                            <p class="opacity-60">JR 内核已将该文件的执行进程挂起并隔离。</p>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        function registerDynamicApp(appConfig) {
-            const alreadyRegistered = preinstalledApps.some(app => app.id === appConfig.appName);
-            if (alreadyRegistered) return false;
-
-            if (!SYSTEM_STATE.installedApps) SYSTEM_STATE.installedApps = {};
-            SYSTEM_STATE.installedApps[appConfig.appName] = {
-                id: appConfig.appName,
-                label: appConfig.appTitle,
-                width: appConfig.width || 500,
-                height: appConfig.height || 400,
-                script: appConfig.script
-            };
-
-            const hiddenContainer = document.querySelector('.hidden');
-            const newTemplate = document.createElement('div');
-            newTemplate.id = `template-${appConfig.appName}`;
-            newTemplate.className = "hidden";
-            newTemplate.innerHTML = `<div id="app-content-${appConfig.appName}" class="h-full w-full overflow-hidden bg-slate-950 font-sans text-white"></div>`;
-            hiddenContainer.appendChild(newTemplate);
-
-            preinstalledApps.push({
-                id: appConfig.appName,
-                label: appConfig.appTitle,
-                icon: appConfig.icon || '📦'
-            });
-
-            initDesktop();
-            return true;
-        }
-
+        // ⚙️ SYSTEM MONITOR (任务管理器) 折线渲染
         function initMonitorApp(winObj) {
             const canvasCpu = document.getElementById('canvas-cpu-chart');
             const canvasRam = document.getElementById('canvas-ram-chart');
@@ -1647,10 +1277,10 @@
                 const w = canvas.width = canvas.parentElement.clientWidth;
                 const h = canvas.height = 96;
 
-                ctx.fillStyle = "#09090e";
+                ctx.fillStyle = "#0c0c0f";
                 ctx.fillRect(0, 0, w, h);
 
-                ctx.strokeStyle = "rgba(255,255,255,0.03)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
                 ctx.lineWidth = 1;
                 for (let i = 0; i < w; i += 30) {
                     ctx.beginPath();
@@ -1666,7 +1296,7 @@
                 }
 
                 ctx.strokeStyle = accentCol;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1.8;
                 ctx.beginPath();
 
                 const step = w / (history.length - 1);
@@ -1679,7 +1309,7 @@
                 }
                 ctx.stroke();
 
-                ctx.fillStyle = `rgba(${accentCol === '#00f2fe' ? '0, 242, 254' : '255, 0, 127'}, 0.1)`;
+                ctx.fillStyle = "rgba(0, 120, 212, 0.1)";
                 ctx.lineTo(w, h);
                 ctx.lineTo(0, h);
                 ctx.fill();
@@ -1687,18 +1317,18 @@
 
             const renderProcesses = () => {
                 procTable.innerHTML = '';
-                Scheduler.processes.forEach(proc => {
+                Scheduler.processes.forEach(p => {
                     const row = `
-                        <tr class="border-b border-zinc-800/40 py-1 font-mono-os">
-                            <td class="py-1.5 opacity-60">${proc.pid}</td>
-                            <td class="py-1.5 font-bold">${proc.name}</td>
-                            <td class="py-1.5 text-sky-400">${proc.cpu}%</td>
-                            <td class="py-1.5 opacity-80">${Math.floor(proc.ram/1024)} KB</td>
-                            <td class="py-1.5 text-emerald-400">${proc.status}</td>
+                        <tr class="border-b border-white/5 py-1.5 font-mono-os hover:bg-white/5">
+                            <td class="py-1.5 opacity-60">${p.pid}</td>
+                            <td class="py-1.5 font-bold text-zinc-100">${p.name}</td>
+                            <td class="py-1.5 text-sky-400">${p.cpu}%</td>
+                            <td class="py-1.5 opacity-80">${Math.floor(p.ram/1024)} KB</td>
+                            <td class="py-1.5 text-emerald-400">${p.status}</td>
                             <td class="py-1.5 text-right">
-                                ${proc.pid > 4 ? `
-                                    <button onclick="killProc(${proc.pid})" class="px-2 py-0.5 bg-red-600/20 text-red-400 border border-red-500/20 rounded hover:bg-red-600 hover:text-white transition cursor-pointer">Kill</button>
-                                ` : `<span class="opacity-30 text-[10px]">保护级</span>`}
+                                ${p.pid > 4 ? `
+                                    <button onclick="killProc(${p.pid})" class="px-2 py-0.5 bg-rose-600/20 text-rose-400 border border-rose-500/20 rounded hover:bg-rose-600 hover:text-white transition">结束任务</button>
+                                ` : `<span class="opacity-30 text-[10px]">保护中</span>`}
                             </td>
                         </tr>
                     `;
@@ -1715,7 +1345,7 @@
                         const matchWin = windowManager.windows.find(w => w.title === cleanTitle);
                         if (matchWin) windowManager.closeWindow(matchWin.id);
                     }
-                    playSystemSound(150, 'sawtooth', 0.2);
+                    playSystemSound(150, 'sawtooth', 0.15);
                     renderProcesses();
                 }
             };
@@ -1732,18 +1362,15 @@
                 ramHistory.shift();
                 ramHistory.push(SYSTEM_STATE.ramLoad);
 
-                const style = getComputedStyle(document.body);
-                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
-                const secColor = style.getPropertyValue('--secondary-color').trim() || '#ff007f';
-
-                drawChart(ctxCpu, canvasCpu, cpuHistory, 100, accentColor);
-                drawChart(ctxRam, canvasRam, ramHistory, 100, secColor);
+                drawChart(ctxCpu, canvasCpu, cpuHistory, 100, '#0078d4');
+                drawChart(ctxRam, canvasRam, ramHistory, 100, '#ff007f');
                 renderProcesses();
             }, 1000);
 
             renderProcesses();
         }
 
+        // 🎨 PAINT (画图) 控制器
         function initPaintApp(winObj) {
             const canvas = document.getElementById('paint-canvas');
             const ctx = canvas.getContext('2d');
@@ -1758,7 +1385,7 @@
                 const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 canvas.width = parent.clientWidth;
                 canvas.height = parent.clientHeight;
-                ctx.fillStyle = '#0a0a10';
+                ctx.fillStyle = '#0a0a0f';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.putImageData(temp, 0, 0);
             };
@@ -1776,15 +1403,15 @@
                 };
             };
 
-            const startDraw = (e) => {
+            canvas.addEventListener('pointerdown', (e) => {
                 drawing = true;
                 ctx.beginPath();
                 const coords = getCoords(e);
                 ctx.moveTo(coords.x, coords.y);
                 e.preventDefault();
-            };
+            });
 
-            const draw = (e) => {
+            canvas.addEventListener('pointermove', (e) => {
                 if (!drawing) return;
                 const coords = getCoords(e);
                 ctx.strokeStyle = colorIn.value;
@@ -1794,24 +1421,21 @@
                 ctx.lineTo(coords.x, coords.y);
                 ctx.stroke();
                 e.preventDefault();
-            };
+            });
 
-            const stopDraw = () => {
+            document.addEventListener('pointerup', () => {
                 drawing = false;
                 ctx.closePath();
-            };
-
-            canvas.addEventListener('pointerdown', startDraw);
-            canvas.addEventListener('pointermove', draw);
-            document.addEventListener('pointerup', stopDraw);
+            });
 
             clearBtn.onclick = () => {
-                ctx.fillStyle = '#0a0a10';
+                ctx.fillStyle = '#0a0a0f';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 playSystemSound(200, 'sine', 0.15);
             };
         }
 
+        // 🎵 MEDIA PLAYER ( Chiptune Tracker)
         function initSynthApp(winObj) {
             const playBtn = document.getElementById('synth-play-btn');
             const stopBtn = document.getElementById('synth-stop-btn');
@@ -1878,20 +1502,17 @@
             const animateSpectrum = () => {
                 if (!audioCtx) return;
                 const w = visualizer.width = visualizer.parentElement.clientWidth;
-                const h = visualizer.height = 160;
+                const h = visualizer.height = 140;
 
                 vctx.clearRect(0, 0, w, h);
 
-                const barWidth = 12;
+                const barWidth = 10;
                 const barGap = 4;
                 const barCount = Math.floor(w / (barWidth + barGap));
 
-                const style = getComputedStyle(document.body);
-                const accentColor = style.getPropertyValue('--accent-color').trim() || '#00f2fe';
-
-                vctx.fillStyle = accentColor;
+                vctx.fillStyle = '#0078d4';
                 for (let i = 0; i < barCount; i++) {
-                    const val = synthTimer ? Math.sin(Date.now() * 0.01 + i) * 40 + 50 + Math.random() * 20 : 5;
+                    const val = synthTimer ? Math.sin(Date.now() * 0.01 + i) * 35 + 40 + Math.random() * 15 : 5;
                     const bh = (val / 100) * h * 0.6;
                     vctx.fillRect(i * (barWidth + barGap), h - bh, barWidth, bh);
                 }
@@ -1908,6 +1529,7 @@
             };
         }
 
+        // 🚀 ARCADE GAME (太空侵略者)
         function initGameApp(winObj) {
             const canvas = document.getElementById('game-canvas');
             const ctx = canvas.getContext('2d');
@@ -1990,7 +1612,7 @@
                 ctx.fillStyle = '#06060c';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
                 ctx.lineWidth = 1;
                 for (let i = 0; i < canvas.width; i += 20) {
                     ctx.beginPath();
@@ -2006,7 +1628,7 @@
                     playerX = Math.min(canvas.width - 20, playerX + 4);
                 }
 
-                ctx.fillStyle = '#00f2fe';
+                ctx.fillStyle = '#0078d4';
                 ctx.beginPath();
                 ctx.moveTo(playerX + 10, playerY);
                 ctx.lineTo(playerX, playerY + 15);
@@ -2077,20 +1699,157 @@
             };
         }
 
+
+        /**
+         * =========================================================================
+         * VII. 浏览器代理与虚拟 DOM 传输层 (Bypass-Proxy)
+         * =========================================================================
+         */
+        const VIRTUAL_INTERNET = {
+            "jros://welcome": {
+                title: "Microsoft Edge - 默认导航主页",
+                body: `
+                    <div class="space-y-6 text-zinc-100 select-text">
+                        <div class="p-6 rounded-xl bg-gradient-to-r from-winblue/60 to-indigo-900/40 border border-winblue/30 text-center">
+                            <h1 class="text-2xl font-bold text-sky-200">🌐 欢迎使用 Microsoft Edge 仿真网卡</h1>
+                            <p class="text-xs text-slate-300 mt-2">在这里，我们提供完全沙箱化的跨域网络反向代理解析技术。你可以畅游以下推荐站点：</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-lg bg-zinc-800/80 border border-white/5 hover:border-winblue transition">
+                                <h4 class="font-bold text-winblue">🎮 极客街机中心</h4>
+                                <p class="text-[11px] opacity-60 mt-1">调用 Windows 绘图核心，即刻游玩太空入侵者经典机型。</p>
+                                <button onclick="windowManager.createWindow('game', '经典太空侵略者', 'template-game', 460, 450, initGameApp)" class="mt-3 text-xs bg-winblue hover:bg-winblue-hover px-3 py-1 rounded font-bold text-white transition">启动 &rarr;</button>
+                            </div>
+                            <div class="p-4 rounded-lg bg-zinc-800/80 border border-white/5 hover:border-winblue transition">
+                                <h4 class="font-bold text-cyan-400">📖 OSDev.org 操作系统设计百科</h4>
+                                <p class="text-[11px] opacity-60 mt-1">加载全球最大的开源内核硬件开发者学习百科（支持 Iframe）</p>
+                                <button onclick="browserNavigate('app-content-browser', 'https://www.osdev.org')" class="mt-3 text-xs bg-cyan-600 hover:bg-cyan-500 px-3 py-1 rounded font-bold text-white transition">浏览 &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        const BROWSER_HISTORY = {
+            historyStack: ['jros://welcome'],
+            currentIndex: 0
+        };
+
+        window.browserNavigate = (containerId, targetUrl) => {
+            const browserDom = document.getElementById(containerId);
+            if (!browserDom) return;
+
+            const iframe = browserDom.querySelector('#browser-iframe');
+            const sandbox = browserDom.querySelector('#browser-sandbox');
+            const urlInput = browserDom.querySelector('#browser-url-input');
+            const progress = browserDom.querySelector('#browser-progress-bar');
+
+            progress.style.transition = 'none';
+            progress.style.transform = 'translateX(-100%)';
+            setTimeout(() => {
+                progress.style.transition = 'transform 0.4s ease-out';
+                progress.style.transform = 'translateX(-30%)';
+            }, 50);
+
+            urlInput.value = targetUrl;
+
+            if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
+                const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
+                const page = VIRTUAL_INTERNET[normUrl] || {
+                    title: "404 - 无法解析的网址",
+                    body: `<div class="text-center p-8 text-slate-400"><h2 class="text-xl font-bold text-red-500 mb-2">⚠️ 无法寻址该星际坐标</h2></div>`
+                };
+
+                setTimeout(() => {
+                    iframe.classList.add('hidden');
+                    sandbox.classList.remove('hidden');
+                    sandbox.innerHTML = `
+                        <div class="p-4 text-slate-100 select-text">
+                            <h2 class="text-xl font-bold mb-4">${page.title}</h2>
+                            ${page.body}
+                        </div>
+                    `;
+                    progress.style.transform = 'translateX(0%)';
+                }, 300);
+
+                pushBrowserHistory(containerId, targetUrl);
+            } else {
+                setTimeout(() => {
+                    sandbox.classList.add('hidden');
+                    iframe.classList.remove('hidden');
+                    iframe.src = PROXY_SERVER + "?url=" + encodeURIComponent(targetUrl);
+
+                    iframe.onload = () => {
+                        progress.style.transform = 'translateX(0%)';
+                        playSystemSound(750, 'sine', 0.1);
+                    };
+                }, 300);
+
+                pushBrowserHistory(containerId, targetUrl);
+            }
+        };
+
+        function pushBrowserHistory(containerId, url) {
+            if (BROWSER_HISTORY.historyStack[BROWSER_HISTORY.currentIndex] === url) return;
+            BROWSER_HISTORY.historyStack = BROWSER_HISTORY.historyStack.slice(0, BROWSER_HISTORY.currentIndex + 1);
+            BROWSER_HISTORY.historyStack.push(url);
+            BROWSER_HISTORY.currentIndex = BROWSER_HISTORY.historyStack.length - 1;
+            updateBrowserNavButtons(containerId);
+        }
+
+        function updateBrowserNavButtons(containerId) {
+            const browserDom = document.getElementById(containerId);
+            if (!browserDom) return;
+            const backBtn = browserDom.querySelector('#browser-back-btn');
+            const forwardBtn = browserDom.querySelector('#browser-forward-btn');
+            backBtn.disabled = BROWSER_HISTORY.currentIndex <= 0;
+            forwardBtn.disabled = BROWSER_HISTORY.currentIndex >= BROWSER_HISTORY.historyStack.length - 1;
+        }
+
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'jros-browser-navigated') {
+                const browserDom = document.getElementById('app-content-browser');
+                if (browserDom) {
+                    const urlInput = browserDom.querySelector('#browser-url-input');
+                    if (urlInput) urlInput.value = e.data.url;
+                    pushBrowserHistory('app-content-browser', e.data.url);
+                }
+            }
+        });
+
+
+        /**
+         * =========================================================================
+         * VIII. Windows 引导程序及桌面快捷磁贴组装 (Bootloader & Tile Assembly)
+         * =========================================================================
+         */
+
         const bootLogs = [
-            "JR-BIOS Core v1.60 Online Edition Copyright (C) 2026 J&R OS Corp.",
-            "CPU: Cloudflare Edge Simulated Kernel @ Intel Xeon Platinum (P-Core)",
-            "Memory Test: 65536KB OK. Virtual paging activated.",
-            "Detecting Primary Virtual Hard Disk... OK (Cloud Virtual Memory Mounted)",
-            "Mounting /sys/kernel/modules/installer.conf... SUCCESS",
-            "Initializing Gesture Recognition & Double-Tap Timers... SUCCESS",
-            "Checking Network Bridge... ONLINE (Cloudflare Global CDN Bypassing)",
-            "Kernel load addr: 0x100000. Jump to C Entry Point.",
-            "Initializing user session context: [Admin: jr_user]",
-            "All hardware devices initialized. System Ready."
+            "JR-BIOS Pro v2.10 Copyright (C) 2026 J&R OS Corp.",
+            "CPU: Intel(R) Core(TM) i9-13900K @ 5.40GHz",
+            "RAM: 65536MB OK. Cache Enabled.",
+            "Detecting Primary Windows Partition (C: NTFS)... SUCCESS",
+            "Loading Windows 11 Bootloader (winload.efi)... SUCCESS",
+            "Entering Protected Mode... GDT, IDT loaded.",
+            "Launching explorer.exe 외 Shell Server...",
+            "Registry initialized. Applying personalization Bloom theme...",
+            "Desktop System Loaded. Welcome Admin."
         ];
 
-        window.addEventListener('load', () => {
+        // 桌面快捷方式定义
+        const desktopApps = [
+            { id: 'explorer', label: '此电脑', icon: '📂' },
+            { id: 'browser', label: 'Microsoft Edge', icon: '🌐' },
+            { id: 'editor', label: '记事本', icon: '📝' },
+            { id: 'monitor', label: '任务管理器', icon: '⚙️' },
+            { id: 'paint', label: '画图', icon: '🎨' },
+            { id: 'synth', label: '音乐播放器', icon: '🎵' },
+            { id: 'game', label: '太空入侵者', icon: '🚀' },
+            { id: 'settings', label: '设置', icon: '🎛️' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
             const logBox = document.getElementById('boot-log');
             const progress = document.getElementById('boot-progress');
             const startBtn = document.getElementById('btn-start-os');
@@ -2108,7 +1867,7 @@
 
                     logIdx++;
                     playSystemSound(800 + logIdx * 50, 'sine', 0.04);
-                    setTimeout(printNextLog, Math.random() * 80 + 20);
+                    setTimeout(printNextLog, Math.random() * 80 + 30);
                 } else {
                     startBtn.classList.remove('hidden');
                 }
@@ -2117,345 +1876,216 @@
             setTimeout(printNextLog, 400);
 
             startBtn.onclick = () => {
-                playSystemSound(523.25, 'triangle', 0.15);
-                setTimeout(() => playSystemSound(659.25, 'triangle', 0.15), 150);
-                setTimeout(() => playSystemSound(783.99, 'triangle', 0.3), 300);
+                // 触发经典 Windows 11 开机和弦音！
+                playSystemSound(523.25, 'triangle', 0.15); // C5
+                setTimeout(() => playSystemSound(659.25, 'triangle', 0.15), 150); // E5
+                setTimeout(() => playSystemSound(783.99, 'triangle', 0.3), 300); // G5
 
                 document.getElementById('boot-screen').classList.add('hidden');
-                document.getElementById('desktop').classList.remove('hidden');
+                document.getElementById('desktop-workspace').classList.remove('hidden');
 
                 window.wallpaperEngine = new WallpaperEngine();
                 initDesktop();
             };
         });
 
+        // 全局时间刷新
         function updateClock() {
-            const timeEl = document.getElementById('sys-time');
-            const dateEl = document.getElementById('sys-date');
-            if (timeEl && dateEl) {
+            const clockEl = document.getElementById('taskbar-time-text');
+            const dateEl = document.getElementById('taskbar-date-text');
+            if (clockEl && dateEl) {
                 const now = new Date();
-                timeEl.innerText = now.toTimeString().split(' ')[0];
+                clockEl.innerText = now.toTimeString().split(' ')[0].substring(0, 5);
                 dateEl.innerText = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
             }
             SYSTEM_STATE.uptime++;
         }
 
+        // 统一的分发拉起应用入口
         function openApp(id) {
-            const startMenu = document.getElementById('start-menu');
-            if (startMenu) startMenu.classList.add('hidden');
-
-            if (SYSTEM_STATE.installedApps && SYSTEM_STATE.installedApps[id]) {
-                const app = SYSTEM_STATE.installedApps[id];
-                windowManager.createWindow(app.id, app.label, `template-${app.id}`, app.width, app.height, (win) => {
-                    try {
-                        const initFunc = new Function('winObj', app.script);
-                        initFunc(win);
-                    } catch (err) {
-                        const content = document.getElementById(`win-content-${win.id}`);
-                        if (content) {
-                            content.innerHTML = `<div class="p-4 text-red-500 font-mono-os text-xs"><h4>⚠️ 运行时崩溃</h4><p>${err.message}</p></div>`;
-                        }
-                    }
-                });
-                return;
-            }
+            // 自动关闭开始菜单
+            document.getElementById('start-menu').classList.add('hidden');
 
             switch (id) {
-                case 'terminal':
-                    windowManager.createWindow('terminal', '系统终端控制台 (Terminal)', 'template-terminal', 520, 360, initTerminalApp);
-                    break;
                 case 'explorer':
-                    windowManager.createWindow('explorer', '文件资源管理器 (VFS Explorer)', 'template-explorer', 600, 420, initExplorerApp);
+                    windowManager.createWindow('explorer', '此电脑 (This PC) - 文件资源管理器', 'template-explorer', 680, 480, initExplorerApp);
+                    break;
+                case 'editor':
+                    windowManager.createWindow('editor', '无标题 - 记事本', 'template-editor', 560, 420, () => {
+                        openEditorForFile("C:/Users/jr_user/Documents/sys_test.txt");
+                    });
                     break;
                 case 'browser':
-                    windowManager.createWindow('browser', '星际航行浏览器 (JR-Web Browser)', 'template-browser', 680, 480, initBrowserApp);
+                    windowManager.createWindow('browser', 'Microsoft Edge', 'template-browser', 720, 500, initBrowserApp);
                     break;
                 case 'monitor':
-                    windowManager.createWindow('monitor', '内核与硬件监视器 (System Monitor)', 'template-monitor', 620, 450, initMonitorApp);
+                    windowManager.createWindow('monitor', '任务管理器 (Task Manager)', 'template-monitor', 620, 450, initMonitorApp);
                     break;
                 case 'paint':
-                    windowManager.createWindow('paint', '复古 Canvas 像素画板 (JR Paint)', 'template-paint', 560, 450, initPaintApp);
+                    windowManager.createWindow('paint', '画图 (Paint)', 'template-paint', 560, 450, initPaintApp);
                     break;
                 case 'synth':
-                    windowManager.createWindow('synth', '脉冲波形发生器 (Chiptune Synth)', 'template-synth', 480, 320, initSynthApp);
-                    break;
-                case 'settings':
-                    windowManager.createWindow('settings', '系统首选项与主题 (Settings)', 'template-settings', 420, 400, null);
+                    windowManager.createWindow('synth', '和弦媒体播放器', 'template-synth', 480, 320, initSynthApp);
                     break;
                 case 'game':
-                    windowManager.createWindow('game', '经典太空侵略者 (Space Invaders)', 'template-game', 460, 450, initGameApp);
+                    windowManager.createWindow('game', '经典太空侵略者', 'template-game', 460, 450, initGameApp);
+                    break;
+                case 'settings':
+                    windowManager.createWindow('settings', '系统设置 (Settings)', 'template-settings', 480, 420, initSettingsApp);
                     break;
             }
         }
 
-        const preinstalledApps = [
-            { id: 'terminal', label: '系统终端', icon: '💻' },
-            { id: 'explorer', label: '文件管理器', icon: '📂' },
-            { id: 'browser', label: '网络浏览器', icon: '🌐' },
-            { id: 'monitor', label: '系统监控', icon: '⚙️' },
-            { id: 'paint', label: '复古画板', icon: '🎨' },
-            { id: 'synth', label: '和弦合成器', icon: '🎵' },
-            { id: 'game', label: '太空入侵者', icon: '🚀' },
-            { id: 'settings', label: '系统设置', icon: '🎛️' }
-        ];
-
+        // 渲染 Windows 桌面图标
         function initDesktop() {
-            if (!window.clockTimer) {
-                window.clockTimer = setInterval(updateClock, 1000);
-                updateClock();
-            }
+            setInterval(updateClock, 1000);
+            updateClock();
 
-            const iconsContainer = document.getElementById('desktop-icons-container');
-            iconsContainer.innerHTML = '';
+            const container = document.getElementById('desktop-icons-container');
+            container.innerHTML = '';
 
-            preinstalledApps.forEach(app => {
+            desktopApps.forEach(app => {
                 const iconHtml = `
-                    <div class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/10 active:bg-white/20 transition duration-150 cursor-pointer text-center w-[80px]" id="desk-icon-${app.id}">
-                        <span class="text-4xl mb-1 filter drop-shadow-md select-none">${app.icon}</span>
-                        <span class="text-[11px] font-bold text-white tracking-wide truncate w-full filter drop-shadow-md">${app.label}</span>
+                    <div class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/10 active:bg-white/20 transition cursor-pointer text-center w-[80px]" id="desk-icon-${app.id}">
+                        <span class="text-3xl mb-1.5 filter drop-shadow-md select-none">${app.icon}</span>
+                        <span class="text-[11px] font-semibold text-white tracking-wide truncate w-full filter drop-shadow-md">${app.label}</span>
                     </div>
                 `;
-                iconsContainer.insertAdjacentHTML('beforeend', iconHtml);
+                container.insertAdjacentHTML('beforeend', iconHtml);
 
                 const el = document.getElementById(`desk-icon-${app.id}`);
-                
                 addDoubleTapListener(el, () => {
                     openApp(app.id);
                 });
             });
 
-            updateDock();
+            // 监听开始菜单内 Pinned 磁贴的生成
+            const startGrid = document.getElementById('start-menu-pinned-grid');
+            startGrid.innerHTML = '';
+            desktopApps.forEach(app => {
+                const appHtml = `
+                    <div onclick="openApp('${app.id}')" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-white/10 cursor-pointer transition select-none">
+                        <span class="text-3xl mb-1">${app.icon}</span>
+                        <span class="text-[10px] text-white/90 truncate w-full">${app.label}</span>
+                    </div>
+                `;
+                startGrid.insertAdjacentHTML('beforeend', appHtml);
+            });
 
-            const radioButtons = document.querySelectorAll('input[name="wallpaper-type"]');
-            radioButtons.forEach(btn => {
-                btn.onchange = (e) => {
+            // 初始推荐项目挂载
+            const recommendedGrid = document.getElementById('start-menu-recommended-grid');
+            recommendedGrid.innerHTML = `
+                <div onclick="openApp('editor')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-xs select-none">
+                    <span>📄</span>
+                    <div class="truncate text-left">
+                        <p class="font-bold truncate">sys_test.txt</p>
+                        <p class="opacity-50 text-[10px]">刚刚打开 - C:/Users/jr_user/Documents</p>
+                    </div>
+                </div>
+            `;
+
+            updateTaskbar();
+
+            // 点击桌面壁纸区域关闭所有浮空看板（开始菜单、日历、电源）
+            document.getElementById('desktop-wallpaper-trigger').onclick = () => {
+                document.getElementById('start-menu').classList.add('hidden');
+                document.getElementById('calendar-flyout').classList.add('hidden');
+            };
+        }
+
+        // 渲染 Windows 底部系统任务栏
+        function updateTaskbar() {
+            const trayContainer = document.getElementById('taskbar-running-apps');
+            // 清理旧活动图标
+            trayContainer.innerHTML = '';
+
+            windowManager.windows.forEach(win => {
+                const activeBar = SYSTEM_STATE.activeWindow === win.id ? 'bg-winblue w-4' : 'bg-white/40 w-1.5';
+                const appMeta = desktopApps.find(app => app.id === win.id);
+                const icon = appMeta ? appMeta.icon : '⚙️';
+
+                const appHtml = `
+                    <div onclick="windowManager.focusWindow('${win.id}')" class="relative group cursor-pointer w-10 h-10 flex flex-col items-center justify-center hover:bg-white/10 rounded-md transition duration-150 active:scale-90 select-none">
+                        <span class="text-2xl">${icon}</span>
+                        <span class="absolute bottom-1 h-[3px] rounded-full transition-all duration-200 ${activeBar}"></span>
+                    </div>
+                `;
+                trayContainer.insertAdjacentHTML('beforeend', appHtml);
+            });
+        }
+
+        // 开始菜单与日历看板弹起
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            document.getElementById('calendar-flyout').classList.add('hidden'); // 关闭日历
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                menu.classList.add('start-animate');
+                playSystemSound(700, 'sine', 0.05);
+            }
+        }
+
+        function toggleCalendarFlyout() {
+            const flyout = document.getElementById('calendar-flyout');
+            document.getElementById('start-menu').classList.add('hidden'); // 关闭开始菜单
+            flyout.classList.toggle('hidden');
+            if (!flyout.classList.contains('hidden')) {
+                playSystemSound(700, 'sine', 0.05);
+            }
+        }
+
+        // 一键显示桌面 (Show Desktop)
+        function minimizeAllWindows() {
+            windowManager.windows.forEach(win => {
+                windowManager.minimizeWindow(win.id);
+            });
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('calendar-flyout').classList.add('hidden');
+        }
+
+        // 系统设置选项控制器
+        function initSettingsApp(winObj) {
+            // 监听任务栏居中 vs 靠左
+            const alignRadios = document.querySelectorAll('input[name="settings-taskbar-align"]');
+            alignRadios.forEach(radio => {
+                radio.onchange = (e) => {
+                    const align = e.target.value;
+                    const wrapper = document.getElementById('taskbar-center-container');
+                    if (align === 'left') {
+                        wrapper.className = "flex-1 flex justify-start pl-8";
+                    } else {
+                        wrapper.className = "flex-1 flex justify-center";
+                    }
+                    playSystemSound(600, 'sine', 0.05);
+                };
+            });
+
+            // 动态壁纸监听
+            const wallpaperRadios = document.querySelectorAll('input[name="wallpaper-type"]');
+            wallpaperRadios.forEach(radio => {
+                radio.onchange = (e) => {
                     SYSTEM_STATE.wallpaper = e.target.value;
-                    playSystemSound(600, 'sine', 0.1);
+                    playSystemSound(600, 'sine', 0.05);
                 };
             });
         }
 
-        function updateDock() {
-            const dock = document.getElementById('dock-bar');
-            dock.innerHTML = '';
-
-            preinstalledApps.forEach(app => {
-                const isOpen = windowManager.windows.some(w => w.id === app.id);
-                const itemHtml = `
-                    <div onclick="openApp('${app.id}')" class="relative group cursor-pointer p-2 rounded-xl hover:bg-white/10 hover:scale-110 active:scale-95 transition-all flex items-center justify-center">
-                        <span class="text-3xl">${app.icon}</span>
-                        ${isOpen ? `
-                            <span class="absolute bottom-1 w-1.5 h-1.5 dynamic-accent-bg rounded-full animate-pulse"></span>
-                        ` : ''}
-                    </div>
-                `;
-                dock.insertAdjacentHTML('beforeend', itemHtml);
-            });
-        }
-
-        function toggleStartMenu() {
-            const menu = document.getElementById('start-menu');
-            menu.classList.toggle('hidden');
-            playSystemSound(700, 'sine', 0.08);
-        }
-
-        function setTheme(themeId) {
-            document.body.className = `overflow-hidden w-screen h-screen select-none bg-black theme-${themeId}`;
-            SYSTEM_STATE.theme = themeId;
-            playSystemSound(800, 'sine', 0.1);
-        }
-
-        function triggerShutdown() {
+        // 经典 Windows CRT 安全关机逻辑
+        function triggerPowerMenu() {
             playSystemSound(150, 'sawtooth', 0.4);
-            const desktop = document.getElementById('desktop');
+            const desktop = document.getElementById('desktop-workspace');
             desktop.classList.add('crt-shutdown');
+            document.getElementById('start-menu').classList.add('hidden');
             setTimeout(() => {
                 document.body.innerHTML = `
-                    <div class="w-full h-full bg-black flex flex-col items-center justify-center font-mono-os text-zinc-700 text-xs select-none">
-                        <span>[ JR OS 已安全切断微内核电源 ]</span>
-                        <span class="opacity-40 mt-1">刷新页面重新点火。</span>
+                    <div class="w-full h-full bg-black flex flex-col items-center justify-center font-mono-os text-zinc-600 text-xs select-none">
+                        <span class="text-sm font-semibold mb-1">[ Windows 11 已成功安全关机 ]</span>
+                        <span class="opacity-40">请刷新网页重新点火启动系统。</span>
                     </div>
                 `;
             }, 400);
         }
-
-        window.addEventListener('resize', () => {
-            if (window.wallpaperEngine) {
-                window.wallpaperEngine.resize();
-            }
-        });
     </script>
-    
-    <!-- 仿真互联网静态数据库 -->
-    <script>
-        const VIRTUAL_INTERNET = {
-            "jros://welcome": {
-                title: "JR OS 官方引航站",
-                body: `
-                    <div class="space-y-6">
-                        <div class="p-6 rounded-xl bg-gradient-to-r from-blue-900/60 to-indigo-900/40 border border-blue-500/30 text-center">
-                            <h1 class="text-2xl font-bold text-sky-300">🌐 欢迎来到星际航行浏览器 v1.2.2</h1>
-                            <p class="text-xs text-slate-300 mt-2">在这里，我们彻底打破了跨域 Frame-Busting 限制。你可以直接无缝浏览真实网页，或是完美体验内置的“虚拟极客万维网”！</p>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-sm font-bold text-slate-300 border-b border-slate-700 pb-2 mb-3">📍 推荐网络节点</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
-                                    <h4 class="font-bold text-sky-400">🎮 街机游戏中心</h4>
-                                    <p class="text-xs text-slate-400 mt-1">无需下载，内网即时启动经典街机休闲游戏。</p>
-                                    <button onclick="browserNavigate('app-content-browser', 'jros://games')" class="mt-3 text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1 rounded text-white font-bold transition">立即访问 &rarr;</button>
-                                </div>
-                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
-                                    <h4 class="font-bold text-cyan-400">💬 极客聊天室</h4>
-                                    <p class="text-xs text-slate-400 mt-1">进入内网暗哨聊天室，看看其他极客们正在讨论什么。</p>
-                                    <button onclick="browserNavigate('app-content-browser', 'jros://chat')" class="mt-3 text-xs bg-cyan-600 hover:bg-cyan-500 px-3 py-1 rounded text-white font-bold transition">敲门进入 &rarr;</button>
-                                </div>
-                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-emerald-500/40 transition">
-                                    <h4 class="font-bold text-emerald-400">📖 外部: OSDev Wiki (Iframe)</h4>
-                                    <p class="text-xs text-slate-400 mt-1">探索真实的操作系统底层开发指南，无阻碍学习。</p>
-                                    <button onclick="browserNavigate('app-content-browser', 'https://www.osdev.org')" class="mt-3 text-xs bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-white font-bold transition">直接航行 &rarr;</button>
-                                </div>
-                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-purple-500/40 transition">
-                                    <h4 class="font-bold text-purple-400">📡 仿真代理: Github 个人主页</h4>
-                                    <p class="text-xs text-slate-400 mt-1">经典伪静态克隆。支持在此浏览器里继续跳转。</p>
-                                    <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="mt-3 text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-white font-bold transition">点击跳转 &rarr;</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-            "jros://games": {
-                title: "经典街机游戏中心",
-                body: `
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
-                            <h2 class="text-xl font-bold text-amber-400">👾 经典街机游戏厅</h2>
-                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回引航站</button>
-                        </div>
-                        <p class="text-xs text-slate-400">这些是 JR OS 为您特供的内网应用，点击下方按钮将直接调用 OS 底层核心渲染和硬件声音模块！</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
-                                <div>
-                                    <h4 class="font-bold text-white">🚀 太空入侵者 (Space Invaders)</h4>
-                                    <p class="text-xs text-slate-400 mt-1">复古 8-Bit 像素弹幕飞行射击。</p>
-                                </div>
-                                <button onclick="windowManager.createWindow('game', '经典太空侵略者 (Space Invaders)', 'template-game', 460, 450, initGameApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
-                            </div>
-                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
-                                <div>
-                                    <h4 class="font-bold text-white">🎨 像素画板 (JR Paint)</h4>
-                                    <p class="text-xs text-slate-400 mt-1">画作直接支持保存至 VFS 文件系统中。</p>
-                                </div>
-                                <button onclick="windowManager.createWindow('paint', '复古 Canvas 像素画板 (JR Paint)', 'template-paint', 560, 450, initPaintApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-            "jros://chat": {
-                title: "极客地下聊天室",
-                body: `
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
-                            <h2 class="text-xl font-bold text-emerald-400">💬 Anonymous Geeks Chatroom</h2>
-                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回主页</button>
-                        </div>
-                        
-                        <div class="p-4 rounded-lg bg-black/40 border border-slate-800 h-64 overflow-y-auto space-y-3 text-xs font-mono-os">
-                            <div class="text-slate-500 text-center">[ 系统提示: 安全加密隧道已构建 ]</div>
-                            <div><span class="text-purple-400 font-bold">Neo:</span> 你们有人尝试过在 iPad 上双击 calc.exe 直接调起安装包了吗？</div>
-                            <div><span class="text-cyan-400 font-bold">Trinity:</span> 我刚刚双击了，动画非常丝滑，向导不仅有进度条，写完了还能自动追加桌面图标和底栏圆点！</div>
-                            <div><span class="text-amber-400 font-bold">Morpheus:</span> 没错，我们甚至可以直接在文本编辑器里写一段 JSON 包，写完了保存为 .exe 也能一键安装！这直接构成了一个完整的 OS 开发大闭环。</div>
-                            <div><span class="text-emerald-400 font-bold">You (Admin):</span> <span class="text-slate-300">完全闭环！我们实现了一个可以动态安装拓展的轻量 OS。最绝的是配置项被作者提到 index.html 最开头了，一打开就能看见！</span></div>
-                        </div>
-                        
-                        <div class="flex space-x-2">
-                            <input type="text" placeholder="向匿名信道发送加密短波..." class="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 outline-none focus:border-emerald-500">
-                            <button onclick="playSystemSound(900, 'sine', 0.08)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold">发送</button>
-                        </div>
-                    </div>
-                `
-            },
-            "jros://github/jr_user": {
-                title: "Github - jr_user / OS-Project",
-                body: `
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-2 text-xs text-slate-400 bg-slate-800 p-2 rounded">
-                            <span>🐱 Github.com / jr_user / <strong>jros-kernel</strong></span>
-                            <span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-green-400">Public</span>
-                        </div>
-                        
-                        <h2 class="text-xl font-bold text-white">💻 jros-kernel: A micro-kernel for hobbyists</h2>
-                        <p class="text-xs text-slate-400">This is an operating system core developed for iPad, running directly on customized HTML5 core engines.</p>
-                        
-                        <div class="border border-slate-800 rounded-lg overflow-hidden text-xs">
-                            <div class="bg-slate-800/80 px-4 py-2 border-b border-slate-800 flex justify-between text-slate-300">
-                                <span>📁 Files</span>
-                                <span class="text-sky-400">Latest commit 2 hours ago</span>
-                            </div>
-                            <div class="divide-y divide-slate-800 bg-slate-900/60 font-mono-os">
-                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/kernel')">
-                                    <span class="text-sky-400">📁 kernel/</span>
-                                    <span class="text-slate-500">Add context-switch bitmap scheduler</span>
-                                </div>
-                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/vfs')">
-                                    <span class="text-sky-400">📁 vfs/</span>
-                                    <span class="text-slate-500">Optimize path resolver</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-            "jros://github/jr_user/kernel": {
-                title: "Github - jr_user/jros-kernel/kernel",
-                body: `
-                    <div class="space-y-4 font-mono-os">
-                        <div class="flex justify-between items-center text-xs">
-                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
-                            <span class="text-slate-500">Path: /kernel/sched.c</span>
-                        </div>
-                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
-<pre>#include &lt;jros/sched.h&gt;
-#include &lt;jros/interrupt.h&gt;
 
-void context_switch(thread_t* next) {
-    play_hardware_beep(440);
-    asm volatile(
-        "mov %0, %%cr3\\n"
-        "switch_registers..."
-        : : "r"(next->page_dir_phys)
-    );
-}</pre>
-                        </div>
-                    </div>
-                `
-            },
-            "jros://github/jr_user/vfs": {
-                title: "Github - jr_user/jros-kernel/vfs",
-                body: `
-                    <div class="space-y-4 font-mono-os">
-                        <div class="flex justify-between items-center text-xs">
-                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
-                            <span class="text-slate-500">Path: /vfs/vfs_resolve.c</span>
-                        </div>
-                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
-<pre>#include &lt;jros/vfs.h&gt;
-
-vfs_node_t* resolve_path(const char* path) {
-    if (path[0] == '/') {
-        return root_node;
-    }
-    return NULL;
-}</pre>
-                        </div>
-                    </div>
-                `
-            }
-        };
-    </script>
 </body>
 </html>
