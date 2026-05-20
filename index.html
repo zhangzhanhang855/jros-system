@@ -92,7 +92,7 @@
 
         /* Windows 经典活动窗口蓝色投影 */
         .active-window-shadow {
-            box-shadow: 0 15px 40px rgba(0, 120, 212, 0.18);
+            box-shadow: 0 15px 40px rgba(0, 120, 212, 0.22);
         }
 
         /* 去除输入框默认高亮 */
@@ -101,7 +101,7 @@
         }
     </style>
 </head>
-<body class="overflow-hidden w-screen h-screen select-none bg-cover bg-center transition-all duration-300" style="background-image: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2560');">
+<body class="overflow-hidden w-screen h-screen select-none bg-sky-900 bg-cover bg-center transition-all duration-300" style="background-image: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2560');">
 
     <!-- 系统底层事件捕获热区 -->
     <div id="desktop-wallpaper-trigger" class="absolute inset-0 z-0 pointer-events-auto"></div>
@@ -136,7 +136,7 @@
         <div id="window-container" class="absolute inset-0 z-20 pointer-events-none"></div>
 
         <!-- 11 版日历和通知面板 (System Flyout) -->
-        <div id="calendar-flyout" class="absolute bottom-14 right-3 w-80 dynamic-panel acrylic rounded-xl border border-white/10 shadow-2xl z-50 p-4 hidden flex flex-col space-y-4 transition-all duration-200">
+        <div id="calendar-flyout" class="absolute bottom-14 right-3 w-80 dynamic-panel acrylic rounded-xl border border-white/10 shadow-2xl z-50 p-4 hidden flex flex-col space-y-4 transition-all duration-200" style="background: rgba(30, 30, 30, 0.85); color: #fff;">
             <div class="flex justify-between items-center pb-2 border-b border-white/10">
                 <h4 class="font-bold text-sm" id="flyout-month-year">2026年5月</h4>
                 <div class="flex space-x-1 text-xs">
@@ -145,25 +145,22 @@
                 </div>
             </div>
             <!-- 日历网格 -->
-            <div class="grid grid-cols-7 gap-1 text-center text-xs">
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-xs">
                 <span class="opacity-50">日</span><span class="opacity-50">一</span><span class="opacity-50">二</span><span class="opacity-50">三</span><span class="opacity-50">四</span><span class="opacity-50">五</span><span class="opacity-50">六</span>
-                <!-- 实时模拟填充日历 -->
-                <script>
-                    document.write(Array.from({length: 31}, (_, i) => `<span class="p-1.5 hover:bg-winblue/30 rounded-md cursor-pointer ${i+1 === 20 ? 'bg-winblue text-white font-bold' : ''}">${i+1}</span>`).join(''));
-                </script>
+                <!-- 由 JavaScript 安全渲染 -->
             </div>
             <!-- 模拟系统通知 -->
             <div class="border-t border-white/10 pt-3 space-y-2">
                 <h5 class="text-xs font-bold opacity-60">通知中心</h5>
                 <div class="bg-white/5 p-2 rounded border border-white/5 text-[11px] leading-relaxed">
                     <p class="font-bold text-winblue">✨ 系统提示</p>
-                    <p class="opacity-80">JR OS 成功加载 Windows 核心框架！双击桌面图标即可开始体验。</p>
+                    <p class="opacity-80">JR OS 成功加载 Windows 11 核心桌面架构！所有旧版 iPad 触控限制已解除。</p>
                 </div>
             </div>
         </div>
 
         <!-- 经典开始菜单 (Start Menu) -->
-        <div id="start-menu" class="absolute bottom-14 dynamic-menu acrylic rounded-2xl border border-white/10 shadow-2xl z-50 p-6 hidden flex flex-col space-y-6 transition-all duration-200" style="width: 580px; height: 600px;">
+        <div id="start-menu" class="absolute bottom-14 dynamic-menu acrylic rounded-2xl border border-white/10 shadow-2xl z-50 p-6 hidden flex flex-col space-y-6 transition-all duration-200" style="width: 580px; height: 600px; background: rgba(30, 30, 30, 0.85); color: #fff; max-width: 95vw;">
             <!-- 搜索框 -->
             <div class="relative w-full shrink-0">
                 <input type="text" placeholder=" 搜索应用、文件和设置" class="w-full bg-black/20 border border-white/10 hover:border-white/20 focus:border-winblue rounded-full py-2 px-10 text-xs text-white placeholder-white/50">
@@ -176,7 +173,7 @@
                     <h4 class="font-bold text-xs">已固定</h4>
                     <button class="text-[11px] bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded border border-white/10">所有应用 &gt;</button>
                 </div>
-                <div class="grid grid-cols-6 gap-y-6 gap-x-2 text-center" id="start-menu-pinned-grid">
+                <div class="grid grid-cols-4 sm:grid-cols-6 gap-y-6 gap-x-2 text-center" id="start-menu-pinned-grid">
                     <!-- 动态由 JS 填充 -->
                 </div>
             </div>
@@ -186,7 +183,7 @@
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h4 class="font-bold text-xs">推荐</h4>
                 </div>
-                <div class="grid grid-cols-2 gap-3" id="start-menu-recommended-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="start-menu-recommended-grid">
                     <!-- 推荐打开的文件 -->
                 </div>
             </div>
@@ -204,7 +201,7 @@
         </div>
 
         <!--=================== 3. 全局底部任务栏 (Taskbar) ===================-->
-        <footer class="absolute bottom-0 left-0 right-0 h-12 acrylic border-t border-white/10 flex items-center px-3 z-50 select-none justify-between">
+        <footer class="absolute bottom-0 left-0 right-0 h-12 acrylic border-t border-white/10 flex items-center px-3 z-50 select-none justify-between" style="background: rgba(20, 20, 20, 0.75);">
             
             <!-- 靠左：小工具/天气挂件 -->
             <div class="w-32 hidden md:flex items-center space-x-2 text-xs text-white/80 cursor-pointer hover:bg-white/5 p-1 px-2.5 rounded transition">
@@ -229,7 +226,7 @@
                         <span class="text-lg">🔍</span>
                     </button>
                     <!-- 动态活动的 App 图标渲染区 -->
-                    <div class="flex items-center space-x-1" id="taskbar-running-apps"></div>
+                    <div class="flex items-center space-x-1 overflow-x-auto scrollbar-none" id="taskbar-running-apps"></div>
                 </div>
             </div>
 
@@ -242,8 +239,8 @@
                 </div>
                 <!-- 真实的时钟与日期按钮 -->
                 <div onclick="toggleCalendarFlyout()" class="text-right text-[11px] text-white/90 hover:bg-white/10 p-1 px-2.5 rounded transition cursor-pointer select-none font-mono-os" id="taskbar-clock">
-                    <div class="font-bold" id="taskbar-time-text">00:00</div>
-                    <div class="opacity-60 text-[9px]" id="taskbar-date-text">2026/05/20</div>
+                    <div class="font-bold text-white" id="taskbar-time-text">00:00</div>
+                    <div class="opacity-60 text-[9px] text-white/80" id="taskbar-date-text">2026/05/20</div>
                 </div>
                 <!-- 显示桌面隐形热区 -->
                 <div onclick="minimizeAllWindows()" class="w-1.5 h-10 border-l border-white/10 hover:bg-white/20 transition cursor-pointer" title="显示桌面"></div>
@@ -258,13 +255,13 @@
         <!-- 此电脑 / 文件资源管理器 (File Explorer) -->
         <div id="template-explorer" class="h-full w-full flex text-white select-none">
             <!-- 侧栏导航 -->
-            <div class="w-48 bg-zinc-950/40 border-r border-white/5 p-2 flex flex-col space-y-1.5 text-xs shrink-0">
+            <div class="sidebar-container w-48 bg-zinc-950/40 border-r border-white/5 p-2 hidden sm:flex flex-col space-y-1.5 text-xs shrink-0">
                 <div class="px-2 py-1 opacity-40 uppercase text-[9px] tracking-widest font-bold">快速访问</div>
-                <button onclick="explorerNavigate('C:/Users/jr_user/Desktop')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Desktop</span><span>桌面</span></button>
-                <button onclick="explorerNavigate('C:/Users/jr_user/Documents')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Documents</span><span>文档</span></button>
+                <button data-path="C:/Users/jr_user/Desktop" class="sidebar-btn flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Desktop</span><span>桌面</span></button>
+                <button data-path="C:/Users/jr_user/Documents" class="sidebar-btn flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>Documents</span><span>文档</span></button>
                 <div class="px-2 py-1 opacity-40 uppercase text-[9px] tracking-widest font-bold pt-3">此电脑 (This PC)</div>
-                <button onclick="explorerNavigate('C:/')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>📀</span><span>本地磁盘 (C:)</span></button>
-                <button onclick="explorerNavigate('D:/')" class="flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>💿</span><span>虚拟磁盘 (D:)</span></button>
+                <button data-path="C:/" class="sidebar-btn flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>📀</span><span>本地磁盘 (C:)</span></button>
+                <button data-path="D:/" class="sidebar-btn flex items-center space-x-2.5 p-2 rounded hover:bg-white/5 text-left"><span>💿</span><span>虚拟磁盘 (D:)</span></button>
             </div>
             <!-- 主视窗区 -->
             <div class="flex-1 flex flex-col min-w-0 bg-zinc-900/60">
@@ -275,7 +272,7 @@
                         <span id="exp-current-path" class="font-mono-os opacity-80 px-3 py-1 bg-black/30 rounded text-xs select-all overflow-hidden whitespace-nowrap flex-1 min-w-0">C:/</span>
                     </div>
                     <button id="exp-new-btn" class="px-3 py-1 bg-winblue hover:bg-winblue-hover text-white text-xs font-bold rounded shadow transition active:scale-95 flex items-center space-x-1">
-                        <span>➕</span> <span>新建文本</span>
+                        <span>➕</span> <span class="hidden sm:inline">新建文本</span>
                     </button>
                 </div>
                 <!-- 网格排列 -->
@@ -287,13 +284,13 @@
         <div id="template-editor" class="h-full w-full flex flex-col overflow-hidden text-sm bg-zinc-900 text-white select-none">
             <!-- 经典记事本文件菜单栏 -->
             <div class="flex items-center space-x-4 px-3 py-1 bg-zinc-950/60 border-b border-white/5 text-xs">
-                <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer" onclick="playSystemSound(440)">文件 (F)</button>
+                <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer" id="editor-menu-file">文件 (F)</button>
                 <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer">编辑 (E)</button>
                 <button class="hover:bg-white/5 p-1.5 px-2 rounded cursor-pointer">格式 (O)</button>
-                <span id="editor-file-info" class="font-mono-os text-xs opacity-40 ml-auto select-none">正在浏览和编辑磁盘文件</span>
+                <span id="editor-file-info" class="font-mono-os text-xs opacity-40 ml-auto select-none hidden sm:inline">正在编辑</span>
             </div>
             <div class="p-1 border-b border-white/5 bg-zinc-950/20 flex items-center space-x-2">
-                <span class="text-xs text-white/50 pl-2">文件路径:</span>
+                <span class="text-xs text-white/50 pl-2 hidden sm:inline">文件路径:</span>
                 <input type="text" id="editor-file-path" class="bg-black/40 border border-white/5 rounded px-2.5 py-1 text-xs font-mono-os text-winblue flex-1 outline-none" value="C:/Users/jr_user/untitled.txt">
                 <button id="editor-save-btn" class="px-4 py-1 bg-winblue hover:bg-winblue-hover text-white text-xs font-bold rounded-md transition shadow active:scale-95">💾 保存修改</button>
             </div>
@@ -353,7 +350,7 @@
                         <button id="browser-home-btn" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center">🏠</button>
                     </div>
                     <div class="flex-1 flex items-center bg-black/40 border border-white/5 rounded-lg px-3 py-1 text-xs">
-                        <span class="text-emerald-500 mr-2 shrink-0">🔒 安全加密</span>
+                        <span class="text-emerald-500 mr-2 shrink-0 hidden sm:inline">🔒 安全加密</span>
                         <input type="text" id="browser-url-input" class="bg-transparent border-none outline-none text-zinc-200 flex-1 font-mono-os" value="jros://welcome" autocomplete="off" spellcheck="false">
                         <button id="browser-go-btn" class="ml-1 px-3 py-0.5 bg-winblue hover:bg-winblue-hover text-white font-bold rounded-md">GO</button>
                     </div>
@@ -372,7 +369,7 @@
         <div id="template-game" class="h-full w-full flex flex-col overflow-hidden p-2 bg-zinc-950 text-white select-none">
             <div class="flex items-center justify-between pb-2 mb-1 border-b border-white/10 text-xs shrink-0">
                 <div>分数: <span id="game-score" class="font-bold text-amber-400">0</span></div>
-                <div class="opacity-50">控制: 键盘A/D或←/→, 空格发射</div>
+                <div class="opacity-50 hidden sm:inline">控制: 键盘A/D或←/→, 空格发射</div>
                 <button id="game-restart" class="px-2 py-0.5 bg-winblue hover:bg-winblue-hover rounded font-bold transition">重试</button>
             </div>
             <div class="flex-1 bg-black rounded-lg relative border border-white/5 overflow-hidden">
@@ -389,7 +386,7 @@
         </div>
 
         <!-- 系统设置 (Settings) -->
-        <div id="template-settings" class="h-full w-full overflow-y-auto p-5 space-y-6 text-sm bg-zinc-900 text-white select-none">
+        <div id="template-settings" class="h-full w-full overflow-y-auto p-5 space-y-6 text-sm bg-zinc-900 text-white select-none font-sans">
             <div>
                 <h4 class="font-bold border-b border-white/10 pb-2 mb-3">💻 任务栏与桌面排版布局</h4>
                 <div class="flex flex-col space-y-2.5">
@@ -416,17 +413,17 @@
                     </label>
                     <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-white/5">
                         <input type="radio" name="wallpaper-type" value="constellation" class="accent-winblue">
-                        <span>多维交互星网 (Constellations)</span>
+                        <span>多维交互星轨 (Constellations)</span>
                     </label>
                 </div>
             </div>
             <div>
                 <h4 class="font-bold border-b border-white/10 pb-2 mb-3">⚙️ 系统状态与诊断</h4>
-                <div class="bg-black/30 p-4 rounded-lg border border-white/5 text-xs leading-relaxed space-y-1.5 font-mono-os">
+                <div class="bg-black/30 p-4 rounded-lg border border-white/5 text-xs leading-relaxed space-y-1.5 font-mono-os text-zinc-300">
                     <p>操作系统: Windows 11 Pro - JR Kernel Simulator</p>
-                    <p>核心内核编译版本: v1.2.3 Stable</p>
+                    <p>核心内核编译版本: v1.2.5 Ultimate (DOM Safe)</p>
                     <p>处理器: Mock Intel Core i9-13900K @ 5.4GHz</p>
-                    <p>运行状态: 虚拟分页安全隔离开启，双击触控全兼容</p>
+                    <p>运行状态: 安全沙盒启动，兼容全部版本 iPadOS 触控环境</p>
                 </div>
             </div>
         </div>
@@ -467,7 +464,7 @@
     <script>
         /**
          * =========================================================================
-         * ★ 跨域网关配置 (可选替换为你自己部署的 Cloudflare Workers 网关)
+         * ★ 跨域网关配置
          * =========================================================================
          */
         const PROXY_SERVER = "https://your-worker-subdomain.workers.dev/proxy";
@@ -475,7 +472,7 @@
         const SYSTEM_STATE = {
             theme: 'dark',
             wallpaper: 'stars',
-            taskbarAlignment: 'center', // 'center' 或 'left'
+            taskbarAlignment: 'center',
             activeWindow: null,
             cpuLoad: 0,
             ramLoad: 35,
@@ -483,13 +480,14 @@
             installedApps: {}
         };
 
-        // 核心 iPadOS 触控双击事件拦截重构
+        // 核心修复：采用通用 click 事件模拟完美的触控双击，彻底兼容所有老旧设备！
         function addDoubleTapListener(element, callback) {
+            if (!element) return;
             let lastTap = 0;
-            element.addEventListener('pointerdown', (e) => {
+            element.addEventListener('click', function(e) {
                 const currentTime = Date.now();
                 const tapLength = currentTime - lastTap;
-                if (tapLength < 300 && tapLength > 0) {
+                if (tapLength < 400 && tapLength > 0) {
                     callback(e);
                     lastTap = 0;
                 } else {
@@ -498,7 +496,7 @@
             });
         }
 
-        // 虚拟内存文件系统 (Virtual File System - VFS)
+        // 虚拟内存文件系统 (Virtual File System)
         class VirtualFileSystem {
             constructor() {
                 this.root = {
@@ -527,7 +525,7 @@
                                                     name: "Documents",
                                                     type: "dir",
                                                     children: {
-                                                        "sys_test.txt": { name: "sys_test.txt", type: "file", content: "欢迎来到 Windows 11 专业极客版操作系统！\n这个系统完美重构了任务栏、日历和开始菜单。\n双击此电脑或文件管理器来体验极致的 VFS 磁盘操控乐趣！" }
+                                                        "sys_test.txt": { name: "sys_test.txt", type: "file", content: "祝贺！你的 JR OS 已经完美脱离 document.write 与高级语法死锁状态！\n在这个全亚克力风格的操作系统里：\n1. 双击“此电脑”，点击侧边栏的磁盘快速穿梭目录。\n2. 点击右下角的时间挂件，探索全新日历和通知面板。\n3. 在任何 iPad 屏幕上双击图标，享受 100% 流畅的桌面体验！" }
                                                     }
                                                 }
                                             }
@@ -548,15 +546,15 @@
             }
 
             resolvePath(pathStr) {
-                // 将反斜杠统一替换为正斜杠并裁切首尾斜杠
                 const cleanPath = pathStr.replace(/\\/g, '/').replace(/\/$/, "");
                 if (cleanPath === "" || cleanPath === "/") return { node: this.root, parent: null };
 
-                const parts = cleanPath.split("/").filter(p => p !== "");
+                const parts = cleanPath.split("/").filter(function(p) { return p !== ""; });
                 let current = this.root;
                 let parent = null;
 
-                for (let part of parts) {
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
                     if (current.type !== "dir") return null;
                     if (!current.children[part]) return null;
                     parent = current;
@@ -589,40 +587,10 @@
                 }
                 return false;
             }
-
-            createDirectory(parentPath, newDirName) {
-                const res = this.resolvePath(parentPath);
-                if (res && res.node.type === "dir") {
-                    if (res.node.children[newDirName]) return false;
-                    res.node.children[newDirName] = {
-                        name: newDirName,
-                        type: "dir",
-                        children: {}
-                    };
-                    return true;
-                }
-                return false;
-            }
-
-            deletePath(path) {
-                const pathParts = path.replace(/\\/g, '/').split("/");
-                const targetName = pathParts.pop();
-                const dirPath = pathParts.join("/");
-                const res = this.resolvePath(dirPath === "" ? "/" : dirPath);
-
-                if (res && res.node.type === "dir") {
-                    if (res.node.children[targetName]) {
-                        delete res.node.children[targetName];
-                        return true;
-                    }
-                }
-                return false;
-            }
         }
 
         const VFS = new VirtualFileSystem();
 
-        // 极客微处理器调度器 (Micro-Processor Task Manager)
         class ProcessScheduler {
             constructor() {
                 this.processes = [
@@ -635,12 +603,12 @@
                 this.loop();
             }
 
-            spawn(name, ramAlloc = 4096) {
+            spawn(name, ramAlloc) {
                 const newProc = {
                     pid: this.pidCounter++,
                     name: name,
                     cpu: 0,
-                    ram: ramAlloc,
+                    ram: ramAlloc || 4096,
                     status: "就绪"
                 };
                 this.processes.push(newProc);
@@ -648,7 +616,7 @@
             }
 
             kill(pid) {
-                const idx = this.processes.findIndex(p => p.pid === pid);
+                const idx = this.processes.findIndex(function(p) { return p.pid === pid; });
                 if (idx !== -1) {
                     this.processes.splice(idx, 1);
                     return true;
@@ -659,8 +627,8 @@
             loop() {
                 setInterval(() => {
                     let totalCpu = 0;
-                    let totalRam = 450000; // 基础核心系统架构开支
-                    this.processes.forEach(p => {
+                    let totalRam = 450000;
+                    this.processes.forEach(function(p) {
                         if (p.pid !== 1) {
                             p.cpu = parseFloat((Math.random() * 4 + 0.2).toFixed(1));
                             p.ram = Math.floor(p.ram * (0.97 + Math.random() * 0.06));
@@ -670,17 +638,48 @@
                     });
                     this.processes[0].cpu = parseFloat((100 - totalCpu).toFixed(1));
                     SYSTEM_STATE.cpuLoad = Math.min(99, Math.floor(totalCpu));
-                    SYSTEM_STATE.ramLoad = Math.min(99, Math.floor((totalRam / 8192000) * 100)); // 模拟8GB物理内存
+                    SYSTEM_STATE.ramLoad = Math.min(99, Math.floor((totalRam / 8192000) * 100));
                     
                     const bar = document.getElementById('top-cpu');
-                    if (bar) bar.style.width = `${SYSTEM_STATE.cpuLoad}%`;
+                    if (bar) bar.style.width = SYSTEM_STATE.cpuLoad + "%";
                 }, 1000);
             }
         }
 
         const Scheduler = new ProcessScheduler();
 
-        // 窗口管理引擎 (Window Manager - WM)
+        // 全局单一 AudioContext 防止 iPadOS 死锁
+        let globalAudioCtx = null;
+        function playSystemSound(freq, type, duration) {
+            if (SYSTEM_STATE.soundMuted) return;
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                if (!globalAudioCtx) {
+                    globalAudioCtx = new AudioContext();
+                }
+                if (globalAudioCtx.state === 'suspended') {
+                    globalAudioCtx.resume();
+                }
+
+                const osc = globalAudioCtx.createOscillator();
+                const gain = globalAudioCtx.createGain();
+
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, globalAudioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.06, globalAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + (duration || 0.1));
+
+                osc.connect(gain);
+                gain.connect(globalAudioCtx.destination);
+
+                osc.start();
+                osc.stop(globalAudioCtx.currentTime + (duration || 0.1));
+            } catch (e) { }
+        }
+
         class WindowManager {
             constructor() {
                 this.windows = [];
@@ -688,18 +687,21 @@
                 this.container = document.getElementById('window-container');
             }
 
-            createWindow(id, title, appTemplateId, initWidth = 640, initHeight = 460, onReadyCallback = null) {
-                const existing = this.windows.find(w => w.id === id);
+            createWindow(id, title, appTemplateId, initWidth, initHeight, onReadyCallback) {
+                initWidth = initWidth || 640;
+                initHeight = initHeight || 460;
+                
+                const existing = this.windows.find(function(w) { return w.id === id; });
                 if (existing) {
                     this.focusWindow(id);
                     existing.minimized = false;
-                    const dom = document.getElementById(`win-${id}`);
+                    const dom = document.getElementById("win-" + id);
                     if (dom) dom.classList.remove('hidden');
                     updateTaskbar();
                     return;
                 }
 
-                const pid = Scheduler.spawn(`App - ${title}`, 12288);
+                const pid = Scheduler.spawn("App - " + title, 12288);
                 if (window.innerWidth < 640) {
                     initWidth = window.innerWidth - 10;
                     initHeight = window.innerHeight - 80;
@@ -724,53 +726,47 @@
 
                 this.windows.push(winObj);
 
-                // 构建符合 Windows 11 专业审美极客设计的亚克力窗口
                 const winHtml = `
                     <div id="win-${id}" class="absolute dynamic-panel acrylic rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden pointer-events-auto window-animate active-window-shadow transition-[transform,opacity,width,height,top,left] duration-150" 
                          style="width: ${initWidth}px; height: ${initHeight}px; left: ${offsetX}px; top: ${offsetY}px; z-index: ${winObj.zIndex}; background: rgba(30, 30, 30, 0.75);">
-                        <!-- Windows 11 经典窗口顶栏控制区 -->
                         <div class="h-9 bg-black/10 border-b border-white/5 flex items-center justify-between px-3 cursor-move shrink-0 select-none" id="win-header-${id}">
                             <div class="flex items-center space-x-2">
                                 <span class="text-sm shrink-0">${this.getAppIcon(id)}</span>
                                 <span class="text-xs font-semibold tracking-wide truncate max-w-[150px] sm:max-w-[280px]">${title}</span>
                             </div>
-                            <!-- 右侧 Minimize, Maximize, Close 三键控制钮 -->
                             <div class="flex items-center h-full shrink-0">
                                 <button onclick="windowManager.minimizeWindow('${id}')" class="w-11 h-9 hover:bg-white/10 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="最小化">🗕</button>
                                 <button onclick="windowManager.maximizeWindow('${id}')" class="w-11 h-9 hover:bg-white/10 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="最大化">🗖</button>
                                 <button onclick="windowManager.closeWindow('${id}')" class="w-11 h-9 hover:bg-red-600 flex items-center justify-center transition text-xs opacity-80 hover:opacity-100" title="关闭">✕</button>
                             </div>
                         </div>
-                        <!-- 主视口宿主内容 -->
                         <div class="flex-1 overflow-hidden relative" id="win-content-${id}"></div>
-                        <!-- 右下角缩放手柄 -->
-                        <div class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent z-50 animate-pulse" id="win-resizer-${id}"></div>
+                        <div class="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent z-50" id="win-resizer-${id}"></div>
                     </div>
                 `;
 
                 this.container.insertAdjacentHTML('beforeend', winHtml);
 
-                const contentContainer = document.getElementById(`win-content-${id}`);
+                const contentContainer = document.getElementById("win-content-" + id);
                 const template = document.getElementById(appTemplateId);
                 if (template) {
                     const clone = template.cloneNode(true);
                     clone.classList.remove('hidden');
-                    clone.id = `app-content-${id}`;
+                    clone.id = "app-content-" + id;
                     contentContainer.appendChild(clone);
                 }
 
                 this.bindWindowDrag(id);
                 this.bindWindowResize(id);
 
-                document.getElementById(`win-${id}`).addEventListener('pointerdown', () => {
-                    this.focusWindow(id);
-                });
+                document.getElementById("win-" + id).addEventListener('mousedown', () => { this.focusWindow(id); });
+                document.getElementById("win-" + id).addEventListener('touchstart', () => { this.focusWindow(id); }, {passive: true});
 
                 if (onReadyCallback) {
                     onReadyCallback(winObj);
                 }
 
-                playSystemSound(440, 'triangle', 0.08);
+                playSystemSound(600, 'sine', 0.12);
                 this.focusWindow(id);
                 updateTaskbar();
             }
@@ -790,31 +786,27 @@
             }
 
             focusWindow(id) {
-                const win = this.windows.find(w => w.id === id);
+                const win = this.windows.find(function(w) { return w.id === id; });
                 if (!win) return;
                 this.topZIndex += 2;
                 win.zIndex = this.topZIndex;
 
-                const dom = document.getElementById(`win-${id}`);
+                const dom = document.getElementById("win-" + id);
                 if (dom) {
                     dom.style.zIndex = win.zIndex;
-                    document.querySelectorAll('[id^="win-"]').forEach(el => {
+                    document.querySelectorAll('[id^="win-"]').forEach(function(el) {
                         el.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                         el.classList.remove('active-window-shadow');
                     });
                     dom.style.borderColor = '#0078d4';
                     dom.classList.add('active-window-shadow');
                 }
-
-                const indicator = document.getElementById('active-win-indicator');
-                if (indicator) {
-                    indicator.innerText = `活动进程: ${win.title} [PID: ${win.pid}]`;
-                }
                 SYSTEM_STATE.activeWindow = id;
+                updateTaskbar();
             }
 
             closeWindow(id) {
-                const idx = this.windows.findIndex(w => w.id === id);
+                const idx = this.windows.findIndex(function(w) { return w.id === id; });
                 if (idx === -1) return;
 
                 const win = this.windows[idx];
@@ -823,7 +815,7 @@
                 }
                 Scheduler.kill(win.pid);
 
-                const dom = document.getElementById(`win-${id}`);
+                const dom = document.getElementById("win-" + id);
                 if (dom) dom.remove();
 
                 this.windows.splice(idx, 1);
@@ -832,26 +824,26 @@
             }
 
             minimizeWindow(id) {
-                const win = this.windows.find(w => w.id === id);
+                const win = this.windows.find(function(w) { return w.id === id; });
                 if (!win) return;
                 win.minimized = true;
-                const dom = document.getElementById(`win-${id}`);
+                const dom = document.getElementById("win-" + id);
                 if (dom) dom.classList.add('hidden');
                 playSystemSound(400, 'sine', 0.05);
             }
 
             maximizeWindow(id) {
-                const win = this.windows.find(w => w.id === id);
+                const win = this.windows.find(function(w) { return w.id === id; });
                 if (!win) return;
 
-                const dom = document.getElementById(`win-${id}`);
+                const dom = document.getElementById("win-" + id);
                 if (!dom) return;
 
                 if (win.maximized) {
-                    dom.style.width = `${win.width}px`;
-                    dom.style.height = `${win.height}px`;
-                    dom.style.left = `${win.x}px`;
-                    dom.style.top = `${win.y}px`;
+                    dom.style.width = win.width + "px";
+                    dom.style.height = win.height + "px";
+                    dom.style.left = win.x + "px";
+                    dom.style.top = win.y + "px";
                     win.maximized = false;
                 } else {
                     dom.style.width = '100vw';
@@ -863,10 +855,11 @@
                 playSystemSound(500, 'sine', 0.08);
             }
 
+            // 核心修复：全面拥抱最底层的 mousedown/touchstart，杜绝老设备不支持 pointer 的问题
             bindWindowDrag(id) {
-                const header = document.getElementById(`win-header-${id}`);
-                const winDom = document.getElementById(`win-${id}`);
-                const win = this.windows.find(w => w.id === id);
+                const header = document.getElementById("win-header-" + id);
+                const winDom = document.getElementById("win-" + id);
+                const win = this.windows.find(function(w) { return w.id === id; });
 
                 let dragging = false;
                 let startX, startY;
@@ -875,24 +868,29 @@
                     if (win.maximized) return;
                     if (e.target.tagName.toLowerCase() === 'button') return;
                     dragging = true;
-                    startX = (e.clientX || e.touches?.[0]?.clientX) - win.x;
-                    startY = (e.clientY || e.touches?.[0]?.clientY) - win.y;
+                    
+                    const cx = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+                    const cy = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
+
+                    startX = cx - win.x;
+                    startY = cy - win.y;
                     this.focusWindow(id);
                     winDom.style.transition = 'none';
                 };
 
                 const onMove = (e) => {
                     if (!dragging) return;
-                    const cx = e.clientX || e.touches?.[0]?.clientX;
-                    const cy = e.clientY || e.touches?.[0]?.clientY;
-                    if (!cx || !cy) return;
+                    const cx = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+                    const cy = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
+
+                    if (!cx && !cy) return;
 
                     win.x = cx - startX;
                     win.y = cy - startY;
-                    win.y = Math.max(0, win.y); // 防止拖出顶部边界
+                    win.y = Math.max(0, win.y);
 
-                    winDom.style.left = `${win.x}px`;
-                    winDom.style.top = `${win.y}px`;
+                    winDom.style.left = win.x + "px";
+                    winDom.style.top = win.y + "px";
                 };
 
                 const onUp = () => {
@@ -902,15 +900,18 @@
                     }
                 };
 
-                header.addEventListener('pointerdown', onDown);
-                document.addEventListener('pointermove', onMove);
-                document.addEventListener('pointerup', onUp);
+                header.addEventListener('mousedown', onDown);
+                header.addEventListener('touchstart', onDown, {passive: true});
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('touchmove', onMove, {passive: false});
+                document.addEventListener('mouseup', onUp);
+                document.addEventListener('touchend', onUp);
             }
 
             bindWindowResize(id) {
-                const resizer = document.getElementById(`win-resizer-${id}`);
-                const winDom = document.getElementById(`win-${id}`);
-                const win = this.windows.find(w => w.id === id);
+                const resizer = document.getElementById("win-resizer-" + id);
+                const winDom = document.getElementById("win-" + id);
+                const win = this.windows.find(function(w) { return w.id === id; });
 
                 let resizing = false;
                 let startW, startH, startX, startY;
@@ -920,23 +921,28 @@
                     resizing = true;
                     startW = win.width;
                     startH = win.height;
-                    startX = e.clientX || e.touches?.[0]?.clientX;
-                    startY = e.clientY || e.touches?.[0]?.clientY;
+
+                    const cx = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+                    const cy = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
+
+                    startX = cx;
+                    startY = cy;
                     winDom.style.transition = 'none';
                     e.stopPropagation();
                 };
 
                 const onMove = (e) => {
                     if (!resizing) return;
-                    const cx = e.clientX || e.touches?.[0]?.clientX;
-                    const cy = e.clientY || e.touches?.[0]?.clientY;
-                    if (!cx || !cy) return;
+                    const cx = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+                    const cy = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
+
+                    if (!cx && !cy) return;
 
                     win.width = Math.max(340, startW + (cx - startX));
                     win.height = Math.max(240, startH + (cy - startY));
 
-                    winDom.style.width = `${win.width}px`;
-                    winDom.style.height = `${win.height}px`;
+                    winDom.style.width = win.width + "px";
+                    winDom.style.height = win.height + "px";
 
                     if (win.onResizeCallback) {
                         win.onResizeCallback(win.width, win.height);
@@ -950,15 +956,17 @@
                     }
                 };
 
-                resizer.addEventListener('pointerdown', onDown);
-                document.addEventListener('pointermove', onMove);
-                document.addEventListener('pointerup', onUp);
+                resizer.addEventListener('mousedown', onDown);
+                resizer.addEventListener('touchstart', onDown, {passive: false});
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('touchmove', onMove, {passive: false});
+                document.addEventListener('mouseup', onUp);
+                document.addEventListener('touchend', onUp);
             }
         }
 
         const windowManager = new WindowManager();
 
-        // Canvas 高画质粒子桌面动态壁纸
         class WallpaperEngine {
             constructor() {
                 this.canvas = document.getElementById('wallpaper-canvas');
@@ -1025,7 +1033,8 @@
                     ctx.fillRect(0, 0, w, h);
 
                     ctx.fillStyle = '#0078d4';
-                    for (let star of this.stars) {
+                    for (let i=0; i<this.stars.length; i++) {
+                        let star = this.stars[i];
                         star.z -= 2;
                         if (star.z <= 0) {
                             star.z = w;
@@ -1055,7 +1064,7 @@
                     ctx.font = '14px "Fira Code", monospace';
 
                     const fontSize = 14;
-                    this.matrixColumns.forEach((col, i) => {
+                    this.matrixColumns.forEach(function(col, i) {
                         const char = Math.random() > 0.5 ? "1" : "0";
                         const x = i * fontSize;
                         ctx.fillText(char, x, col.y);
@@ -1087,7 +1096,7 @@
                             const p2 = this.particles[j];
                             const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
                             if (dist < 120) {
-                                ctx.strokeStyle = `rgba(0, 120, 212, ${1 - dist / 120})`;
+                                ctx.strokeStyle = "rgba(0, 120, 212, " + (1 - dist / 120) + ")";
                                 ctx.beginPath();
                                 ctx.moveTo(p1.x, p1.y);
                                 ctx.lineTo(p2.x, p2.y);
@@ -1101,74 +1110,66 @@
             }
         }
 
-
-        /**
-         * =========================================================================
-         * VI. 各内置应用（APPS）业务控制器
-         * =========================================================================
-         */
-
         // 📂 FILE EXPLORER (此电脑) 业务逻辑
         function initExplorerApp(winObj) {
-            const grid = document.getElementById('exp-file-grid');
-            const pathText = document.getElementById('exp-current-path');
-            const backBtn = document.getElementById('exp-back-btn');
-            const newFileBtn = document.getElementById('exp-new-btn');
+            const container = document.getElementById('app-content-' + winObj.id);
+            const grid = container.querySelector('#exp-file-grid');
+            const pathText = container.querySelector('#exp-current-path');
+            const backBtn = container.querySelector('#exp-back-btn');
+            const newFileBtn = container.querySelector('#exp-new-btn');
             let currentPath = "C:/Users/jr_user/Desktop";
 
-            // 监听全局路径跳转命令，支持侧边栏跨盘跳转
-            window.explorerNavigate = (targetPath) => {
-                currentPath = targetPath;
-                renderExplorer();
-            };
+            const sidebarButtons = container.querySelectorAll('.sidebar-btn');
+            sidebarButtons.forEach(function(btn) {
+                btn.onclick = () => {
+                    currentPath = btn.getAttribute('data-path');
+                    renderExplorer();
+                };
+            });
 
             const renderExplorer = () => {
                 grid.innerHTML = '';
                 pathText.innerText = currentPath;
-                backBtn.disabled = currentPath === "C:" || currentPath === "D:";
+                backBtn.disabled = currentPath === "C:" || currentPath === "D:" || currentPath === "C:/" || currentPath === "D:/";
 
                 const res = VFS.resolvePath(currentPath);
                 if (!res || res.node.type !== "dir") {
-                    grid.innerHTML = `<div class="text-xs text-red-500 p-4">⚠️ 无法加载指定的磁盘分区或分区未初始化。</div>`;
+                    grid.innerHTML = '<div class="text-xs text-red-500 p-4">⚠️ 无法加载指定的磁盘分区或文件夹。</div>';
                     return;
                 }
 
                 const children = res.node.children;
 
-                Object.keys(children).forEach(name => {
+                Object.keys(children).forEach(function(name) {
                     const node = children[name];
                     const isDir = node.type === "dir";
                     const isExe = name.endsWith('.exe') || name.endsWith('.json');
 
                     const itemHtml = `
                         <div class="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 active:bg-white/20 cursor-pointer text-center select-none" id="exp-item-${name}">
-                            <span class="text-3xl mb-1">${isDir ? '📁' : (isExe ? '📦' : '📄')}</span>
+                            <span class="text-3xl mb-1.5">${isDir ? '📁' : (isExe ? '📦' : '📄')}</span>
                             <span class="text-xs font-mono-os truncate w-full px-1 text-zinc-100">${name}</span>
                         </div>
                     `;
 
                     grid.insertAdjacentHTML('beforeend', itemHtml);
 
-                    const el = document.getElementById(`exp-item-${name}`);
+                    const el = grid.querySelector("#exp-item-" + name);
                     
                     addDoubleTapListener(el, () => {
                         if (isDir) {
-                            currentPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
+                            currentPath = currentPath.endsWith('/') ? currentPath + name : currentPath + "/" + name;
                             renderExplorer();
                         } else {
-                            const fullPath = currentPath === "/" ? `/${name}` : `${currentPath}/${name}`;
-                            if (isExe) {
-                                launchAppInstaller(fullPath);
-                            } else {
-                                openEditorForFile(fullPath);
-                            }
+                            const fullPath = currentPath.endsWith('/') ? currentPath + name : currentPath + "/" + name;
+                            openEditorForFile(fullPath);
                         }
                     });
                 });
             };
 
             backBtn.onclick = () => {
-                const parts = currentPath.split("/").filter(p => p !== "");
+                const parts = currentPath.split("/").filter(function(p) { return p !== ""; });
                 parts.pop();
                 currentPath = parts.join("/");
                 if (currentPath === "C:" || currentPath === "D:") currentPath += "/";
@@ -1176,20 +1177,27 @@
             };
 
             newFileBtn.onclick = () => {
-                openEditorForFile(`${currentPath}/untitled.txt`);
+                const newFilePath = currentPath.endsWith('/') ? currentPath + "untitled.txt" : currentPath + "/untitled.txt";
+                openEditorForFile(newFilePath);
             };
 
             renderExplorer();
         }
 
         function openEditorForFile(path) {
-            windowManager.createWindow('editor', `记事本 - ${path.split("/").pop()}`, 'template-editor', 560, 420, () => {
-                const pathInput = document.getElementById('editor-file-path');
-                const textarea = document.getElementById('editor-textarea');
-                const saveBtn = document.getElementById('editor-save-btn');
+            windowManager.createWindow('editor', "记事本 - " + path.split("/").pop(), 'template-editor', 560, 420, (win) => {
+                const container = document.getElementById('app-content-' + win.id);
+                const pathInput = container.querySelector('#editor-file-path');
+                const textarea = container.querySelector('#editor-textarea');
+                const saveBtn = container.querySelector('#editor-save-btn');
+                const fileMenuBtn = container.querySelector('#editor-menu-file');
 
                 pathInput.value = path;
                 textarea.value = VFS.readFile(path) || "";
+
+                fileMenuBtn.onclick = () => {
+                    playSystemSound(440, 'sine', 0.1);
+                };
 
                 saveBtn.onclick = () => {
                     const targetPath = pathInput.value.trim();
@@ -1200,7 +1208,7 @@
                         playSystemSound(880, 'sine', 0.15);
                         windowManager.closeWindow('editor');
                         
-                        const expWin = windowManager.windows.find(w => w.id === 'explorer');
+                        const expWin = windowManager.windows.find(function(w) { return w.id === 'explorer'; });
                         if (expWin) {
                             initExplorerApp(expWin);
                         }
@@ -1211,7 +1219,7 @@
 
         // 🌐 BROWSER (Microsoft Edge) 控制器
         function initBrowserApp(winObj) {
-            const containerId = `app-content-${winObj.id}`;
+            const containerId = "app-content-" + winObj.id;
             const browserDom = document.getElementById(containerId);
 
             const urlInput = browserDom.querySelector('#browser-url-input');
@@ -1264,11 +1272,12 @@
 
         // ⚙️ SYSTEM MONITOR (任务管理器) 折线渲染
         function initMonitorApp(winObj) {
-            const canvasCpu = document.getElementById('canvas-cpu-chart');
-            const canvasRam = document.getElementById('canvas-ram-chart');
+            const container = document.getElementById('app-content-' + winObj.id);
+            const canvasCpu = container.querySelector('#canvas-cpu-chart');
+            const canvasRam = container.querySelector('#canvas-ram-chart');
             const ctxCpu = canvasCpu.getContext('2d');
             const ctxRam = canvasRam.getContext('2d');
-            const procTable = document.getElementById('proc-table-body');
+            const procTable = container.querySelector('#proc-table-body');
 
             const cpuHistory = new Array(30).fill(0);
             const ramHistory = new Array(30).fill(30);
@@ -1317,7 +1326,7 @@
 
             const renderProcesses = () => {
                 procTable.innerHTML = '';
-                Scheduler.processes.forEach(p => {
+                Scheduler.processes.forEach(function(p) {
                     const row = `
                         <tr class="border-b border-white/5 py-1.5 font-mono-os hover:bg-white/5">
                             <td class="py-1.5 opacity-60">${p.pid}</td>
@@ -1327,22 +1336,30 @@
                             <td class="py-1.5 text-emerald-400">${p.status}</td>
                             <td class="py-1.5 text-right">
                                 ${p.pid > 4 ? `
-                                    <button onclick="killProc(${p.pid})" class="px-2 py-0.5 bg-rose-600/20 text-rose-400 border border-rose-500/20 rounded hover:bg-rose-600 hover:text-white transition">结束任务</button>
-                                ` : `<span class="opacity-30 text-[10px]">保护中</span>`}
+                                    <button data-pid="${p.pid}" class="kill-btn px-2 py-0.5 bg-rose-600/20 text-rose-400 border border-rose-500/20 rounded hover:bg-rose-600 hover:text-white transition">结束任务</button>
+                                ` : '<span class="opacity-30 text-[10px]">保护中</span>'}
                             </td>
                         </tr>
                     `;
                     procTable.insertAdjacentHTML('beforeend', row);
                 });
+
+                const killButtons = procTable.querySelectorAll('.kill-btn');
+                killButtons.forEach(function(btn) {
+                    btn.onclick = () => {
+                        const pid = parseInt(btn.getAttribute('data-pid'));
+                        killProcLocal(pid);
+                    };
+                });
             };
 
-            window.killProc = (pid) => {
-                const proc = Scheduler.processes.find(p => p.pid === pid);
+            const killProcLocal = (pid) => {
+                const proc = Scheduler.processes.find(function(p) { return p.pid === pid; });
                 if (proc) {
                     Scheduler.kill(pid);
                     if (proc.name.startsWith("App - ")) {
                         const cleanTitle = proc.name.replace("App - ", "");
-                        const matchWin = windowManager.windows.find(w => w.title === cleanTitle);
+                        const matchWin = windowManager.windows.find(function(w) { return w.title === cleanTitle; });
                         if (matchWin) windowManager.closeWindow(matchWin.id);
                     }
                     playSystemSound(150, 'sawtooth', 0.15);
@@ -1351,7 +1368,7 @@
             };
 
             const interval = setInterval(() => {
-                if (!document.getElementById(`win-content-monitor`)) {
+                if (!document.getElementById("win-content-monitor")) {
                     clearInterval(interval);
                     return;
                 }
@@ -1372,11 +1389,12 @@
 
         // 🎨 PAINT (画图) 控制器
         function initPaintApp(winObj) {
-            const canvas = document.getElementById('paint-canvas');
+            const container = document.getElementById('app-content-' + winObj.id);
+            const canvas = container.querySelector('#paint-canvas');
             const ctx = canvas.getContext('2d');
-            const colorIn = document.getElementById('paint-color');
-            const sizeIn = document.getElementById('paint-size');
-            const clearBtn = document.getElementById('paint-clear-btn');
+            const colorIn = container.querySelector('#paint-color');
+            const sizeIn = container.querySelector('#paint-size');
+            const clearBtn = container.querySelector('#paint-clear-btn');
 
             let drawing = false;
 
@@ -1395,23 +1413,23 @@
 
             const getCoords = (e) => {
                 const rect = canvas.getBoundingClientRect();
-                const clientX = e.clientX || e.touches?.[0]?.clientX;
-                const clientY = e.clientY || e.touches?.[0]?.clientY;
+                const cx = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+                const cy = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
                 return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
+                    x: cx - rect.left,
+                    y: cy - rect.top
                 };
             };
 
-            canvas.addEventListener('pointerdown', (e) => {
+            const startDraw = (e) => {
                 drawing = true;
                 ctx.beginPath();
                 const coords = getCoords(e);
                 ctx.moveTo(coords.x, coords.y);
-                e.preventDefault();
-            });
+                if(e.cancelable) e.preventDefault();
+            };
 
-            canvas.addEventListener('pointermove', (e) => {
+            const draw = (e) => {
                 if (!drawing) return;
                 const coords = getCoords(e);
                 ctx.strokeStyle = colorIn.value;
@@ -1420,13 +1438,20 @@
                 ctx.lineJoin = 'round';
                 ctx.lineTo(coords.x, coords.y);
                 ctx.stroke();
-                e.preventDefault();
-            });
+                if(e.cancelable) e.preventDefault();
+            };
 
-            document.addEventListener('pointerup', () => {
+            const stopDraw = () => {
                 drawing = false;
                 ctx.closePath();
-            });
+            };
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('touchstart', startDraw, {passive: false});
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchmove', draw, {passive: false});
+            document.addEventListener('mouseup', stopDraw);
+            document.addEventListener('touchend', stopDraw);
 
             clearBtn.onclick = () => {
                 ctx.fillStyle = '#0a0a0f';
@@ -1437,9 +1462,10 @@
 
         // 🎵 MEDIA PLAYER ( Chiptune Tracker)
         function initSynthApp(winObj) {
-            const playBtn = document.getElementById('synth-play-btn');
-            const stopBtn = document.getElementById('synth-stop-btn');
-            const visualizer = document.getElementById('synth-visualizer');
+            const container = document.getElementById('app-content-' + winObj.id);
+            const playBtn = container.querySelector('#synth-play-btn');
+            const stopBtn = container.querySelector('#synth-stop-btn');
+            const visualizer = container.querySelector('#synth-visualizer');
             const vctx = visualizer.getContext('2d');
 
             let synthTimer = null;
@@ -1531,14 +1557,15 @@
 
         // 🚀 ARCADE GAME (太空侵略者)
         function initGameApp(winObj) {
-            const canvas = document.getElementById('game-canvas');
+            const container = document.getElementById('app-content-' + winObj.id);
+            const canvas = container.querySelector('#game-canvas');
             const ctx = canvas.getContext('2d');
-            const scoreText = document.getElementById('game-score');
-            const restartBtn = document.getElementById('game-restart');
+            const scoreText = container.querySelector('#game-score');
+            const restartBtn = container.querySelector('#game-restart');
 
-            const btnLeft = document.getElementById('game-btn-left');
-            const btnRight = document.getElementById('game-btn-right');
-            const btnFire = document.getElementById('game-btn-fire');
+            const btnLeft = container.querySelector('#game-btn-left');
+            const btnRight = container.querySelector('#game-btn-right');
+            const btnFire = container.querySelector('#game-btn-fire');
 
             let score = 0;
             let playerX = 150;
@@ -1582,7 +1609,7 @@
                         vx: (Math.random() - 0.5) * 4,
                         vy: (Math.random() - 0.5) * 4,
                         life: 25,
-                        color: `hsl(${Math.random() * 60 + 15}, 100%, 60%)`
+                        color: "hsl(" + (Math.random() * 60 + 15) + ", 100%, 60%)"
                     });
                 }
             };
@@ -1601,11 +1628,18 @@
             let touchMovingRight = false;
 
             if (btnLeft && btnRight && btnFire) {
-                btnLeft.ontouchstart = () => { touchMovingLeft = true; };
-                btnLeft.ontouchend = () => { touchMovingLeft = false; };
-                btnRight.ontouchstart = () => { touchMovingRight = true; };
-                btnRight.ontouchend = () => { touchMovingRight = false; };
-                btnFire.ontouchstart = (e) => { fireLaser(); e.preventDefault(); };
+                btnLeft.addEventListener('mousedown', () => { touchMovingLeft = true; });
+                btnLeft.addEventListener('touchstart', () => { touchMovingLeft = true; }, {passive: true});
+                btnLeft.addEventListener('mouseup', () => { touchMovingLeft = false; });
+                btnLeft.addEventListener('touchend', () => { touchMovingLeft = false; });
+
+                btnRight.addEventListener('mousedown', () => { touchMovingRight = true; });
+                btnRight.addEventListener('touchstart', () => { touchMovingRight = true; }, {passive: true});
+                btnRight.addEventListener('mouseup', () => { touchMovingRight = false; });
+                btnRight.addEventListener('touchend', () => { touchMovingRight = false; });
+
+                btnFire.addEventListener('mousedown', (e) => { fireLaser(); });
+                btnFire.addEventListener('touchstart', (e) => { fireLaser(); if(e.cancelable) e.preventDefault(); }, {passive: false});
             }
 
             const updateGame = () => {
@@ -1636,35 +1670,36 @@
                 ctx.closePath();
                 ctx.fill();
 
-                lasers.forEach((laser, lIdx) => {
+                for (let lIdx = lasers.length - 1; lIdx >= 0; lIdx--) {
+                    let laser = lasers[lIdx];
                     laser.y += laser.vy;
                     ctx.fillStyle = '#ff0055';
                     ctx.fillRect(laser.x, laser.y, 4, 10);
-
                     if (laser.y < 0) lasers.splice(lIdx, 1);
-                });
+                }
 
-                particles.forEach((part, pIdx) => {
+                for (let pIdx = particles.length - 1; pIdx >= 0; pIdx--) {
+                    let part = particles[pIdx];
                     part.x += part.vx;
                     part.y += part.vy;
                     part.life--;
                     ctx.fillStyle = part.color;
                     ctx.fillRect(part.x, part.y, 2, 2);
                     if (part.life <= 0) particles.splice(pIdx, 1);
-                });
+                }
 
                 let hasLivingEnemies = false;
-                enemies.forEach(enemy => {
+                enemies.forEach(function(enemy) {
                     if (!enemy.alive) return;
                     hasLivingEnemies = true;
 
                     ctx.fillStyle = '#ffb000';
                     ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
-
                     ctx.fillRect(enemy.x + 3, enemy.y + enemy.h, 4, 3);
                     ctx.fillRect(enemy.x + enemy.w - 7, enemy.y + enemy.h, 4, 3);
 
-                    lasers.forEach((laser, lIdx) => {
+                    for (let lIdx = lasers.length - 1; lIdx >= 0; lIdx--) {
+                        let laser = lasers[lIdx];
                         if (laser.x > enemy.x && laser.x < enemy.x + enemy.w &&
                             laser.y > enemy.y && laser.y < enemy.y + enemy.h) {
                             
@@ -1675,7 +1710,7 @@
                             triggerExplosion(enemy.x + enemy.w / 2, enemy.y + enemy.h / 2);
                             playSystemSound(250, 'sawtooth', 0.1);
                         }
-                    });
+                    }
                 });
 
                 if (!hasLivingEnemies) {
@@ -1699,19 +1734,13 @@
             };
         }
 
-
-        /**
-         * =========================================================================
-         * VII. 浏览器代理与虚拟 DOM 传输层 (Bypass-Proxy)
-         * =========================================================================
-         */
         const VIRTUAL_INTERNET = {
             "jros://welcome": {
                 title: "Microsoft Edge - 默认导航主页",
                 body: `
-                    <div class="space-y-6 text-zinc-100 select-text">
+                    <div class="space-y-6 text-zinc-100 select-text font-sans">
                         <div class="p-6 rounded-xl bg-gradient-to-r from-winblue/60 to-indigo-900/40 border border-winblue/30 text-center">
-                            <h1 class="text-2xl font-bold text-sky-200">🌐 欢迎使用 Microsoft Edge 仿真网卡</h1>
+                            <h1 class="text-2xl font-bold text-sky-200">🌐 欢迎使用 Microsoft Edge</h1>
                             <p class="text-xs text-slate-300 mt-2">在这里，我们提供完全沙箱化的跨域网络反向代理解析技术。你可以畅游以下推荐站点：</p>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1755,17 +1784,17 @@
             urlInput.value = targetUrl;
 
             if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
-                const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
+                const normUrl = targetUrl.startsWith('jros://') ? targetUrl : "jros://" + targetUrl;
                 const page = VIRTUAL_INTERNET[normUrl] || {
                     title: "404 - 无法解析的网址",
-                    body: `<div class="text-center p-8 text-slate-400"><h2 class="text-xl font-bold text-red-500 mb-2">⚠️ 无法寻址该星际坐标</h2></div>`
+                    body: '<div class="text-center p-8 text-slate-400"><h2 class="text-xl font-bold text-red-500 mb-2">⚠️ 无法寻址该星际坐标</h2></div>'
                 };
 
                 setTimeout(() => {
                     iframe.classList.add('hidden');
                     sandbox.classList.remove('hidden');
                     sandbox.innerHTML = `
-                        <div class="p-4 text-slate-100 select-text">
+                        <div class="p-4 text-slate-100 select-text font-sans">
                             <h2 class="text-xl font-bold mb-4">${page.title}</h2>
                             ${page.body}
                         </div>
@@ -1818,13 +1847,6 @@
             }
         });
 
-
-        /**
-         * =========================================================================
-         * VIII. Windows 引导程序及桌面快捷磁贴组装 (Bootloader & Tile Assembly)
-         * =========================================================================
-         */
-
         const bootLogs = [
             "JR-BIOS Pro v2.10 Copyright (C) 2026 J&R OS Corp.",
             "CPU: Intel(R) Core(TM) i9-13900K @ 5.40GHz",
@@ -1832,24 +1854,24 @@
             "Detecting Primary Windows Partition (C: NTFS)... SUCCESS",
             "Loading Windows 11 Bootloader (winload.efi)... SUCCESS",
             "Entering Protected Mode... GDT, IDT loaded.",
-            "Launching explorer.exe 외 Shell Server...",
+            "Launching explorer.exe and Shell Server...",
             "Registry initialized. Applying personalization Bloom theme...",
             "Desktop System Loaded. Welcome Admin."
         ];
 
-        // 桌面快捷方式定义
         const desktopApps = [
             { id: 'explorer', label: '此电脑', icon: '📂' },
             { id: 'browser', label: 'Microsoft Edge', icon: '🌐' },
             { id: 'editor', label: '记事本', icon: '📝' },
             { id: 'monitor', label: '任务管理器', icon: '⚙️' },
             { id: 'paint', label: '画图', icon: '🎨' },
-            { id: 'synth', label: '音乐播放器', icon: '🎵' },
+            { id: 'synth', label: '媒体播放器', icon: '🎵' },
             { id: 'game', label: '太空入侵者', icon: '🚀' },
             { id: 'settings', label: '设置', icon: '🎛️' }
         ];
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // 高兼容系统启动函数
+        function startBootSequence() {
             const logBox = document.getElementById('boot-log');
             const progress = document.getElementById('boot-progress');
             const startBtn = document.getElementById('btn-start-os');
@@ -1858,15 +1880,14 @@
             const printNextLog = () => {
                 if (logIdx < bootLogs.length) {
                     const div = document.createElement('div');
-                    div.innerText = `> ${bootLogs[logIdx]}`;
+                    div.innerText = "> " + bootLogs[logIdx];
                     logBox.appendChild(div);
                     logBox.scrollTop = logBox.scrollHeight;
 
                     const percent = Math.floor(((logIdx + 1) / bootLogs.length) * 100);
-                    progress.style.width = `${percent}%`;
+                    progress.style.width = percent + "%";
 
                     logIdx++;
-                    playSystemSound(800 + logIdx * 50, 'sine', 0.04);
                     setTimeout(printNextLog, Math.random() * 80 + 30);
                 } else {
                     startBtn.classList.remove('hidden');
@@ -1876,10 +1897,9 @@
             setTimeout(printNextLog, 400);
 
             startBtn.onclick = () => {
-                // 触发经典 Windows 11 开机和弦音！
-                playSystemSound(523.25, 'triangle', 0.15); // C5
-                setTimeout(() => playSystemSound(659.25, 'triangle', 0.15), 150); // E5
-                setTimeout(() => playSystemSound(783.99, 'triangle', 0.3), 300); // G5
+                playSystemSound(523.25, 'triangle', 0.15);
+                setTimeout(() => playSystemSound(659.25, 'triangle', 0.15), 150);
+                setTimeout(() => playSystemSound(783.99, 'triangle', 0.3), 300);
 
                 document.getElementById('boot-screen').classList.add('hidden');
                 document.getElementById('desktop-workspace').classList.remove('hidden');
@@ -1887,23 +1907,27 @@
                 window.wallpaperEngine = new WallpaperEngine();
                 initDesktop();
             };
-        });
+        }
 
-        // 全局时间刷新
+        // 核心修复：防止 DOMContentLoaded 竞态丢失导致一直卡在黑屏
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', startBootSequence);
+        } else {
+            startBootSequence();
+        }
+
         function updateClock() {
             const clockEl = document.getElementById('taskbar-time-text');
             const dateEl = document.getElementById('taskbar-date-text');
             if (clockEl && dateEl) {
                 const now = new Date();
                 clockEl.innerText = now.toTimeString().split(' ')[0].substring(0, 5);
-                dateEl.innerText = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+                dateEl.innerText = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, '0') + "/" + String(now.getDate()).padStart(2, '0');
             }
             SYSTEM_STATE.uptime++;
         }
 
-        // 统一的分发拉起应用入口
         function openApp(id) {
-            // 自动关闭开始菜单
             document.getElementById('start-menu').classList.add('hidden');
 
             switch (id) {
@@ -1936,15 +1960,24 @@
             }
         }
 
-        // 渲染 Windows 桌面图标
         function initDesktop() {
             setInterval(updateClock, 1000);
             updateClock();
 
+            const calGrid = document.getElementById('calendar-grid');
+            const today = new Date().getDate();
+            const daysInMonth = 31;
+            for (let i = 1; i <= daysInMonth; i++) {
+                const span = document.createElement('span');
+                span.className = "p-1.5 hover:bg-winblue/30 rounded-md cursor-pointer " + (i === today ? 'bg-winblue text-white font-bold' : '');
+                span.innerText = i;
+                calGrid.appendChild(span);
+            }
+
             const container = document.getElementById('desktop-icons-container');
             container.innerHTML = '';
 
-            desktopApps.forEach(app => {
+            desktopApps.forEach(function(app) {
                 const iconHtml = `
                     <div class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-white/10 active:bg-white/20 transition cursor-pointer text-center w-[80px]" id="desk-icon-${app.id}">
                         <span class="text-3xl mb-1.5 filter drop-shadow-md select-none">${app.icon}</span>
@@ -1953,71 +1986,72 @@
                 `;
                 container.insertAdjacentHTML('beforeend', iconHtml);
 
-                const el = document.getElementById(`desk-icon-${app.id}`);
+                const el = document.getElementById("desk-icon-" + app.id);
                 addDoubleTapListener(el, () => {
                     openApp(app.id);
                 });
             });
 
-            // 监听开始菜单内 Pinned 磁贴的生成
             const startGrid = document.getElementById('start-menu-pinned-grid');
             startGrid.innerHTML = '';
-            desktopApps.forEach(app => {
-                const appHtml = `
-                    <div onclick="openApp('${app.id}')" class="flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-white/10 cursor-pointer transition select-none">
-                        <span class="text-3xl mb-1">${app.icon}</span>
-                        <span class="text-[10px] text-white/90 truncate w-full">${app.label}</span>
-                    </div>
+            desktopApps.forEach(function(app) {
+                const tile = document.createElement('div');
+                tile.className = "flex flex-col items-center justify-center p-2.5 rounded-xl hover:bg-white/10 cursor-pointer transition select-none";
+                tile.innerHTML = `
+                    <span class="text-3xl mb-1">${app.icon}</span>
+                    <span class="text-[10px] text-white/90 truncate w-full">${app.label}</span>
                 `;
-                startGrid.insertAdjacentHTML('beforeend', appHtml);
+                tile.onclick = () => openApp(app.id);
+                startGrid.appendChild(tile);
             });
 
-            // 初始推荐项目挂载
             const recommendedGrid = document.getElementById('start-menu-recommended-grid');
-            recommendedGrid.innerHTML = `
-                <div onclick="openApp('editor')" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-xs select-none">
-                    <span>📄</span>
-                    <div class="truncate text-left">
-                        <p class="font-bold truncate">sys_test.txt</p>
-                        <p class="opacity-50 text-[10px]">刚刚打开 - C:/Users/jr_user/Documents</p>
-                    </div>
+            recommendedGrid.innerHTML = '';
+            const recItem = document.createElement('div');
+            recItem.className = "flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 cursor-pointer text-xs select-none w-full";
+            recItem.innerHTML = `
+                <span>📄</span>
+                <div class="truncate text-left">
+                    <p class="font-bold truncate">sys_test.txt</p>
+                    <p class="opacity-50 text-[10px]">刚刚打开 - C:/Users/jr_user/Documents</p>
                 </div>
             `;
+            recItem.onclick = () => openApp('editor');
+            recommendedGrid.appendChild(recItem);
 
             updateTaskbar();
 
-            // 点击桌面壁纸区域关闭所有浮空看板（开始菜单、日历、电源）
             document.getElementById('desktop-wallpaper-trigger').onclick = () => {
                 document.getElementById('start-menu').classList.add('hidden');
                 document.getElementById('calendar-flyout').classList.add('hidden');
             };
         }
 
-        // 渲染 Windows 底部系统任务栏
         function updateTaskbar() {
             const trayContainer = document.getElementById('taskbar-running-apps');
-            // 清理旧活动图标
             trayContainer.innerHTML = '';
 
-            windowManager.windows.forEach(win => {
+            windowManager.windows.forEach(function(win) {
                 const activeBar = SYSTEM_STATE.activeWindow === win.id ? 'bg-winblue w-4' : 'bg-white/40 w-1.5';
-                const appMeta = desktopApps.find(app => app.id === win.id);
+                const appMeta = desktopApps.find(function(app) { return app.id === win.id; });
                 const icon = appMeta ? appMeta.icon : '⚙️';
 
                 const appHtml = `
-                    <div onclick="windowManager.focusWindow('${win.id}')" class="relative group cursor-pointer w-10 h-10 flex flex-col items-center justify-center hover:bg-white/10 rounded-md transition duration-150 active:scale-90 select-none">
+                    <div id="taskbar-item-${win.id}" class="relative group cursor-pointer w-10 h-10 flex flex-col items-center justify-center hover:bg-white/10 rounded-md transition duration-150 active:scale-90 select-none">
                         <span class="text-2xl">${icon}</span>
                         <span class="absolute bottom-1 h-[3px] rounded-full transition-all duration-200 ${activeBar}"></span>
                     </div>
                 `;
                 trayContainer.insertAdjacentHTML('beforeend', appHtml);
+
+                const item = trayContainer.querySelector("#taskbar-item-" + win.id);
+                item.onclick = () => windowManager.focusWindow(win.id);
             });
         }
 
-        // 开始菜单与日历看板弹起
         function toggleStartMenu() {
             const menu = document.getElementById('start-menu');
-            document.getElementById('calendar-flyout').classList.add('hidden'); // 关闭日历
+            document.getElementById('calendar-flyout').classList.add('hidden');
             menu.classList.toggle('hidden');
             if (!menu.classList.contains('hidden')) {
                 menu.classList.add('start-animate');
@@ -2027,42 +2061,40 @@
 
         function toggleCalendarFlyout() {
             const flyout = document.getElementById('calendar-flyout');
-            document.getElementById('start-menu').classList.add('hidden'); // 关闭开始菜单
+            document.getElementById('start-menu').classList.add('hidden');
             flyout.classList.toggle('hidden');
             if (!flyout.classList.contains('hidden')) {
                 playSystemSound(700, 'sine', 0.05);
             }
         }
 
-        // 一键显示桌面 (Show Desktop)
         function minimizeAllWindows() {
-            windowManager.windows.forEach(win => {
+            windowManager.windows.forEach(function(win) {
                 windowManager.minimizeWindow(win.id);
             });
             document.getElementById('start-menu').classList.add('hidden');
             document.getElementById('calendar-flyout').classList.add('hidden');
         }
 
-        // 系统设置选项控制器
         function initSettingsApp(winObj) {
-            // 监听任务栏居中 vs 靠左
-            const alignRadios = document.querySelectorAll('input[name="settings-taskbar-align"]');
-            alignRadios.forEach(radio => {
+            const container = document.getElementById('app-content-' + winObj.id);
+            
+            const alignRadios = container.querySelectorAll('input[name="settings-taskbar-align"]');
+            alignRadios.forEach(function(radio) {
                 radio.onchange = (e) => {
                     const align = e.target.value;
-                    const wrapper = document.getElementById('taskbar-center-container');
+                    const centerContainer = document.getElementById('taskbar-center-container');
                     if (align === 'left') {
-                        wrapper.className = "flex-1 flex justify-start pl-8";
+                        centerContainer.className = "flex-1 flex justify-start pl-8";
                     } else {
-                        wrapper.className = "flex-1 flex justify-center";
+                        centerContainer.className = "flex-1 flex justify-center";
                     }
                     playSystemSound(600, 'sine', 0.05);
                 };
             });
 
-            // 动态壁纸监听
-            const wallpaperRadios = document.querySelectorAll('input[name="wallpaper-type"]');
-            wallpaperRadios.forEach(radio => {
+            const wallpaperRadios = container.querySelectorAll('input[name="wallpaper-type"]');
+            wallpaperRadios.forEach(function(radio) {
                 radio.onchange = (e) => {
                     SYSTEM_STATE.wallpaper = e.target.value;
                     playSystemSound(600, 'sine', 0.05);
@@ -2070,7 +2102,6 @@
             });
         }
 
-        // 经典 Windows CRT 安全关机逻辑
         function triggerPowerMenu() {
             playSystemSound(150, 'sawtooth', 0.4);
             const desktop = document.getElementById('desktop-workspace');
@@ -2086,6 +2117,5 @@
             }, 400);
         }
     </script>
-
 </body>
 </html>
