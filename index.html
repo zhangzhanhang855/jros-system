@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JR OS - 极客微系统 1.2.2</title>
+
+    <!-- =========================================================================
+      ★ 核心配置区：Cloudflare Worker 跨域网关地址 (放在最头部，方便你直接修改)
+      ========================================================================= -->
+    <script>
+        // 请将下方双引号内的地址，替换为你部署在 Cloudflare 上的 Worker 代理网址！
+        // 注意：网址结尾保留 /proxy
+        window.PROXY_SERVER = "https://jr-os-proxy.zhangzhanhang855.workers.dev/proxy";
+    </script>
+
     <!-- 引入 Tailwind CSS 提供现代化的 UI 基础 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -196,7 +206,7 @@
             </div>
         </footer>
 
-        <!-- 系统快捷启动菜单/开始菜单 -->
+        <!-- 开始菜单 -->
         <div id="start-menu" class="absolute bottom-16 left-4 w-72 dynamic-panel glassmorphism border rounded-xl shadow-2xl z-50 p-4 hidden flex flex-col space-y-4">
             <div class="flex items-center space-x-3 border-b border-zinc-700/50 pb-3">
                 <div class="w-10 h-10 rounded-full dynamic-accent-bg flex items-center justify-center text-black font-bold">JR</div>
@@ -288,7 +298,7 @@
                 </div>
                 <div class="flex items-center space-x-3 px-3 pb-1.5 text-xs opacity-75 overflow-x-auto whitespace-nowrap scrollbar-none">
                     <span class="text-zinc-500 select-none">🔖 书签:</span>
-                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('app-content-browser', 'jros://welcome')">🚀 JR OS 主页</button>
+                    <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://welcome')">🚀 JR OS 主页</button>
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://games')">🎮 街机游戏中心</button>
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'jros://chat')">💬 极客聊天室</button>
                     <button class="hover:text-cyan-400 font-semibold" onclick="browserNavigate('terminal', 'https://en.m.wikipedia.org')">📖 维基百科 (Iframe)</button>
@@ -464,15 +474,6 @@
 
     <!--=================== 4. 完整的操作系统 JS 核心逻辑 ===================-->
     <script>
-        /**
-         * =========================================================================
-         * ★ 跨域网关配置
-         * =========================================================================
-         * 将下方地址替换为你刚才在 Cloudflare Workers 上部署的专属 Workers 地址！
-         */
-        const PROXY_SERVER = "https://jr-os-proxy.zhangzhanhang855.workers.dev/proxy";
-
-
         const SYSTEM_STATE = {
             theme: 'cyber',
             wallpaper: 'stars',
@@ -1387,7 +1388,6 @@
             forwardBtn.disabled = BROWSER_HISTORY.currentIndex >= BROWSER_HISTORY.historyStack.length - 1;
         }
 
-        // 全局网络导航解析引擎（支持将外部网页转发至 Workers 智能网关，并规避 Frame-Busting）
         window.browserNavigate = (containerId, targetUrl) => {
             const browserDom = document.getElementById(containerId);
             if (!browserDom) return;
@@ -1406,7 +1406,6 @@
 
             urlInput.value = targetUrl;
 
-            // 处理内部 jros 协议
             if (targetUrl.startsWith('jros://') || !targetUrl.startsWith('http')) {
                 const normUrl = targetUrl.startsWith('jros://') ? targetUrl : `jros://${targetUrl}`;
                 const page = VIRTUAL_INTERNET[normUrl] || {
@@ -1432,13 +1431,12 @@
 
                 pushBrowserHistory(containerId, targetUrl);
             } else {
-                // 如果是外部真实网页，直接路由到你的 Cloudflare Worker 反向代理网关！
                 setTimeout(() => {
                     sandbox.classList.add('hidden');
                     iframe.classList.remove('hidden');
                     
-                    // 通过 Worker Proxy 加载
-                    iframe.src = PROXY_SERVER + "?url=" + encodeURIComponent(targetUrl);
+                    // 核心关联修改：将以前的变量替换为 window.PROXY_SERVER
+                    iframe.src = window.PROXY_SERVER + "?url=" + encodeURIComponent(targetUrl);
 
                     iframe.onload = () => {
                         progress.style.transform = 'translateX(0%)';
@@ -1450,7 +1448,6 @@
             }
         };
 
-        // 监听 iframe postMessage 跨域消息（当用户在 iframe 里的代理页面中点击链接时，自动传回并更新主界面的地址栏）
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'jros-browser-navigated') {
                 const browserDom = document.getElementById('app-content-browser');
@@ -1517,7 +1514,6 @@
             window.browserNavigate(containerId, 'jros://welcome');
         }
 
-        // ----------------- APP 4: JR OS 安装管理器 (App Installer) -----------------
         function launchAppInstaller(filePath) {
             const rawContent = VFS.readFile(filePath);
             if (!rawContent) {
@@ -2288,6 +2284,178 @@
                 window.wallpaperEngine.resize();
             }
         });
+    </script>
+    
+    <!-- 仿真互联网静态数据库 -->
+    <script>
+        const VIRTUAL_INTERNET = {
+            "jros://welcome": {
+                title: "JR OS 官方引航站",
+                body: `
+                    <div class="space-y-6">
+                        <div class="p-6 rounded-xl bg-gradient-to-r from-blue-900/60 to-indigo-900/40 border border-blue-500/30 text-center">
+                            <h1 class="text-2xl font-bold text-sky-300">🌐 欢迎来到星际航行浏览器 v1.2.2</h1>
+                            <p class="text-xs text-slate-300 mt-2">在这里，我们彻底打破了跨域 Frame-Busting 限制。你可以直接无缝浏览真实网页，或是完美体验内置的“虚拟极客万维网”！</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-300 border-b border-slate-700 pb-2 mb-3">📍 推荐网络节点</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
+                                    <h4 class="font-bold text-sky-400">🎮 街机游戏中心</h4>
+                                    <p class="text-xs text-slate-400 mt-1">无需下载，内网即时启动经典街机休闲游戏。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://games')" class="mt-3 text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1 rounded text-white font-bold transition">立即访问 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-sky-500/40 transition">
+                                    <h4 class="font-bold text-cyan-400">💬 极客聊天室</h4>
+                                    <p class="text-xs text-slate-400 mt-1">进入内网暗哨聊天室，看看其他极客们正在讨论什么。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://chat')" class="mt-3 text-xs bg-cyan-600 hover:bg-cyan-500 px-3 py-1 rounded text-white font-bold transition">敲门进入 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-emerald-500/40 transition">
+                                    <h4 class="font-bold text-emerald-400">📖 外部: OSDev Wiki (Iframe)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">探索真实的操作系统底层开发指南，无阻碍学习。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'https://www.osdev.org')" class="mt-3 text-xs bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-white font-bold transition">直接航行 &rarr;</button>
+                                </div>
+                                <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-purple-500/40 transition">
+                                    <h4 class="font-bold text-purple-400">📡 仿真代理: Github 个人主页</h4>
+                                    <p class="text-xs text-slate-400 mt-1">经典伪静态克隆。支持在此浏览器里继续跳转。</p>
+                                    <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="mt-3 text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1 rounded text-white font-bold transition">点击跳转 &rarr;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://games": {
+                title: "经典街机游戏中心",
+                body: `
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <h2 class="text-xl font-bold text-amber-400">👾 经典街机游戏厅</h2>
+                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回引航站</button>
+                        </div>
+                        <p class="text-xs text-slate-400">这些是 JR OS 为您特供的内网应用，点击下方按钮将直接调用 OS 底层核心渲染和硬件声音模块！</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white">🚀 太空入侵者 (Space Invaders)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">复古 8-Bit 像素弹幕飞行射击。</p>
+                                </div>
+                                <button onclick="windowManager.createWindow('game', '经典太空侵略者 (Space Invaders)', 'template-game', 460, 450, initGameApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white">🎨 像素画板 (JR Paint)</h4>
+                                    <p class="text-xs text-slate-400 mt-1">画作直接支持保存至 VFS 文件系统中。</p>
+                                </div>
+                                <button onclick="windowManager.createWindow('paint', '复古 Canvas 像素画板 (JR Paint)', 'template-paint', 560, 450, initPaintApp)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-bold text-white">启动应用</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://chat": {
+                title: "极客地下聊天室",
+                body: `
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <h2 class="text-xl font-bold text-emerald-400">💬 Anonymous Geeks Chatroom</h2>
+                            <button onclick="browserNavigate('app-content-browser', 'jros://welcome')" class="text-xs text-sky-400 hover:underline">&larr; 返回主页</button>
+                        </div>
+                        
+                        <div class="p-4 rounded-lg bg-black/40 border border-slate-800 h-64 overflow-y-auto space-y-3 text-xs font-mono-os">
+                            <div class="text-slate-500 text-center">[ 系统提示: 安全加密隧道已构建 ]</div>
+                            <div><span class="text-purple-400 font-bold">Neo:</span> 你们有人尝试过在 iPad 上双击 calc.exe 直接调起安装包了吗？</div>
+                            <div><span class="text-cyan-400 font-bold">Trinity:</span> 我刚刚双击了，动画非常丝滑，向导不仅有进度条，写完了还能自动追加桌面图标和底栏圆点！</div>
+                            <div><span class="text-amber-400 font-bold">Morpheus:</span> 没错，我们甚至可以直接在文本编辑器里写一段 JSON 包，写完了保存为 .exe 也能一键安装！这直接构成了一个完整的 OS 开发大闭环。</div>
+                            <div><span class="text-emerald-400 font-bold">You (Admin):</span> <span class="text-slate-300">完全闭环！我们实现了一个可以动态安装拓展的轻量 OS。最绝的是配置项被作者提到 index.html 最开头了，一打开就能看见！</span></div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="向匿名信道发送加密短波..." class="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 outline-none focus:border-emerald-500">
+                            <button onclick="playSystemSound(900, 'sine', 0.08)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold">发送</button>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user": {
+                title: "Github - jr_user / OS-Project",
+                body: `
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-2 text-xs text-slate-400 bg-slate-800 p-2 rounded">
+                            <span>🐱 Github.com / jr_user / <strong>jros-kernel</strong></span>
+                            <span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-green-400">Public</span>
+                        </div>
+                        
+                        <h2 class="text-xl font-bold text-white">💻 jros-kernel: A micro-kernel for hobbyists</h2>
+                        <p class="text-xs text-slate-400">This is an operating system core developed for iPad, running directly on customized HTML5 core engines.</p>
+                        
+                        <div class="border border-slate-800 rounded-lg overflow-hidden text-xs">
+                            <div class="bg-slate-800/80 px-4 py-2 border-b border-slate-800 flex justify-between text-slate-300">
+                                <span>📁 Files</span>
+                                <span class="text-sky-400">Latest commit 2 hours ago</span>
+                            </div>
+                            <div class="divide-y divide-slate-800 bg-slate-900/60 font-mono-os">
+                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/kernel')">
+                                    <span class="text-sky-400">📁 kernel/</span>
+                                    <span class="text-slate-500">Add context-switch bitmap scheduler</span>
+                                </div>
+                                <div class="px-4 py-2.5 flex justify-between hover:bg-slate-800/40 cursor-pointer" onclick="browserNavigate('app-content-browser', 'jros://github/jr_user/vfs')">
+                                    <span class="text-sky-400">📁 vfs/</span>
+                                    <span class="text-slate-500">Optimize path resolver</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user/kernel": {
+                title: "Github - jr_user/jros-kernel/kernel",
+                body: `
+                    <div class="space-y-4 font-mono-os">
+                        <div class="flex justify-between items-center text-xs">
+                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
+                            <span class="text-slate-500">Path: /kernel/sched.c</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
+<pre>#include &lt;jros/sched.h&gt;
+#include &lt;jros/interrupt.h&gt;
+
+void context_switch(thread_t* next) {
+    play_hardware_beep(440);
+    asm volatile(
+        "mov %0, %%cr3\\n"
+        "switch_registers..."
+        : : "r"(next->page_dir_phys)
+    );
+}</pre>
+                        </div>
+                    </div>
+                `
+            },
+            "jros://github/jr_user/vfs": {
+                title: "Github - jr_user/jros-kernel/vfs",
+                body: `
+                    <div class="space-y-4 font-mono-os">
+                        <div class="flex justify-between items-center text-xs">
+                            <button onclick="browserNavigate('app-content-browser', 'jros://github/jr_user')" class="text-sky-400 hover:underline">&larr; 返回根仓库</button>
+                            <span class="text-slate-500">Path: /vfs/vfs_resolve.c</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded border border-slate-800 text-xs leading-relaxed overflow-x-auto text-emerald-500">
+<pre>#include &lt;jros/vfs.h&gt;
+
+vfs_node_t* resolve_path(const char* path) {
+    if (path[0] == '/') {
+        return root_node;
+    }
+    return NULL;
+}</pre>
+                        </div>
+                    </div>
+                `
+            }
+        };
     </script>
 </body>
 </html>
