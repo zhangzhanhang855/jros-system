@@ -34,6 +34,12 @@
         button, .cursor-pointer {
             touch-action: manipulation !important;
             color: #ffffff;
+            .exp-new-btn {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    position: relative;
+    z-index: 9999;
+}
         }
 
         .font-mono-os { font-family: 'Fira Code', Consolas, Monaco, monospace !important; }
@@ -202,7 +208,9 @@
                         <button id="exp-back-btn" class="w-8 h-8 hover:bg-white/20 rounded font-bold text-lg">←</button>
                         <span id="exp-current-path" class="font-mono-os px-3 py-1 bg-black/50 border border-white/10 rounded text-xs overflow-hidden whitespace-nowrap flex-1">C:/</span>
                     </div>
-                    <button id="exp-new-btn" class="px-3 py-1.5 bg-[#0078d4] hover:bg-[#0067b8] text-xs font-bold rounded shadow transition">➕ 新建</button>
+                    <button class="exp-new-btn px-3 py-1.5 bg-[#0078d4] hover:bg-[#0067b8] text-xs font-bold rounded shadow transition">
+    ➕ 新建
+</button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 content-start" id="exp-file-grid"></div>
             </div>
@@ -629,15 +637,24 @@ function addDoubleTapListener(element, callback) {
                     render(); 
                 }
             };
-            container.querySelector('#exp-new-btn').onclick = () => openEditor((path.endsWith('/') ? path : path + "/") + "new.txt");
+            container.querySelector('.exp-new-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    openEditor(
+        (path.endsWith('/') ? path : path + "/") + "new.txt"
+    );
+});
             
             // 侧边栏按钮重新绑定 (单点跳转)
-            container.querySelectorAll('.sidebar-btn').forEach(btn => {
-                btn.onclick = (e) => {
-                    path = btn.getAttribute('data-path');
-                    render();
-                };
-            });
+container.addEventListener('click', (e) => {
+    const sidebar = e.target.closest('.sidebar-btn');
+
+    if (sidebar) {
+        path = sidebar.getAttribute('data-path');
+        render();
+    }
+});
 
             render();
         }
