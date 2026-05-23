@@ -697,7 +697,7 @@ container.addEventListener('click', (e) => {
             });
         }
 
-                function initBrowserApp(winObj) {
+        function initBrowserApp(winObj) {
             const c = document.getElementById("app-content-" + winObj.id);
             const input = c.querySelector('#browser-url-input');
             const iframe = c.querySelector('#browser-iframe');
@@ -857,15 +857,12 @@ container.addEventListener('click', (e) => {
     windowManager.windows.forEach(w => {
         const app = APPS.find(a => a.id === w.id) || { icon: '⚙️' };
 
-        const active =
-            SYSTEM_STATE.activeWindow === w.id
-                ? 'bg-[#0078d4] w-4'
-                : 'bg-white/40 w-1.5';
+        const active = SYSTEM_STATE.activeWindow === w.id
+            ? 'bg-[#0078d4] w-4'
+            : 'bg-white/40 w-1.5';
 
         const btn = document.createElement('div');
-
-        btn.className =
-            "relative w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg cursor-pointer transition";
+        btn.className = 'relative w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg cursor-pointer transition';
 
         btn.innerHTML = `
             <span class="text-2xl">${app.icon}</span>
@@ -878,14 +875,16 @@ container.addEventListener('click', (e) => {
 
         bar.appendChild(btn);
     });
-            function installExe(path) {
+}
+
+function installExe(path) {
     const raw = VFS.readFile(path);
 
     try {
         const pkg = JSON.parse(raw);
 
         if (!pkg.id || !pkg.label || !pkg.icon) {
-            alert("无效安装包");
+            alert('无效安装包');
             return;
         }
 
@@ -895,23 +894,19 @@ container.addEventListener('click', (e) => {
             icon: pkg.icon
         });
 
-        alert(pkg.label + " 安装成功");
+        alert(pkg.label + ' 安装成功');
 
-        document.getElementById(
-            'desktop-icons-container'
-        ).innerHTML = "";
-
-        document.getElementById(
-            'start-menu-pinned-grid'
-        ).innerHTML = "";
+        document.getElementById('desktop-icons-container').innerHTML = '';
+        document.getElementById('start-menu-pinned-grid').innerHTML = '';
 
         initDesktop();
 
     } catch (e) {
-        alert("EXE 解析失败");
+        alert('EXE 解析失败');
     }
 }
-}
-    </script>
+</script>
+</body>
+</html>
 </body>
 </html>
