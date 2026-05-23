@@ -31,10 +31,12 @@
         }
 
         /* 【核心修复】: 利用原生 CSS 消除 iPad 300ms 点击延迟，让所有按钮一击必中 */
-        button, .cursor-pointer {
-            touch-action: manipulation !important;
-            color: #ffffff;
-            .exp-new-btn {
+button, .cursor-pointer {
+    touch-action: manipulation !important;
+    color: #ffffff;
+}
+
+.exp-new-btn {
     pointer-events: auto !important;
     touch-action: manipulation !important;
     position: relative;
@@ -424,8 +426,9 @@ writeFile(path, content) {
 
     return false;
 }
-        const VFS = new VirtualFileSystem();
+}   // ← 补上这个，结束 class
 
+const VFS = new VirtualFileSystem();
         class ProcessScheduler {
             constructor() { this.processes = [{ pid: 1, name: "System Idle", cpu: 85, ram: 1024 }]; this.pidCounter = 10; this.loop(); }
             spawn(name) { const pid = this.pidCounter++; this.processes.push({ pid, name, cpu: 0, ram: 4096 }); return pid; }
@@ -906,4 +909,5 @@ function installExe(path) {
     }
 }
 </script>
+</body>
 </html>
