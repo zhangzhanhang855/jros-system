@@ -886,28 +886,126 @@ function installExe(path) {
     try {
         const pkg = JSON.parse(raw);
 
-        if (!pkg.id || !pkg.label || !pkg.icon) {
+        // 校验安装包
+        if (
+            !pkg.appName ||
+            !pkg.appTitle ||
+            !pkg.icon ||
+            !pkg.script
+        ) {
             alert('无效安装包');
             return;
         }
 
+        const appId = pkg.appName;
+        const templateId = 'template-' + appId;
+
+        // 防止重复安装
+        if (APPS.find(a => a.id === appId)) {
+            alert('应用已安装');
+            return;
+        }
+
+        // 创建动态模板
+        const tpl = document.createElement('div');
+        tpl.id = templateId;
+        tpl.className = 'h-full w-full';
+        document.body.appendChild(tpl);
+
+        // 注册 APP
         APPS.push({
-            id: pkg.id,
-            label: pkg.label,
-            icon: pkg.icon
+            id: appId,
+            label: pkg.appTitle,
+            icon: pkg.icon,
+
+            open: function () {
+                windowManager.createWindow(
+                    appId,
+                    pkg.appTitle,
+                    templateId,
+                    pkg.width || 800,
+                    pkg.height || 600,
+                    function (winObj) {
+                        try {
+                            new Function(
+                                'winObj',
+                                pkg.script
+                            )(winObj);
+                        } catch (e) {
+                            console.error(e);
+                            alert('应用运行失败');
+                        }
+                    }
+                );
+            }
         });
 
-        alert(pkg.label + ' 安装成功');
+        // 动态刷新桌面图标
+        const desk = document.getElementById(
+            'desktop-icons-container'
+        );
 
-        document.getElementById('desktop-icons-container').innerHTML = '';
-        document.getElementById('start-menu-pinned-grid').innerHTML = '';
+        const menu = document.getElementById(
+            'start-menu-pinned-grid'
+        );
 
-        initDesktop();
+        desk.innerHTML += `
+            <div class="flex flex-col items-center p-2 rounded hover:bg-white/20 cursor-pointer"
+                 id="desk-${appId}">
+                <span class="text-4xl">
+                    ${pkg.icon}
+                </span>
+                <span class="text-xs">
+                    ${pkg.appTitle}
+                </span>
+            </div>
+        `;
+
+        menu.innerHTML += `
+            <div class="flex flex-col items-center p-3 rounded-xl hover:bg-white/20 cursor-pointer"
+                 id="start-${appId}">
+                <span class="text-3xl">
+                    ${pkg.icon}
+                </span>
+                <span class="text-[10px]">
+                    ${pkg.appTitle}
+                </span>
+            </div>
+        `;
+
+        // 双击打开
+        addDoubleTapListener(
+            document.getElementById(
+                'desk-' + appId
+            ),
+            () => {
+                const app = APPS.find(
+                    a => a.id === appId
+                );
+                app.open();
+            }
+        );
+
+        addDoubleTapListener(
+            document.getElementById(
+                'start-' + appId
+            ),
+            () => {
+                const app = APPS.find(
+                    a => a.id === appId
+                );
+                app.open();
+            }
+        );
+
+        alert(pkg.appTitle + ' 安装成功');
 
     } catch (e) {
+        console.error(e);
         alert('EXE 解析失败');
     }
 }
+
 </script>
 </body>
 </html>
