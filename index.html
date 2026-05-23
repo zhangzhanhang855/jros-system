@@ -405,16 +405,25 @@ function addDoubleTapListener(element, callback) {
                 const node = this.resolvePath(path); 
                 return (node && node.type === "file") ? node.content : null; 
             }
-            writeFile(path, content) {
-                const parts = path.split("/"); const file = parts.pop(); const dir = parts.join("/");
-                const dirNode = this.resolvePath(dir || "/");
-                if (dirNode && dirNode.type === "dir") { 
-                    dirNode.children[file] = { name: file, type: "file", content: content }; 
-                    return true; 
-                }
-                return false;
-            }
-        }
+writeFile(path, content) {
+    const parts = path.split("/");
+    const file = parts.pop();
+    const dir = parts.join("/");
+
+    const dirNode = this.resolvePath(dir || "/");
+
+    if (dirNode && dirNode.type === "dir") {
+        dirNode.children[file] = {
+            name: file,
+            type: "file",
+            ext: file.split('.').pop().toLowerCase(),
+            content: content
+        };
+        return true;
+    }
+
+    return false;
+}
         const VFS = new VirtualFileSystem();
 
         class ProcessScheduler {
@@ -625,7 +634,15 @@ function addDoubleTapListener(element, callback) {
                     addDoubleTapListener(el, () => {
                         const target = path.endsWith('/') ? path + el.dataset.name : path + "/" + el.dataset.name;
                         if (VFS.resolvePath(target).type === 'dir') { path = target; render(); }
-                        else { openEditor(target); }
+                        else {
+    const file = VFS.resolvePath(target);
+
+    if (file.ext === "exe") {
+        installExe(target);
+    } else {
+        openEditor(target);
+    }
+}
                     });
                 });
             };
@@ -861,6 +878,39 @@ container.addEventListener('click', (e) => {
 
         bar.appendChild(btn);
     });
+            function installExe(path) {
+    const raw = VFS.readFile(path);
+
+    try {
+        const pkg = JSON.parse(raw);
+
+        if (!pkg.id || !pkg.label || !pkg.icon) {
+            alert("无效安装包");
+            return;
+        }
+
+        APPS.push({
+            id: pkg.id,
+            label: pkg.label,
+            icon: pkg.icon
+        });
+
+        alert(pkg.label + " 安装成功");
+
+        document.getElementById(
+            'desktop-icons-container'
+        ).innerHTML = "";
+
+        document.getElementById(
+            'start-menu-pinned-grid'
+        ).innerHTML = "";
+
+        initDesktop();
+
+    } catch (e) {
+        alert("EXE 解析失败");
+    }
+}
 }
     </script>
 </body>
