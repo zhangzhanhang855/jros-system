@@ -498,19 +498,12 @@ const VFS = new VirtualFileSystem();
                 this.container.appendChild(winEl);
 
                 const tpl = document.getElementById(templateId);
-if (tpl) {
-    const container = winEl.querySelector(`#win-content-${id}`);
-
-    container.innerHTML = '';
-    const clone = tpl.cloneNode(true);
-    clone.classList.remove('hidden');
-    clone.id = "app-content-" + id;
-
-    container.appendChild(clone);
-
-    // 🔥 强制 DOM 刷新，防 Safari 不渲染
-    clone.offsetHeight;
-}
+                if (tpl) {
+                    const clone = tpl.cloneNode(true);
+                    clone.classList.remove('hidden');
+                    clone.id = "app-content-" + id;
+                    winEl.querySelector(`#win-content-${id}`).appendChild(clone);
+                }
                 // 【核心修复：分离按钮点击逻辑，强行阻止冒泡】
                 winEl.querySelector('.win-close-btn').onclick = (e) => { e.stopPropagation(); this.closeWindow(id); };
                 winEl.querySelector('.win-min-btn').onclick = (e) => { e.stopPropagation(); this.minimizeWindow(id); };
