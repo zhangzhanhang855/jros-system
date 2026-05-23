@@ -349,20 +349,25 @@
         };
 
         // 【核心修复】：真正的全局防误触双击监听器，只拦截标准 click，iPad 上完美兼容
-        function addDoubleTapListener(element, callback) {
-            if (!element) return;
-            let lastTap = 0;
-            element.onclick = (e) => {
-                const currentTime = Date.now();
-                const tapLength = currentTime - lastTap;
-                if (tapLength > 0 && tapLength < 500) {
-                    callback(e);
-                    lastTap = 0;
-                } else {
-                    lastTap = currentTime;
-                }
-            };
+function addDoubleTapListener(element, callback) {
+    if (!element) return;
+
+    let lastTap = 0;
+
+    element.addEventListener('click', function(e) {
+        const currentTime = Date.now();
+        const tapLength = currentTime - lastTap;
+
+        if (tapLength > 0 && tapLength < 500) {
+            e.preventDefault();
+            e.stopPropagation();
+            callback(e);
+            lastTap = 0;
+        } else {
+            lastTap = currentTime;
         }
+    }, { passive: false });
+}
 
         // VFS 虚拟文件系统 (恢复最清晰的对象树架构)
         class VirtualFileSystem {
@@ -487,7 +492,7 @@
                 // 拖拽逻辑仅绑定在 header 上，且过滤 button
                 const header = winEl.querySelector('.win-header');
                 header.onpointerdown = (e) => {
-                    if (e.target.tagName === 'BUTTON') return; // 点到按钮时不拖拽
+                    if (e.target.closest('button')) return;
                     this.focusWindow(id);
                     let startX = e.clientX - winEl.offsetLeft, startY = e.clientY - winEl.offsetTop;
                     const move = (me) => { winEl.style.left = (me.clientX - startX) + 'px'; winEl.style.top = (me.clientY - startY) + 'px'; };
@@ -812,13 +817,34 @@
         }
 
         function updateTaskbar() {
-            const bar = document.getElementById('taskbar-running-apps'); bar.innerHTML = '';
-            windowManager.windows.forEach(w => {
-                const app = APPS.find(a => a.id === w.id) || {icon:'⚙️'};
-                const active = SYSTEM_STATE.activeWindow === w.id ? 'bg-[#0078d4] w-4' : 'bg-white/40 w-1.5';
-                bar.innerHTML += `<div class="relative w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg cursor-pointer transition" onclick="windowManager.focusWindow('${w.id}')"><span class="text-2xl">${app.icon}</span><span class="absolute bottom-0 h-[3px] rounded-full transition-all ${active}"></span></div>`;
-            });
-        }
+    const bar = document.getElementById('taskbar-running-apps');
+    bar.innerHTML = '';
+
+    windowManager.windows.forEach(w => {
+        const app = APPS.find(a => a.id === w.id) || { icon: '⚙️' };
+
+        const active =
+            SYSTEM_STATE.activeWindow === w.id
+                ? 'bg-[#0078d4] w-4'
+                : 'bg-white/40 w-1.5';
+
+        const btn = document.createElement('div');
+
+        btn.className =
+            "relative w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg cursor-pointer transition";
+
+        btn.innerHTML = `
+            <span class="text-2xl">${app.icon}</span>
+            <span class="absolute bottom-0 h-[3px] rounded-full transition-all ${active}"></span>
+        `;
+
+        btn.addEventListener('click', () => {
+            windowManager.focusWindow(w.id);
+        });
+
+        bar.appendChild(btn);
+    });
+}
     </script>
 </body>
 </html>
