@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Windows 10 OS Simulator</title>
   
-  <!-- Typography: Google Sans (Product Sans) & Icons -->
+  <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Product+Sans:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 
   <style>
     /* ==========================================================================
-       WINDOWS 10 FLUID DESIGN SYSTEM & CSS RESET
+       SYSTEM DESIGN TOKENS
        ========================================================================== */
     :root {
       --font-main: 'Product Sans', 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -21,9 +21,9 @@
       --accent-color: #0078d7;
       --accent-hover: #1084df;
       --accent-glow: rgba(0, 120, 215, 0.4);
-      --taskbar-bg: rgba(16, 16, 16, 0.85);
+      --taskbar-bg: rgba(16, 16, 16, 0.88);
       --taskbar-blur: blur(28px);
-      --acrylic-bg: rgba(32, 32, 32, 0.90);
+      --acrylic-bg: rgba(30, 30, 30, 0.94);
       --acrylic-blur: blur(35px) saturate(140%);
       --window-border: rgba(255, 255, 255, 0.12);
       --window-active-border: var(--accent-color);
@@ -69,10 +69,9 @@
       background-position: center;
       background-repeat: no-repeat;
       overflow: hidden;
-      transition: background-image 0.3s ease;
+      transition: background-image 0.25s ease-in-out;
     }
 
-    /* Selection Box */
     #selection-box {
       position: absolute;
       border: 1px solid rgba(0, 120, 215, 0.85);
@@ -82,22 +81,25 @@
       z-index: 5;
     }
 
-    /* Desktop Icons */
+    /* Fixed: Desktop Grid does not overlap with taskbar */
     #desktop-icons-container {
       position: absolute;
       top: 10px;
       left: 10px;
-      bottom: 10px;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      gap: 12px;
+      bottom: 12px;
+      width: calc(100vw - 20px);
+      height: calc(100vh - var(--taskbar-height) - 20px);
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(auto-fill, 86px);
+      grid-auto-columns: 82px;
+      gap: 10px;
       z-index: 2;
+      align-content: start;
     }
 
     .desktop-icon {
-      width: 78px;
+      width: 80px;
       height: 86px;
       display: flex;
       flex-direction: column;
@@ -112,32 +114,32 @@
     }
 
     .desktop-icon:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
     .desktop-icon.selected {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     .desktop-icon i, .desktop-icon img {
       font-size: 32px;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       margin-bottom: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
       object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
     }
 
     .desktop-icon span {
       font-size: 11.5px;
       line-height: 1.25;
       color: #ffffff;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
       max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -146,25 +148,25 @@
       -webkit-box-orient: vertical;
     }
 
-    /* Native Win10 Notification Toast */
+    /* Fixed: Notifications display cleanly above the taskbar */
     #native-toast-container {
       position: absolute;
-      bottom: 12px;
-      right: 12px;
+      bottom: calc(var(--taskbar-height) + 14px);
+      right: 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      z-index: 100005;
+      gap: 8px;
+      z-index: 100002;
       pointer-events: none;
     }
 
     .win10-toast {
-      width: 320px;
-      background: #1f1f1f;
+      width: 330px;
+      background: #1c1c1c;
       border: 1px solid #333;
       border-left: 4px solid var(--accent-color);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-      padding: 12px 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      padding: 12px 16px;
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -180,20 +182,59 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 600;
-      color: #ddd;
+      color: #e0e0e0;
     }
 
     .toast-body {
       font-size: 11.5px;
-      color: #bbb;
+      color: #b5b5b5;
       line-height: 1.4;
     }
 
     @keyframes toastSlideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       APP LAUNCH SPLASH SCREEN (1s Windows Native Spinner)
+       ========================================================================== */
+    .app-splash-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1c1c1c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 1;
+      transition: opacity 0.25s ease-out;
+    }
+
+    .app-splash-icon {
+      font-size: 48px;
+      color: var(--accent-color);
+      margin-bottom: 24px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+    }
+
+    .app-splash-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spinRing 0.85s linear infinite;
+    }
+
+    @keyframes spinRing {
+      to { transform: rotate(360deg); }
     }
 
     /* ==========================================================================
@@ -430,11 +471,7 @@
       filter: brightness(1.15);
     }
 
-    .live-tile i, .live-tile img {
-      font-size: 26px;
-      width: 28px;
-      height: 28px;
-    }
+    .live-tile i { font-size: 26px; }
 
     .live-tile span {
       font-size: 11.5px;
@@ -548,10 +585,7 @@
       object-fit: contain;
     }
 
-    .window-controls {
-      display: flex;
-      height: 100%;
-    }
+    .window-controls { display: flex; height: 100%; }
 
     .win-control-btn {
       width: 44px;
@@ -583,9 +617,118 @@
     .resize-corner { bottom: 0; right: 0; width: 12px; height: 12px; cursor: nwse-resize; }
 
     /* ==========================================================================
-       APPLICATIONS & REDESIGNED SETTINGS (FULL GRID NAVIGATION)
+       FILE EXPLORER (Interactive Folders)
        ========================================================================== */
-    /* Settings Hub Layout */
+    .explorer-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #1e1e1e;
+      color: #eee;
+    }
+    .explorer-ribbon {
+      padding: 6px 12px;
+      background: #2d2d2d;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      gap: 8px;
+    }
+    .explorer-btn {
+      background: #3a3a3a;
+      border: 1px solid #4a4a4a;
+      color: #fff;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .explorer-btn:hover { background: #484848; }
+    .explorer-address-bar {
+      padding: 4px 8px;
+      background: #252525;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .address-box {
+      flex: 1;
+      background: #181818;
+      border: 1px solid #3c3c3c;
+      padding: 3px 8px;
+      color: #ddd;
+      font-size: 11.5px;
+      border-radius: 2px;
+    }
+    .explorer-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .explorer-sidebar {
+      width: 190px;
+      background: #181818;
+      border-right: 1px solid #2d2d2d;
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .sidebar-folder {
+      padding: 7px 10px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #ccc;
+    }
+    .sidebar-folder:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+    .sidebar-folder.active { background: rgba(255, 255, 255, 0.12); color: #fff; font-weight: 500; }
+
+    .explorer-file-view {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      grid-auto-rows: 90px;
+      gap: 10px;
+      align-content: start;
+    }
+    .file-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+    .file-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .file-item i {
+      font-size: 32px;
+      margin-bottom: 4px;
+    }
+    .file-item span {
+      font-size: 11px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       SETTINGS (Authentic Hub, Wallpaper Upload & Presets)
+       ========================================================================== */
     .settings-window-body {
       height: 100%;
       background: #1f1f1f;
@@ -687,7 +830,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 14px 0;
       border-bottom: 1px solid #2d2d2d;
     }
 
@@ -700,116 +843,77 @@
       cursor: pointer;
       font-size: 12px;
       transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .setting-btn:hover { background: var(--accent-hover); }
 
-    /* File Explorer */
-    .explorer-container {
+    .wallpaper-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .wallpaper-preset-thumb {
+      height: 70px;
+      border-radius: 3px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .wallpaper-preset-thumb:hover {
+      border-color: var(--accent-color);
+      transform: scale(1.02);
+    }
+
+    /* Edge Browser Container */
+    .edge-browser-body {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: #1e1e1e;
-      color: #eee;
-    }
-    .explorer-ribbon {
-      padding: 6px 12px;
-      background: #2d2d2d;
-      border-bottom: 1px solid #3a3a3a;
-      display: flex;
-      gap: 8px;
-    }
-    .explorer-btn {
-      background: #3a3a3a;
-      border: 1px solid #4a4a4a;
-      color: #fff;
-      padding: 4px 10px;
-      font-size: 11.5px;
-      border-radius: 2px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .explorer-btn:hover { background: #484848; }
-    .explorer-address-bar {
-      padding: 4px 8px;
       background: #252525;
-      border-bottom: 1px solid #333;
+    }
+
+    .edge-nav-bar {
       display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-    }
-    .address-box {
-      flex: 1;
-      background: #181818;
-      border: 1px solid #3c3c3c;
-      padding: 3px 8px;
-      color: #ddd;
-      font-size: 11.5px;
-      border-radius: 2px;
-    }
-    .explorer-body {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-    .explorer-sidebar {
-      width: 180px;
-      background: #181818;
-      border-right: 1px solid #2d2d2d;
-      padding: 8px;
-      overflow-y: auto;
-      font-size: 12px;
-    }
-    .sidebar-folder {
-      padding: 6px 8px;
-      border-radius: 2px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
       gap: 8px;
+      padding: 8px 12px;
+      background: #1f1f1f;
+      border-bottom: 1px solid #333;
+      align-items: center;
     }
-    .sidebar-folder:hover, .sidebar-folder.active { background: rgba(255, 255, 255, 0.08); }
-    .explorer-file-view {
+
+    .edge-url-bar {
       flex: 1;
-      padding: 12px;
-      overflow-y: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      grid-auto-rows: 90px;
-      gap: 10px;
+      background: #121212;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 20px;
+      outline: none;
     }
-    .file-item {
+
+    .edge-nav-btn {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 6px;
-      border-radius: 3px;
       cursor: pointer;
-      text-align: center;
-      border: 1px solid transparent;
     }
-    .file-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-    .file-item i, .file-item img {
-      font-size: 30px;
-      width: 32px;
-      height: 32px;
-      margin-bottom: 4px;
-      object-fit: contain;
-    }
-    .file-item span {
-      font-size: 11px;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+
+    .edge-nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
     /* Notepad */
     .notepad-container {
@@ -907,21 +1011,6 @@
       font-size: inherit;
     }
 
-    /* JREX Sandbox */
-    .jrex-sandbox-container {
-      width: 100%;
-      height: 100%;
-      background: #181818;
-      display: flex;
-      flex-direction: column;
-    }
-    .jrex-sandbox-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #fff;
-    }
-
     /* Context Menu */
     #context-menu {
       position: absolute;
@@ -946,7 +1035,7 @@
     .context-menu-item:hover { background: var(--accent-color); color: #fff; }
     .context-divider { height: 1px; background: #3a3a3a; margin: 4px 0; }
 
-    #jrex-file-input { display: none; }
+    #jrex-file-input, #wallpaper-file-input { display: none; }
   </style>
 </head>
 <body>
@@ -955,7 +1044,6 @@
   <div id="desktop">
     <div id="desktop-icons-container"></div>
     <div id="selection-box"></div>
-    <!-- Native Toast Feedback Container -->
     <div id="native-toast-container"></div>
   </div>
 
@@ -1065,7 +1153,7 @@
       </div>
       <div id="clock-widget" class="tray-item" title="Date and Time Settings" onclick="Sys.openApp('settings')">
         <span id="tray-time">12:00 PM</span>
-        <span id="tray-date">2026/8/31</span>
+        <span id="tray-date">2026/9/5</span>
       </div>
       <div class="tray-item" title="Action Center" onclick="Sys.toggleActionCenter()">
         <i class="fa-regular fa-message"></i>
@@ -1074,27 +1162,36 @@
     </div>
   </div>
 
-  <!-- Hidden File Input for iOS/Desktop .jrex packages -->
+  <!-- Hidden Inputs -->
   <input type="file" id="jrex-file-input" accept=".jrex,.json" />
+  <input type="file" id="wallpaper-file-input" accept="image/*" />
 
   <!-- ==========================================================================
-       CORE OPERATING SYSTEM RUNTIME & JREX ENGINE
-       ========================================================================== */
-  -->
+       CORE OPERATING SYSTEM RUNTIME
+       ========================================================================== -->
   <script>
     class OperatingSystem {
       constructor() {
-        this.storageKey = 'WIN10_SIMULATOR_STATE_V1';
+        this.storageKey = 'WIN10_SIMULATOR_STATE_V2';
         this.windows = new Map();
         this.installedApps = new Map();
         this.activeWindowId = null;
         this.zIndexCounter = 100;
+        this.currentExplorerFolder = 'desktop';
+
+        this.presetWallpapers = [
+          'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=2850&q=80',
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2850&q=80',
+          'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=2850&q=80',
+          'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2850&q=80'
+        ];
+
         this.state = {
-          wallpaper: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=2850&q=80',
+          wallpaper: this.presetWallpapers[0],
           accentColor: '#0078d7',
           installedJREX: [],
           documents: [
-            { name: 'Welcome.txt', content: 'Welcome to Windows 10 OS Simulator!\n\nFeatures:\n- Install any .jrex app package.\n- Add custom app shortcuts to the desktop.\n- Automatic state sync to iOS Files / LocalStorage.\n- Native window manager with drag & resize.' }
+            { name: 'Welcome.txt', content: 'Welcome to Windows 10 OS Simulator!\n\nAll bugs resolved:\n- Real-time wallpaper upload & update.\n- Full native toast visibility.\n- Edge browser search engine fallback.\n- Clean non-overlapping desktop grid.\n- 1-second system app launch animations.\n- Fully interactive File Explorer folders.' }
           ]
         };
 
@@ -1112,7 +1209,7 @@
       }
 
       // ========================================================================
-      // IN-UI NATIVE NOTIFICATION / TOAST FEEDBACK
+      // IN-UI TOASTS (CORRECT ELEVATION)
       // ========================================================================
       showInUINativeToast(title, message, type = 'info') {
         const container = document.getElementById('native-toast-container');
@@ -1141,7 +1238,7 @@
             toast.style.transform = 'translateX(50px)';
             setTimeout(() => toast.remove(), 300);
           }
-        }, 3500);
+        }, 4000);
 
         this.pushActionCenterNotification(title, message);
       }
@@ -1164,7 +1261,7 @@
       }
 
       // ========================================================================
-      // PERSISTENCE & IOS FILES COMPATIBILITY
+      // PERSISTENCE ENGINE
       // ========================================================================
       loadPersistentState() {
         try {
@@ -1174,7 +1271,7 @@
             this.state = { ...this.state, ...parsed };
           }
         } catch (e) {
-          console.warn('Failed to parse localStorage data', e);
+          console.warn('Could not read state from localStorage', e);
         }
       }
 
@@ -1182,7 +1279,7 @@
         try {
           localStorage.setItem(this.storageKey, JSON.stringify(this.state));
         } catch (e) {
-          console.error('Failed to write to localStorage', e);
+          console.error('Failed to save state to localStorage', e);
         }
       }
 
@@ -1192,13 +1289,13 @@
           const exportData = {
             system: 'Windows 10 Simulator (iOS Edition)',
             exportDate: new Date().toISOString(),
-            version: '1.0.0',
+            version: '2.0.0',
             data: this.state
           };
 
           const jsonString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
           const downloadAnchor = document.createElement('a');
-          const filename = `Win10_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+          const filename = `Win10_Snapshot_${new Date().toISOString().slice(0, 10)}.json`;
           
           downloadAnchor.setAttribute('href', jsonString);
           downloadAnchor.setAttribute('download', filename);
@@ -1206,9 +1303,9 @@
           downloadAnchor.click();
           downloadAnchor.remove();
 
-          this.showInUINativeToast('Export Successful', `System backup file "${filename}" dispatched to iOS Files.`, 'success');
+          this.showInUINativeToast('Export Successful', `Snapshot "${filename}" dispatched to iOS Files.`, 'success');
         } catch (err) {
-          this.showInUINativeToast('Export Failed', 'An error occurred while generating system snapshot.', 'error');
+          this.showInUINativeToast('Export Error', 'Failed to generate JSON snapshot.', 'error');
         }
       }
 
@@ -1221,8 +1318,9 @@
           id: 'explorer',
           name: 'File Explorer',
           icon: 'fa-solid fa-folder',
-          width: 750,
+          width: 760,
           height: 480,
+          splash: true,
           render: (win) => this.renderFileExplorer(win)
         });
 
@@ -1233,6 +1331,7 @@
           icon: 'fa-solid fa-file-lines',
           width: 600,
           height: 420,
+          splash: false,
           render: (win, args) => this.renderNotepad(win, args)
         });
 
@@ -1243,6 +1342,7 @@
           icon: 'fa-solid fa-calculator',
           width: 320,
           height: 460,
+          splash: false,
           render: (win) => this.renderCalculator(win)
         });
 
@@ -1251,52 +1351,46 @@
           id: 'cmd',
           name: 'Command Prompt',
           icon: 'fa-solid fa-terminal',
-          width: 620,
+          width: 640,
           height: 380,
+          splash: true,
           render: (win) => this.renderCmd(win)
         });
 
-        // 5. Settings (Grid Hub Architecture)
+        // 5. Settings
         this.registerApp({
           id: 'settings',
           name: 'Settings',
           icon: 'fa-solid fa-gear',
-          width: 750,
+          width: 760,
           height: 520,
+          splash: true,
           render: (win) => this.renderSettings(win)
         });
 
-        // 6. Microsoft Edge
+        // 6. Microsoft Edge (Fixed Browser with search & fallback)
         this.registerApp({
           id: 'edge',
           name: 'Microsoft Edge',
           icon: 'fa-brands fa-edge',
-          width: 800,
-          height: 520,
-          render: (win) => {
-            win.content.innerHTML = `
-              <div style="display:flex; flex-direction:column; height:100%; background:#252525;">
-                <div style="display:flex; gap:8px; padding:6px; background:#1e1e1e; border-bottom:1px solid #333;">
-                  <input type="text" id="edge-url-input" value="https://bing.com" style="flex:1; background:#121212; border:1px solid #444; color:#fff; padding:4px 10px; font-size:12px; border-radius:3px;">
-                  <button class="explorer-btn" onclick="const url = document.getElementById('edge-url-input').value; this.parentElement.nextElementSibling.src = url;"><i class="fa-solid fa-arrow-rotate-right"></i></button>
-                </div>
-                <iframe src="https://bing.com" style="flex:1; width:100%; border:none; background:#fff;"></iframe>
-              </div>
-            `;
-          }
+          width: 820,
+          height: 540,
+          splash: true,
+          render: (win) => this.renderEdgeBrowser(win)
         });
 
-        // 7. JREX App Installer
+        // 7. JR App Store
         this.registerApp({
           id: 'jrex_installer',
-          name: 'JR App Store & Installer',
+          name: 'JR App Store',
           icon: 'fa-solid fa-box-open',
           width: 640,
           height: 480,
+          splash: true,
           render: (win) => this.renderJREXInstaller(win)
         });
 
-        // Register Installed JREX Packages from State
+        // Register custom JREX packages
         this.state.installedJREX.forEach(pkg => {
           this.registerJREXPackage(pkg, false);
         });
@@ -1306,12 +1400,9 @@
         this.installedApps.set(appConfig.id, appConfig);
       }
 
-      // ========================================================================
-      // .JREX PACKAGE ENGINE
-      // ========================================================================
       registerJREXPackage(pkg, persist = true) {
         if (!pkg.id || !pkg.name) {
-          this.showInUINativeToast('Installation Error', 'Invalid package format: missing ID or Name.', 'error');
+          this.showInUINativeToast('Install Error', 'Invalid package format: missing ID or Name.', 'error');
           return;
         }
 
@@ -1322,11 +1413,12 @@
           width: pkg.width || 640,
           height: pkg.height || 480,
           isJREX: true,
+          splash: true,
           render: (win) => {
             const container = document.createElement('div');
-            container.className = 'jrex-sandbox-container';
+            container.style.cssText = 'width:100%; height:100%; background:#181818;';
             const iframe = document.createElement('iframe');
-            iframe.className = 'jrex-sandbox-iframe';
+            iframe.style.cssText = 'width:100%; height:100%; border:none; background:#fff;';
             iframe.sandbox = 'allow-scripts allow-modals allow-forms allow-same-origin';
 
             const bundleHtml = `
@@ -1340,7 +1432,7 @@
                 </style>
               </head>
               <body>
-                ${pkg.html || '<div style="padding:20px;">No interface provided.</div>'}
+                ${pkg.html || '<div style="padding:20px;">No user interface provided.</div>'}
                 <script>
                   try {
                     ${pkg.js || ''}
@@ -1369,7 +1461,7 @@
           this.savePersistentState();
           this.renderDesktop();
           this.renderStartMenuApps();
-          this.showInUINativeToast('App Installed', `"${pkg.name}" is successfully installed and added to Desktop.`, 'success');
+          this.showInUINativeToast('Application Installed', `"${pkg.name}" added to desktop.`, 'success');
         }
       }
 
@@ -1383,20 +1475,16 @@
           reader.onload = (event) => {
             try {
               const parsed = JSON.parse(event.target.result);
-              
-              // Handle whole system backup recovery
               if (parsed.system && parsed.data) {
                 this.state = parsed.data;
                 this.savePersistentState();
-                this.showInUINativeToast('System Restored', 'System state successfully loaded. Applying changes...', 'success');
+                this.showInUINativeToast('System Restored', 'Reloading system...', 'success');
                 setTimeout(() => location.reload(), 1000);
                 return;
               }
-
-              // Handle individual .jrex package
               this.registerJREXPackage(parsed, true);
             } catch (err) {
-              this.showInUINativeToast('Import Error', 'Failed to read package file. Ensure it is valid JSON.', 'error');
+              this.showInUINativeToast('Import Failed', 'Invalid JSON syntax.', 'error');
             }
           };
           reader.readAsText(file);
@@ -1405,7 +1493,7 @@
       }
 
       // ========================================================================
-      // WINDOW MANAGER ARCHITECTURE
+      // WINDOW MANAGER WITH 1-SECOND STARTUP ANIMATION
       // ========================================================================
       openApp(appId, args = {}) {
         const app = this.installedApps.get(appId);
@@ -1467,7 +1555,27 @@
         this.setupWindowInteractions(winObj);
         this.focusWindow(winId);
 
-        app.render(winObj, args);
+        // Native 1-Second Loading Splash Feature
+        if (app.splash) {
+          const splash = document.createElement('div');
+          splash.className = 'app-splash-overlay';
+          splash.innerHTML = `
+            <div class="app-splash-icon"><i class="${app.icon}"></i></div>
+            <div class="app-splash-spinner"></div>
+          `;
+          winObj.content.appendChild(splash);
+
+          setTimeout(() => {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+              splash.remove();
+              app.render(winObj, args);
+            }, 250);
+          }, 1000);
+        } else {
+          app.render(winObj, args);
+        }
+
         this.renderTaskbar();
         this.closeStartMenu();
       }
@@ -1659,7 +1767,7 @@
       }
 
       // ========================================================================
-      // DESKTOP & SHELL RENDERING
+      // DESKTOP ICONS & SHELL
       // ========================================================================
       renderDesktop() {
         const container = document.getElementById('desktop-icons-container');
@@ -1746,14 +1854,148 @@
       }
 
       // ========================================================================
-      // APPLICATIONS IMPLEMENTATION
+      // INTERACTIVE FILE EXPLORER
       // ========================================================================
-      
-      /**
-       * Windows Settings (Modern Categorized Hub)
-       * Completely removed the sidebar selection layout and replaced with
-       * authentic Settings Home Grid + In-window category pages.
-       */
+      renderFileExplorer(win) {
+        win.content.innerHTML = `
+          <div class="explorer-container">
+            <div class="explorer-ribbon">
+              <button class="explorer-btn" onclick="Sys.promptImportJREX()"><i class="fa-solid fa-file-import"></i> Import .jrex</button>
+              <button class="explorer-btn" onclick="Sys.exportToIOSFiles()"><i class="fa-solid fa-floppy-disk"></i> Backup to iOS Files</button>
+              <button class="explorer-btn" onclick="Sys.openApp('notepad')"><i class="fa-solid fa-plus"></i> New Text Doc</button>
+            </div>
+            <div class="explorer-address-bar">
+              <i class="fa-solid fa-arrow-left" style="cursor:pointer;" onclick="Sys.switchExplorerFolder('${win.id}', 'desktop')"></i>
+              <i class="fa-solid fa-arrow-up" style="cursor:pointer;" onclick="Sys.switchExplorerFolder('${win.id}', 'c_drive')"></i>
+              <input class="address-box" id="explorer-address-input" value="This PC > Desktop" readonly />
+            </div>
+            <div class="explorer-body">
+              <div class="explorer-sidebar">
+                <div class="sidebar-folder active" id="side-btn-desktop" onclick="Sys.switchExplorerFolder('${win.id}', 'desktop')"><i class="fa-solid fa-desktop"></i> Desktop</div>
+                <div class="sidebar-folder" id="side-btn-documents" onclick="Sys.switchExplorerFolder('${win.id}', 'documents')"><i class="fa-solid fa-file"></i> Documents</div>
+                <div class="sidebar-folder" id="side-btn-jrex" onclick="Sys.switchExplorerFolder('${win.id}', 'jrex')"><i class="fa-solid fa-box-archive"></i> JREX Packages</div>
+                <div class="sidebar-folder" id="side-btn-c_drive" onclick="Sys.switchExplorerFolder('${win.id}', 'c_drive')"><i class="fa-solid fa-hard-drive"></i> Local Disk (C:)</div>
+              </div>
+              <div class="explorer-file-view" id="explorer-files-grid"></div>
+            </div>
+          </div>
+        `;
+
+        this.switchExplorerFolder(win.id, this.currentExplorerFolder || 'desktop');
+      }
+
+      switchExplorerFolder(winId, folderKey) {
+        this.currentExplorerFolder = folderKey;
+        const win = this.windows.get(winId);
+        if (!win) return;
+
+        const grid = win.content.querySelector('#explorer-files-grid');
+        const addr = win.content.querySelector('#explorer-address-input');
+        if (!grid || !addr) return;
+
+        win.content.querySelectorAll('.sidebar-folder').forEach(el => el.classList.remove('active'));
+        const activeBtn = win.content.querySelector(`#side-btn-${folderKey}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        grid.innerHTML = '';
+
+        if (folderKey === 'desktop') {
+          addr.value = 'This PC > Desktop';
+          this.installedApps.forEach((app) => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<i class="${app.icon}" style="color:var(--accent-color);"></i><span>${app.name}</span>`;
+            item.ondblclick = () => this.openApp(app.id);
+            grid.appendChild(item);
+          });
+        } else if (folderKey === 'documents') {
+          addr.value = 'This PC > Documents';
+          this.state.documents.forEach((doc, idx) => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<i class="fa-solid fa-file-lines" style="color:#0078d7;"></i><span>${doc.name}</span>`;
+            item.ondblclick = () => this.openApp('notepad', { docIndex: idx });
+            grid.appendChild(item);
+          });
+        } else if (folderKey === 'jrex') {
+          addr.value = 'This PC > JREX Packages';
+          if (this.state.installedJREX.length === 0) {
+            grid.innerHTML = '<div style="font-size:12px; color:#888; grid-column:1/-1; padding:20px;">No custom .jrex applications installed.</div>';
+          }
+          this.state.installedJREX.forEach(pkg => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<i class="${pkg.icon || 'fa-solid fa-cube'}" style="color:#ffb900;"></i><span>${pkg.name}.jrex</span>`;
+            item.ondblclick = () => this.openApp(pkg.id);
+            grid.appendChild(item);
+          });
+        } else if (folderKey === 'c_drive') {
+          addr.value = 'This PC > Local Disk (C:)';
+          const folders = [
+            { name: 'Windows', icon: 'fa-solid fa-folder' },
+            { name: 'Program Files', icon: 'fa-solid fa-folder' },
+            { name: 'Users', icon: 'fa-solid fa-folder' }
+          ];
+          folders.forEach(f => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<i class="${f.icon}" style="color:#f3c834;"></i><span>${f.name}</span>`;
+            item.ondblclick = () => alert(`Access denied to system directory C:\\${f.name}`);
+            grid.appendChild(item);
+          });
+        }
+      }
+
+      // ========================================================================
+      // MICROSOFT EDGE (FIXED BROWSING CAPABILITIES)
+      // ========================================================================
+      renderEdgeBrowser(win) {
+        win.content.innerHTML = `
+          <div class="edge-browser-body">
+            <div class="edge-nav-bar">
+              <button class="edge-nav-btn" onclick="const iframe = document.getElementById('edge-frame-${win.id}'); try { iframe.contentWindow.history.back(); } catch(e){}"><i class="fa-solid fa-arrow-left"></i></button>
+              <button class="edge-nav-btn" onclick="const iframe = document.getElementById('edge-frame-${win.id}'); try { iframe.contentWindow.history.forward(); } catch(e){}"><i class="fa-solid fa-arrow-right"></i></button>
+              <button class="edge-nav-btn" onclick="Sys.navigateEdge('${win.id}')"><i class="fa-solid fa-rotate-right"></i></button>
+              <input type="text" id="edge-url-${win.id}" class="edge-url-bar" value="https://duckduckgo.com" placeholder="Search the web or type a URL" />
+              <button class="edge-nav-btn" onclick="Sys.navigateEdge('${win.id}')"><i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+            </div>
+            <div style="flex:1; position:relative; background:#fff;">
+              <iframe id="edge-frame-${win.id}" src="https://duckduckgo.com" style="width:100%; height:100%; border:none;" sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+            </div>
+          </div>
+        `;
+
+        const input = win.content.querySelector(`#edge-url-${win.id}`);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') Sys.navigateEdge(win.id);
+        });
+      }
+
+      navigateEdge(winId) {
+        const input = document.getElementById(`edge-url-${winId}`);
+        const iframe = document.getElementById(`edge-frame-${winId}`);
+        if (!input || !iframe) return;
+
+        let query = input.value.trim();
+        if (!query) return;
+
+        if (!query.startsWith('http://') && !query.startsWith('https://')) {
+          if (query.includes('.') && !query.includes(' ')) {
+            query = 'https://' + query;
+          } else {
+            // Search query fallback
+            query = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+          }
+        }
+
+        input.value = query;
+        iframe.src = query;
+        this.showInUINativeToast('Edge Browser', `Navigating to: ${query}`, 'info');
+      }
+
+      // ========================================================================
+      // SETTINGS & WALLPAPER UPDATE FIX
+      // ========================================================================
       renderSettings(win) {
         const showHub = () => {
           win.content.innerHTML = `
@@ -1766,7 +2008,7 @@
                     <i class="fa-solid fa-palette"></i>
                     <div>
                       <div class="settings-card-title">Personalization</div>
-                      <div class="settings-card-desc">Background, colors, lock screen, themes</div>
+                      <div class="settings-card-desc">Background wallpapers, custom images</div>
                     </div>
                   </div>
 
@@ -1774,23 +2016,23 @@
                     <i class="fa-solid fa-hard-drive"></i>
                     <div>
                       <div class="settings-card-title">Storage & iOS Files</div>
-                      <div class="settings-card-desc">Save snapshot, backup images, local state</div>
+                      <div class="settings-card-desc">Save snapshot, state backup and restore</div>
                     </div>
                   </div>
 
                   <div class="settings-card" onclick="Sys.showSettingsPage('${win.id}', 'apps')">
                     <i class="fa-solid fa-box-open"></i>
                     <div>
-                      <div class="settings-card-title">Apps & Features</div>
-                      <div class="settings-card-desc">Manage installed .jrex packages, defaults</div>
+                      <div class="settings-card-title">Apps & JREX</div>
+                      <div class="settings-card-desc">Manage installed packages, store apps</div>
                     </div>
                   </div>
 
                   <div class="settings-card" onclick="Sys.showSettingsPage('${win.id}', 'about')">
                     <i class="fa-solid fa-circle-info"></i>
                     <div>
-                      <div class="settings-card-title">System & About</div>
-                      <div class="settings-card-desc">Display, notifications, power, OS specifications</div>
+                      <div class="settings-card-title">System & Specs</div>
+                      <div class="settings-card-desc">Build info, typography, engine details</div>
                     </div>
                   </div>
 
@@ -1811,25 +2053,43 @@
         let contentHtml = '';
 
         if (page === 'personalization') {
+          const presetThumbs = this.presetWallpapers.map((url, i) => `
+            <div class="wallpaper-preset-thumb" style="background-image:url('${url}');" onclick="Sys.setWallpaper('${url}')" title="Theme ${i+1}"></div>
+          `).join('');
+
           contentHtml = `
             <div class="settings-header-nav">
               <button class="settings-back-btn" onclick="Sys.windows.get('${winId}').showHub()"><i class="fa-solid fa-arrow-left"></i> Home</button>
-              <span style="font-size:13px; font-weight:600;">Personalization</span>
+              <span style="font-size:13px; font-weight:600;">Personalization & Wallpaper</span>
             </div>
             <div class="settings-subpage">
               <div>
-                <h3 style="font-size:16px;">Background</h3>
-                <p style="font-size:12px; color:#aaa; margin-top:2px;">Customize your desktop wallpaper</p>
+                <h3 style="font-size:16px;">Desktop Background</h3>
+                <p style="font-size:12px; color:#aaa; margin-top:2px;">Select from high-definition presets or upload your own file</p>
               </div>
+
+              <div>
+                <div style="font-size:12.5px; font-weight:500; margin-bottom:6px;">Preset Themes:</div>
+                <div class="wallpaper-preset-grid">${presetThumbs}</div>
+              </div>
+
               <div class="settings-row">
                 <div>
-                  <div style="font-size:13px; font-weight:500;">Wallpaper Image URL</div>
-                  <div style="font-size:11px; color:#888;">Paste any direct HTTPS image link</div>
+                  <div style="font-size:13px; font-weight:500;">Custom Wallpaper URL</div>
+                  <div style="font-size:11px; color:#888;">Paste direct image link (JPEG, PNG, WebP)</div>
                 </div>
-                <input type="text" id="setting-wallpaper-input" value="${this.state.wallpaper}" style="background:#111; border:1px solid #444; color:#fff; padding:6px 10px; font-size:12px; width:260px; border-radius:3px;">
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="setting-wallpaper-input" value="${this.state.wallpaper.startsWith('data:') ? 'Custom Local Image' : this.state.wallpaper}" style="background:#111; border:1px solid #444; color:#fff; padding:6px 10px; font-size:12px; width:220px; border-radius:3px;">
+                  <button class="setting-btn" onclick="Sys.updateWallpaperFromInput()"><i class="fa-solid fa-check"></i> Apply</button>
+                </div>
               </div>
-              <div>
-                <button class="setting-btn" onclick="Sys.updateWallpaper()"><i class="fa-solid fa-check"></i> Apply Wallpaper</button>
+
+              <div class="settings-row">
+                <div>
+                  <div style="font-size:13px; font-weight:500;">Upload Local Image File</div>
+                  <div style="font-size:11px; color:#888;">Select an image directly from your local device or iOS Files</div>
+                </div>
+                <button class="setting-btn" onclick="document.getElementById('wallpaper-file-input').click()"><i class="fa-solid fa-upload"></i> Browse Image</button>
               </div>
             </div>
           `;
@@ -1867,7 +2127,7 @@
                 <i class="${pkg.icon || 'fa-solid fa-cube'}" style="font-size:18px; color:var(--accent-color);"></i>
                 <div>
                   <div style="font-size:13px; font-weight:500;">${pkg.name}</div>
-                  <div style="font-size:11px; color:#888;">Package ID: ${pkg.id}</div>
+                  <div style="font-size:11px; color:#888;">ID: ${pkg.id}</div>
                 </div>
               </div>
               <button class="setting-btn" style="background:#d13438;" onclick="Sys.uninstallJREX('${pkg.id}')"><i class="fa-solid fa-trash"></i> Uninstall</button>
@@ -1887,7 +2147,7 @@
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                   <h3 style="font-size:16px;">Installed Applications</h3>
-                  <p style="font-size:12px; color:#aaa; margin-top:2px;">Manage system apps and custom imported programs</p>
+                  <p style="font-size:12px; color:#aaa; margin-top:2px;">Manage installed programs</p>
                 </div>
                 <button class="setting-btn" onclick="Sys.promptImportJREX()"><i class="fa-solid fa-plus"></i> Install .jrex</button>
               </div>
@@ -1903,20 +2163,38 @@
             <div class="settings-subpage">
               <div>
                 <h3 style="font-size:16px;">Device Specifications</h3>
-                <p style="font-size:12px; color:#aaa; margin-top:2px;">Windows 10 Pro Simulator (JR AI Architecture)</p>
+                <p style="font-size:12px; color:#aaa; margin-top:2px;">Windows 10 Pro Simulator</p>
               </div>
               <div style="background:#181818; padding:16px; border:1px solid #333; font-size:12px; line-height:1.8; border-radius:3px;">
-                <div><strong>Edition:</strong> Windows 10 Pro</div>
-                <div><strong>Version:</strong> 22H2 (OS Build 19045.2965)</div>
+                <div><strong>Edition:</strong> Windows 10 Pro (22H2)</div>
                 <div><strong>Typography:</strong> Google Sans (Product Sans)</div>
-                <div><strong>Platform Container:</strong> iOS WebKit / IPA Single-File Engine</div>
-                <div><strong>Package Runtime:</strong> JREX Virtual Sandbox Container</div>
+                <div><strong>Target Architecture:</strong> Single-File IPA WebKit Container</div>
+                <div><strong>Packaging API:</strong> JREX Virtual App Container</div>
               </div>
             </div>
           `;
         }
 
         win.content.innerHTML = `<div class="settings-window-body">${contentHtml}</div>`;
+      }
+
+      setWallpaper(url) {
+        this.state.wallpaper = url;
+        this.savePersistentState();
+        this.applyPersonalization();
+        this.showInUINativeToast('Wallpaper Updated', 'Desktop background refreshed.', 'success');
+      }
+
+      updateWallpaperFromInput() {
+        const input = document.getElementById('setting-wallpaper-input');
+        if (input && input.value && !input.value.includes('Custom Local Image')) {
+          this.setWallpaper(input.value);
+        }
+      }
+
+      applyPersonalization() {
+        const desktop = document.getElementById('desktop');
+        desktop.style.backgroundImage = `url("${this.state.wallpaper}")`;
       }
 
       uninstallJREX(appId) {
@@ -1926,9 +2204,8 @@
         this.renderDesktop();
         this.renderStartMenuApps();
         this.renderTaskbar();
-        this.showInUINativeToast('App Uninstalled', `Application was removed from the system.`, 'info');
+        this.showInUINativeToast('Application Removed', `Package ${appId} uninstalled.`, 'info');
         
-        // Refresh settings view if open
         for (const [, win] of this.windows) {
           if (win.appId === 'settings') {
             this.showSettingsPage(win.id, 'apps');
@@ -1936,50 +2213,9 @@
         }
       }
 
-      renderFileExplorer(win) {
-        win.content.innerHTML = `
-          <div class="explorer-container">
-            <div class="explorer-ribbon">
-              <button class="explorer-btn" onclick="Sys.promptImportJREX()"><i class="fa-solid fa-file-import"></i> Import .jrex</button>
-              <button class="explorer-btn" onclick="Sys.exportToIOSFiles()"><i class="fa-solid fa-floppy-disk"></i> Backup to iOS Files</button>
-              <button class="explorer-btn" onclick="Sys.openApp('notepad')"><i class="fa-solid fa-plus"></i> New Document</button>
-            </div>
-            <div class="explorer-address-bar">
-              <i class="fa-solid fa-arrow-left" style="cursor:pointer;"></i>
-              <i class="fa-solid fa-arrow-right" style="cursor:pointer;"></i>
-              <i class="fa-solid fa-arrow-up" style="cursor:pointer;"></i>
-              <input class="address-box" value="This PC > Local Storage (C:) > Documents" readonly />
-            </div>
-            <div class="explorer-body">
-              <div class="explorer-sidebar">
-                <div class="sidebar-folder active"><i class="fa-solid fa-desktop"></i> Desktop</div>
-                <div class="sidebar-folder"><i class="fa-solid fa-file"></i> Documents</div>
-                <div class="sidebar-folder"><i class="fa-solid fa-box-archive"></i> JREX Packages</div>
-                <div class="sidebar-folder"><i class="fa-solid fa-hard-drive"></i> Local Disk (C:)</div>
-              </div>
-              <div class="explorer-file-view" id="explorer-files-grid"></div>
-            </div>
-          </div>
-        `;
-
-        const grid = win.content.querySelector('#explorer-files-grid');
-        this.state.documents.forEach((doc, idx) => {
-          const item = document.createElement('div');
-          item.className = 'file-item';
-          item.innerHTML = `<i class="fa-solid fa-file-lines" style="color:#0078d7;"></i><span>${doc.name}</span>`;
-          item.ondblclick = () => this.openApp('notepad', { docIndex: idx });
-          grid.appendChild(item);
-        });
-
-        this.state.installedJREX.forEach(pkg => {
-          const item = document.createElement('div');
-          item.className = 'file-item';
-          item.innerHTML = `<i class="${pkg.icon || 'fa-solid fa-cube'}" style="color:#ffb900;"></i><span>${pkg.name}.jrex</span>`;
-          item.ondblclick = () => this.openApp(pkg.id);
-          grid.appendChild(item);
-        });
-      }
-
+      // ========================================================================
+      // BUILT-IN APPLICATIONS (NOTEPAD, CALC, CMD, JREX STORE)
+      // ========================================================================
       renderNotepad(win, args = {}) {
         let currentDoc = { name: 'Untitled.txt', content: '' };
         if (args.docIndex !== undefined && this.state.documents[args.docIndex]) {
@@ -2005,7 +2241,7 @@
             this.state.documents.push(currentDoc);
           }
           this.savePersistentState();
-          this.showInUINativeToast('Notepad', `Document "${currentDoc.name}" successfully saved.`, 'success');
+          this.showInUINativeToast('Notepad', `Document "${currentDoc.name}" saved.`, 'success');
         };
 
         win.content.querySelector('#notepad-export-btn').onclick = () => {
@@ -2091,7 +2327,7 @@
       renderCmd(win) {
         win.content.innerHTML = `
           <div class="cmd-container">
-            <div class="cmd-output" id="cmd-history">Microsoft Windows [Version 10.0.19045.2965]\n(c) Microsoft Corporation. All rights reserved.\n\nType 'help' for available commands.</div>
+            <div class="cmd-output" id="cmd-history">Microsoft Windows [Version 10.0.19045.2965]\n(c) Microsoft Corporation. All rights reserved.\n\nType 'help' for commands.</div>
             <div class="cmd-input-line">
               <span class="cmd-prompt-text">C:\\Users\\Administrator&gt;</span>
               <input type="text" class="cmd-input" id="cmd-cli" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
@@ -2119,12 +2355,12 @@
 
         switch (main) {
           case 'help':
-            outputElem.innerText += `\nSupported commands:\n  help        Display terminal commands\n  dir         List files and apps\n  cls         Clear console output\n  backup      Export snapshot for iOS Files\n  install     Trigger .jrex installer\n  ver         Display Windows version\n  reboot      Restart session\n`;
+            outputElem.innerText += `\nCommands:\n  help        Display terminal commands\n  dir         List files and apps\n  cls         Clear console output\n  backup      Export snapshot for iOS Files\n  install     Trigger .jrex package installer\n  ver         Display Windows version\n  reboot      Restart session\n`;
             break;
           case 'dir':
             outputElem.innerText += `\n Directory of C:\\Users\\Administrator\n\n`;
-            this.state.documents.forEach(d => outputElem.innerText += `08/31/2026  05:30 PM    <DOC>   ${d.name}\n`);
-            this.state.installedJREX.forEach(p => outputElem.innerText += `08/31/2026  05:30 PM    <JREX>  ${p.name}.jrex\n`);
+            this.state.documents.forEach(d => outputElem.innerText += `09/05/2026  08:40 AM    <DOC>   ${d.name}\n`);
+            this.state.installedJREX.forEach(p => outputElem.innerText += `09/05/2026  08:40 AM    <JREX>  ${p.name}.jrex\n`);
             break;
           case 'cls':
             outputElem.innerText = '';
@@ -2138,7 +2374,7 @@
             outputElem.innerText += `[INFO] File selector opened.\n`;
             break;
           case 'ver':
-            outputElem.innerText += `\nMicrosoft Windows [Version 10.0.19045.2965 - JR AI Edition]\n`;
+            outputElem.innerText += `\nMicrosoft Windows [Version 10.0.19045.2965 - JR AI Simulator]\n`;
             break;
           case 'reboot':
             this.reboot();
@@ -2161,15 +2397,15 @@
             <div style="border: 2px dashed #444; border-radius:6px; padding:30px; text-align:center; margin-bottom:20px; cursor:pointer;" onclick="Sys.promptImportJREX()">
               <i class="fa-solid fa-cloud-arrow-up" style="font-size:36px; color:var(--accent-color); margin-bottom:12px;"></i>
               <div style="font-weight:600; font-size:14px;">Click to Browse or Drop .jrex File</div>
-              <div style="font-size:11px; color:#888; margin-top:4px;">Supports all standard .jrex / .json application archives</div>
+              <div style="font-size:11px; color:#888; margin-top:4px;">Supports standard JSON app archives</div>
             </div>
 
-            <h3>Sample Quick Install Packages</h3>
+            <h3>Featured Packages</h3>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
               <div style="background:#252525; padding:12px; border:1px solid #333; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                   <div style="font-weight:600; font-size:13px;"><i class="fa-solid fa-palette"></i> Paint Studio</div>
-                  <div style="font-size:11px; color:#888;">Drawing canvas tool</div>
+                  <div style="font-size:11px; color:#888;">Drawing canvas application</div>
                 </div>
                 <button class="setting-btn" onclick="Sys.installSamplePaint()">Install</button>
               </div>
@@ -2177,7 +2413,7 @@
               <div style="background:#252525; padding:12px; border:1px solid #333; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                   <div style="font-weight:600; font-size:13px;"><i class="fa-solid fa-stopwatch"></i> Stopwatch Pro</div>
-                  <div style="font-size:11px; color:#888;">Precision timer utility</div>
+                  <div style="font-size:11px; color:#888;">High-precision timer utility</div>
                 </div>
                 <button class="setting-btn" onclick="Sys.installSampleStopwatch()">Install</button>
               </div>
@@ -2198,7 +2434,7 @@
               <div style="padding:8px; background:#333; display:flex; gap:10px; align-items:center;">
                 <input type="color" id="colorPicker" value="#0078d7">
                 <input type="range" id="brushSize" min="1" max="40" value="4">
-                <button id="clearBtn" style="background:#555; color:#fff; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Clear Canvas</button>
+                <button id="clearBtn" style="background:#555; color:#fff; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Clear</button>
               </div>
               <canvas id="paintCanvas" style="flex:1; background:#fff; cursor:crosshair;"></canvas>
             </div>
@@ -2327,24 +2563,10 @@
         if (!isVisible) this.closeStartMenu();
       }
 
-      updateWallpaper() {
-        const input = document.getElementById('setting-wallpaper-input');
-        if (input && input.value) {
-          this.state.wallpaper = input.value;
-          this.savePersistentState();
-          this.applyPersonalization();
-          this.showInUINativeToast('Personalization', 'New wallpaper successfully applied.', 'success');
-        }
-      }
-
-      applyPersonalization() {
-        document.getElementById('desktop').style.backgroundImage = `url("${this.state.wallpaper}")`;
-      }
-
       refreshDesktop() {
         this.renderDesktop();
         this.renderTaskbar();
-        this.showInUINativeToast('System', 'Desktop workspace refreshed.', 'info');
+        this.showInUINativeToast('System Refreshed', 'Desktop icons and views reset.', 'info');
       }
 
       toggleFullscreen() {
@@ -2380,6 +2602,19 @@
       }
 
       setupEventListeners() {
+        // Wallpaper local file upload input
+        const wpInput = document.getElementById('wallpaper-file-input');
+        wpInput.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            this.setWallpaper(event.target.result);
+          };
+          reader.readAsDataURL(file);
+        };
+
         window.addEventListener('click', (e) => {
           const startMenu = document.getElementById('start-menu');
           const startBtn = document.getElementById('start-btn');
